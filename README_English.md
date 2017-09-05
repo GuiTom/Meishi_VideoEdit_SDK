@@ -14,5 +14,5 @@
 # Wuhan Fun Connect Technology Co., Ltd.(in China)
 ## For Business cooperation:
 ### cell phone:(86)13148475541
-### QQ:1806235010
+### Email:306768929@qq.com
 
