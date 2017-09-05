@@ -1,4 +1,4 @@
-### scroll the web page for English Version
+### Scroll this web page for document in English
 # 美视视频编辑SDK安卓版
 ### 一次付费，永久使用,目前可能是国内性价比最高的视频编辑SDK
 ### 独创Animation 视频贴纸、文字动画。
