@@ -8,4 +8,4 @@
 
 
 ### 代码及API文档即将上线，敬请期待！
-<font color="#00ff00">点此下载</font>
+<a href="https://github.com/GuiTom/Meishi_VideoEdit_SDK/blob/master/meishi_signed_align.apk"><font color="#00ff00" size=24>点此下载Demo安装包</font>
