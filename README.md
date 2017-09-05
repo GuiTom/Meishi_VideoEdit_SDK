@@ -1,7 +1,9 @@
-
+# MeiShi Video Edit SDK for Android
 # 美视视频编辑SDK安卓版
+### Authenticate once,use permanently！May be the most cost-effective SDK in the world!
 ### 一次付费，永久使用,目前可能是国内性价比最高的视频编辑SDK
 ### 独创Animation 视频贴纸、文字动画。
+
 ## 功能简介
 ### 录制
 #### 支持实时美颜等24种滤镜、断点续拍、动态贴纸、实时切换摄像头、竖屏、横屏、正方形录制，可自定义码率、尺寸、旋转方向
