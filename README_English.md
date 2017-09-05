@@ -8,7 +8,7 @@
 ### Video Edit 
 #### Also support 24 kinds of Real-Time filters suce as FaceBeauty filter etc,support font animation、image Animation、video joint、video cut,and also you can define bitrate、size、rotation of the video youself.
 ### source code and API document will be on line,please care for us!
-<a href="https://github.com/GuiTom/Meishi_VideoEdit_SDK/blob/master/meishi_signed_align.apk?raw=true"><font color="#00ff00" size=24>to download apk for Demo</font>
+<a href="https://github.com/GuiTom/Meishi_VideoEdit_SDK/blob/master/meishi_signed_align.apk?raw=true"><font color="#00ff00" size=24>to download apk for Demo</font></a>
 #### Or scan the QR code
 ## ![](https://qr.api.cli.im/qr?data=https%253A%252F%252Fgithub.com%252FGuiTom%252FMeishi_VideoEdit_SDK%252Fblob%252Fmaster%252Fmeishi_signed_align.apk%253Fraw%253Dtrue&level=H&transparent=false&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=280&kid=cliim&key=d46aaf359b5794be0c7e971a2673d7af)
 ## For Business cooperation:
