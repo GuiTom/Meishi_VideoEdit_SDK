@@ -1,4 +1,4 @@
-"# Meishi_VideoEdit_SDK" 
+
 #视频编辑SDK安卓版
 ##功能简介
 ###录制
