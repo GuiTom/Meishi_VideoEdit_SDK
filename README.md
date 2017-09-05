@@ -1,4 +1,4 @@
-<a href="https://github.com/GuiTom/Meishi_VideoEdit_SDK/blob/master/README.md#jump"><font color="#00ff00" size=24>For English Version</font>
+<a href="#jump"><font color="#00ff00" size=24>For English Version</font>
 # 美视视频编辑SDK安卓版
 ### 一次付费，永久使用,目前可能是国内性价比最高的视频编辑SDK
 ### 独创Animation 视频贴纸、文字动画。
