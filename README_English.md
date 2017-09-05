@@ -1,5 +1,4 @@
 
-##English Version
 # MeiShi Video Edit SDK for Android
 ### Authenticate once,use permanently.May be the most cost-effective SDK in the world!
 ### Original creation of coreAnimatin for video attaching image and fonts.
