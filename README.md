@@ -12,7 +12,7 @@
 #### 或扫描二维码下载
 ## ![](https://qr.api.cli.im/qr?data=https%253A%252F%252Fgithub.com%252FGuiTom%252FMeishi_VideoEdit_SDK%252Fblob%252Fmaster%252Fmeishi_signed_align.apk%253Fraw%253Dtrue&level=H&transparent=false&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=280&kid=cliim&key=d46aaf359b5794be0c7e971a2673d7af)
 
-#武汉趣通科技有限公司
+武汉趣通科技有限公司
 ## 商务合作:
 ### QQ:1806235010
 ### (cell phone)手机  :(86)13148475541
