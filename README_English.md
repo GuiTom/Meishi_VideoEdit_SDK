@@ -11,7 +11,7 @@
 <a href="https://github.com/GuiTom/Meishi_VideoEdit_SDK/blob/master/meishi_signed_align.apk?raw=true"><font color="#00ff00" size=24>to download apk for Demo</font></a>
 #### Or scan the QR code
 ## ![](https://qr.api.cli.im/qr?data=https%253A%252F%252Fgithub.com%252FGuiTom%252FMeishi_VideoEdit_SDK%252Fblob%252Fmaster%252Fmeishi_signed_align.apk%253Fraw%253Dtrue&level=H&transparent=false&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=280&kid=cliim&key=d46aaf359b5794be0c7e971a2673d7af)
-# Wuhan Fun Technology Co., Ltd.(in China)
+# Wuhan Fun Connect Technology Co., Ltd.(in China)
 ## For Business cooperation:
 ### QQ:1806235010
 ### cell phone:(86)13148475541
