@@ -1,25 +1,31 @@
 # MeiShi Video Edit SDK for Android
 # 美视视频编辑SDK安卓版
-### Authenticate once,use permanently！May be the most cost-effective SDK in the world!
+### Authenticate once,use permanently.May be the most cost-effective SDK in the world!
 ### 一次付费，永久使用,目前可能是国内性价比最高的视频编辑SDK
+### Original creation of coreAnimatin for video attaching image and fonts.
 ### 独创Animation 视频贴纸、文字动画。
-
+## Function Profile
 ## 功能简介
+## Record
 ### 录制
+#### Support 24 kinds of Real-Time filters suce as FaceBeauty filter etc,support pause and resume、dynamic attaching image,real-time camera switching、protrait/landscape/square record size is OK,and you can define bitrate、size、rotation of the video youself.
 #### 支持实时美颜等24种滤镜、断点续拍、动态贴纸、实时切换摄像头、竖屏、横屏、正方形录制，可自定义码率、尺寸、旋转方向
+### Video Edit 
 ### 视频编辑
+#### Also support 24 kinds of Real-Time filters suce as FaceBeauty filter etc,support font animation、image Animation,video joint,video cut,and also you can define bitrate、size、rotation of the video youself.
 #### 支持美颜等24种滤镜、支持添加字幕动画、图片动画、视频拼接、视频剪切，可自定义码率、尺寸、旋转方向
 
-
+### source and API document will be on line,please care for us!
 ### 代码及API文档即将上线，敬请期待！
+<a href="https://github.com/GuiTom/Meishi_VideoEdit_SDK/blob/master/meishi_signed_align.apk?raw=true"><font color="#00ff00" size=24>to download apk for Demo</font>
 <a href="https://github.com/GuiTom/Meishi_VideoEdit_SDK/blob/master/meishi_signed_align.apk?raw=true"><font color="#00ff00" size=24>点此下载Demo安装包</font>
 
-
+#### Or scan the QR code
 #### 或扫描二维码下载
 ## ![](https://qr.api.cli.im/qr?data=https%253A%252F%252Fgithub.com%252FGuiTom%252FMeishi_VideoEdit_SDK%252Fblob%252Fmaster%252Fmeishi_signed_align.apk%253Fraw%253Dtrue&level=H&transparent=false&bgcolor=%23ffffff&forecolor=%23000000&blockpixel=12&marginblock=1&logourl=&size=280&kid=cliim&key=d46aaf359b5794be0c7e971a2673d7af)
-
-## 商务合作
+## For Business cooperation:
+## 商务合作:
 ### QQ:1806235010
-### 手机  :(86)13148475541
+### (cell phone)手机  :(86)13148475541
 
 
