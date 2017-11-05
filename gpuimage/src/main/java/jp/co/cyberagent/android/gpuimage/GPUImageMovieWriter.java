@@ -156,7 +156,6 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                     return;
                 }
 
-
                 mMuxer.pauseRecording();
                 recordStatus=RecordStatus.Paused;
 
