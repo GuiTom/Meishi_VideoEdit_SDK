@@ -11,8 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import tech.qt.com.meishivideoeditsdk.R;
-import tech.qt.com.meishivideoeditsdk.wiget.Group;
-import tech.qt.com.meishivideoeditsdk.wiget.Item;
+
 
 /**
  * Created by Jay on 2015/9/25 0025.

@@ -6,15 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -25,10 +21,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import transcoder.SystemUtil;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.Future;
+
 import transcoder.VideoTranscoder;
 import transcoder.engine.EffectLayer;
 import transcoder.engine.MediaTranscoder;
+import transcoder.engine.QTTimeRange;
 import transcoder.engine.displayObject.Animation;
 import transcoder.engine.displayObject.AnimationBitmap;
 import transcoder.engine.displayObject.AnimationText;
@@ -36,26 +36,17 @@ import transcoder.format.MediaPreSet;
 import transcoder.format.Size;
 import utils.MetaInfoUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Future;
-
 import static android.widget.ImageView.ScaleType.FIT_CENTER;
 
-
-public class VideoJoinActivity extends Activity {
+public class VideoCutActivity extends Activity {
     private static final String TAG = "VideoJoinActivity";
     private static final String FILE_PROVIDER_AUTHORITY = "net.ypresto.androidtranscoder.example.fileprovider";
     private static final int REQUEST_CODE_PICK = 1;
     private static final int PROGRESS_BAR_MAX = 1000;
     private Future<Void> mFuture;
     private long startTime;
-    private ArrayList<Uri>fileUris;
-//    private ArrayList<ParcelFileDescriptor>parcelFileDescriptors;
+    private ArrayList<Uri> fileUris;
+    //    private ArrayList<ParcelFileDescriptor>parcelFileDescriptors;
     private String dstMediaPath;
     private File outFile=null;
     private ArrayList<MetaInfo> listItems;
@@ -65,11 +56,12 @@ public class VideoJoinActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_videojoin);
+        setContentView(R.layout.activity_video_cut);
         list=(ListView)findViewById(R.id.myList);
         findViewById(R.id.select_video_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType("video/*"), REQUEST_CODE_PICK);
             }
         });
@@ -87,8 +79,8 @@ public class VideoJoinActivity extends Activity {
             public void onClick(View v) {
 
 
-                if(fileUris==null||fileUris.size()<2){
-                    Toast.makeText(getApplicationContext(),"请选择两个或以上的视频",Toast.LENGTH_SHORT);
+                if(fileUris==null||fileUris.size()<1){
+                    Toast.makeText(getApplicationContext(),"请选择1个视频",Toast.LENGTH_SHORT);
                     return;
                 }
                 startTime = SystemClock.uptimeMillis();
@@ -103,6 +95,7 @@ public class VideoJoinActivity extends Activity {
                 mediaPreSet.audioBitRate=128*1000;
                 mediaPreSet.audioSampleRate=48*1000;
                 mediaPreSet.audioChannelCount=2;
+                mediaPreSet.timeRange=new QTTimeRange(0,3*1000000);
 
 //                           //设置遮罩
                 String borderPath= Environment.getExternalStorageDirectory()+"/border1";
@@ -111,11 +104,11 @@ public class VideoJoinActivity extends Activity {
 
 
 
-                 dstMediaPath= new File(Environment.getExternalStorageDirectory(),"outPut.mp4").getAbsolutePath();
+                dstMediaPath= new File(Environment.getExternalStorageDirectory(),"outPut.mp4").getAbsolutePath();
                 EffectLayer effectLayer = new EffectLayer();
 //                effectLayer.animationBitmaps = this.animationBitmaps;
 //                effectLayer.animationTexts = this.animationTexts;
-//                effectLayer.getTimeRange();
+                effectLayer.getTimeRange();
 
 
                 VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer, listener);
@@ -159,23 +152,23 @@ public class VideoJoinActivity extends Activity {
                 if(position>cellList.size()-1){
                     MetaInfo metaInfo=listItems.get(position);
                     // 创建一个LinearLayout，并向其中添加两个组件
-                    line = new LinearLayout(VideoJoinActivity.this);
+                    line = new LinearLayout(VideoCutActivity.this);
                     line.setOrientation(LinearLayout.HORIZONTAL);
-                    ImageView image = new ImageView(VideoJoinActivity.this);
+                    ImageView image = new ImageView(VideoCutActivity.this);
                     image.setLayoutParams(new LinearLayout.LayoutParams(200,200));
                     image.setScaleType(FIT_CENTER);
                     image.setImageBitmap(metaInfo.thumbnail);
 
                     line.addView(image);
-                    LinearLayout right = new LinearLayout(VideoJoinActivity.this);
+                    LinearLayout right = new LinearLayout(VideoCutActivity.this);
                     right.setOrientation(LinearLayout.VERTICAL);
-                    TextView text = new TextView(VideoJoinActivity.this);
+                    TextView text = new TextView(VideoCutActivity.this);
                     text.setText("时长:"+metaInfo.durationMS/1000);
                     text.setTextSize(20);
                     text.setTextColor(Color.GRAY);
                     right.addView(text);
 
-                    TextView text2 = new TextView(VideoJoinActivity.this);
+                    TextView text2 = new TextView(VideoCutActivity.this);
                     text2.setText("尺寸:"+metaInfo.videoWidth+"x"+metaInfo.videoHeight);
                     text2.setTextSize(20);
                     text2.setTextColor(Color.GRAY);
@@ -278,16 +271,16 @@ public class VideoJoinActivity extends Activity {
             case REQUEST_CODE_PICK: {
 
                 if (resultCode == RESULT_OK) {
-                    if(fileUris==null){
+//                    if(fileUris==null){
                         fileUris=new ArrayList<>();
-                    }
+//                    }
                     fileUris.add(data.getData());
                     Uri uri=data.getData();
                     MetaInfo metaInfo= MetaInfoUtil.getMediaInfo(getApplicationContext(),uri);
-
+                    listItems=new ArrayList<MetaInfo>();
                     listItems.add(metaInfo);
-                   BaseAdapter baseAdapter = (BaseAdapter) list.getAdapter();
-                   baseAdapter.notifyDataSetChanged();
+                    BaseAdapter baseAdapter = (BaseAdapter) list.getAdapter();
+                    baseAdapter.notifyDataSetChanged();
 
                 }
                 break;
@@ -333,7 +326,7 @@ public class VideoJoinActivity extends Activity {
 //                    .setDataAndType(uri, "video/mp4")
 //                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
 
-            Intent intent=new Intent(VideoJoinActivity.this,VideoPlayerActivity.class);
+            Intent intent=new Intent(VideoCutActivity.this,VideoPlayerActivity.class);
             intent.putExtra("videoPath",dstMediaPath);
             startActivity(intent);
         }
@@ -360,7 +353,7 @@ public class VideoJoinActivity extends Activity {
         progressBar.setProgress(isSuccess ? PROGRESS_BAR_MAX : 0);
         switchButtonEnabled(false);
 
-        Toast.makeText(VideoJoinActivity.this, toastMessage, Toast.LENGTH_LONG).show();
+        Toast.makeText(VideoCutActivity.this, toastMessage, Toast.LENGTH_LONG).show();
 
     }
 
@@ -369,6 +362,4 @@ public class VideoJoinActivity extends Activity {
         findViewById(R.id.cancel_button).setEnabled(isProgress);
 
     }
-
-
 }

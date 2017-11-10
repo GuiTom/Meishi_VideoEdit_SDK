@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent intent=new Intent(MainActivity.this,VideoJoinActivity.class);
                         startActivity(intent);
                     }else if(childPosition==1){
-                        Intent intent=new Intent(MainActivity.this,VideoJoinActivity.class);
+                        Intent intent=new Intent(MainActivity.this,VideoCutActivity.class);
                         startActivity(intent);
                     }
                 }

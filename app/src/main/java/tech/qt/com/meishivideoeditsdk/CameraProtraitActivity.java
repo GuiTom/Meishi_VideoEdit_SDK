@@ -119,7 +119,7 @@ public class CameraProtraitActivity extends AppCompatActivity {
             }
         };
         mCameraHelper = new CameraHelper(this);
-
+        mCamera = new CameraLoader(mCameraHelper,mGPUImage,this);
     }
 
     private void setUpIdsAndListeners() {
