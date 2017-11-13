@@ -64,7 +64,6 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                 mEGLCore = new EglCore(EGL14.eglGetCurrentContext(), EglCore.FLAG_RECORDABLE);
                 mCodecInput = new WindowSurface(mEGLCore, mVideoEncoder.getSurface(), false);
             }
-
             // Draw on encoder surface
             mCodecInput.makeCurrent();
             super.onDraw(textureId, cubeBuffer, textureBuffer);

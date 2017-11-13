@@ -78,7 +78,6 @@ public class VideoCutActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-
                 if(fileUris==null||fileUris.size()<1){
                     Toast.makeText(getApplicationContext(),"请选择1个视频",Toast.LENGTH_SHORT);
                     return;
@@ -99,7 +98,8 @@ public class VideoCutActivity extends Activity {
 
 //                           //设置遮罩
                 String borderPath= Environment.getExternalStorageDirectory()+"/border1";
-//                setUpBorderAnimation(borderPath,20,30);
+                setUpBorderAnimation(borderPath,20,30);
+
                 setUpTextAnimation();
 
 
@@ -321,10 +321,6 @@ public class VideoCutActivity extends Activity {
                     ((TextView)findViewById(R.id.timeView)).setText("timeUse:"+(SystemClock.uptimeMillis() - startTime)/1000);
                 }
             });
-//            Uri uri = Uri.parse(dstMediaPath);
-//            startActivity(new Intent(Intent.ACTION_VIEW)
-//                    .setDataAndType(uri, "video/mp4")
-//                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
 
             Intent intent=new Intent(VideoCutActivity.this,VideoPlayerActivity.class);
             intent.putExtra("videoPath",dstMediaPath);

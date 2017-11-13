@@ -1,6 +1,9 @@
 package tech.qt.com.meishivideoeditsdk;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 import android.os.Environment;
@@ -12,11 +15,16 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+
 import VideoHandle.EpVideo;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilterGroup;
 import jp.co.cyberagent.android.gpuimage.GPUImageMovieWriter;
+import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
 import utils.CameraHelper;
 import utils.CameraLoader;
 import utils.GPUImageFilterTools;
@@ -118,6 +126,26 @@ public class CameraProtraitActivity extends AppCompatActivity {
                 stopRecording();
             }
         };
+        //                           //设置遮罩
+//        String borderPath= Environment.getExternalStorageDirectory()+"/border1";
+        int frameNum=30;
+        GPUImageTwoInputFilter.bitmaps=new ArrayList<Bitmap>();
+        for(int i=0;i<frameNum;i++){
+//            String filePath=borderPath+String.format("/%04d.png",(i+1));
+//            BitmapDrawable bitmapDrawable= (BitmapDrawable) BitmapDrawable.createFromPath(filePath);
+//            Bitmap bitmap=bitmapDrawable.getBitmap();
+//            GPUImageTwoInputFilter.bitmaps.add(bitmap);
+            String fileName=String.format("images_yanhua/image_%d.png",(i+1));
+
+            try {
+                InputStream is = getApplicationContext().getAssets().open(fileName);
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                GPUImageTwoInputFilter.bitmaps.add(bitmap);
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         mCameraHelper = new CameraHelper(this);
         mCamera = new CameraLoader(mCameraHelper,mGPUImage,this);
     }

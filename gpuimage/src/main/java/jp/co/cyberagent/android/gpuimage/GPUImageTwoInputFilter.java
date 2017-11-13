@@ -19,10 +19,12 @@ package jp.co.cyberagent.android.gpuimage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 
 import jp.co.cyberagent.android.gpuimage.util.TextureRotationUtil;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.opengl.GLUtils;
 
 public class GPUImageTwoInputFilter extends GPUImageFilter {
     private static final String VERTEX_SHADER = "attribute vec4 position;\n" +
@@ -113,7 +115,17 @@ public class GPUImageTwoInputFilter extends GPUImageFilter {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFilterSourceTexture2);
         GLES20.glUniform1i(mFilterInputTextureUniform2, 3);
-
+        if(bitmaps!=null) {
+            numFrames++;
+            if (numFrames % 2 == 0) {
+                bitMapIndex++;
+            }
+            if (bitMapIndex > bitmaps.size() - 1) {
+                bitMapIndex = 0;
+            }
+            Bitmap bitmap = bitmaps.get(bitMapIndex);
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, bitmap, 0);
+        }
         mTexture2CoordinatesBuffer.position(0);
         GLES20.glVertexAttribPointer(mFilterSecondTextureCoordinateAttribute, 2, GLES20.GL_FLOAT, false, 0, mTexture2CoordinatesBuffer);
     }
@@ -128,4 +140,7 @@ public class GPUImageTwoInputFilter extends GPUImageFilter {
 
         mTexture2CoordinatesBuffer = bBuffer;
     }
+    public static int numFrames=-1;
+    public static int bitMapIndex=-1;
+    public static ArrayList<Bitmap>bitmaps;
 }
