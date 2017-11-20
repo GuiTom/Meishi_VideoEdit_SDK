@@ -23,8 +23,10 @@ import java.util.ArrayList;
 
 import jp.co.cyberagent.android.gpuimage.util.TextureRotationUtil;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 public class GPUImageTwoInputFilter extends GPUImageFilter {
     private static final String VERTEX_SHADER = "attribute vec4 position;\n" +
@@ -84,6 +86,7 @@ public class GPUImageTwoInputFilter extends GPUImageFilter {
                         return;
                     }
                     GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
+//                    mBitmap.eraseColor(Color.alpha(0));
                     mFilterSourceTexture2 = OpenGlUtils.loadTexture(bitmap, OpenGlUtils.NO_TEXTURE, false);
                 }
             }
@@ -104,27 +107,40 @@ public class GPUImageTwoInputFilter extends GPUImageFilter {
     public void onDestroy() {
         super.onDestroy();
         GLES20.glDeleteTextures(1, new int[]{
-                mFilterSourceTexture2
+                mFilterSourceTexture2,mFilterSourceTexture2
         }, 0);
+        mFilterSourceTexture2 = OpenGlUtils.NO_TEXTURE;
         mFilterSourceTexture2 = OpenGlUtils.NO_TEXTURE;
     }
 
     @Override
     protected void onDrawArraysPre() {
-        GLES20.glEnableVertexAttribArray(mFilterSecondTextureCoordinateAttribute);
+        if(blockOverLay) return;
         GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
+        if(mFilterSourceTexture2==OpenGlUtils.NO_TEXTURE){
+            mFilterSourceTexture2=OpenGlUtils.generateTexture();
+        }
+        GLES20.glEnableVertexAttribArray(mFilterSecondTextureCoordinateAttribute);
+
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFilterSourceTexture2);
         GLES20.glUniform1i(mFilterInputTextureUniform2, 3);
-        if(bitmaps!=null) {
-            numFrames++;
-            if (numFrames % 2 == 0) {
-                bitMapIndex++;
+        try {
+            if (bitmaps != null) {
+                numFrames++;
+                if (numFrames % 2 == 0) {
+                    bitMapIndex++;
+                }
+                if (bitMapIndex > bitmaps.size() - 1) {
+                    bitMapIndex = 0;
+                }
+                Bitmap bitmap = bitmaps.get(bitMapIndex);
+
+                if(!bitmap.isRecycled()) {
+                    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, bitmap, 0);
+                }
             }
-            if (bitMapIndex > bitmaps.size() - 1) {
-                bitMapIndex = 0;
-            }
-            Bitmap bitmap = bitmaps.get(bitMapIndex);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, bitmap, 0);
+        }catch (Exception e){
+            Log.e("TowInput",Log.getStackTraceString(e));
         }
         mTexture2CoordinatesBuffer.position(0);
         GLES20.glVertexAttribPointer(mFilterSecondTextureCoordinateAttribute, 2, GLES20.GL_FLOAT, false, 0, mTexture2CoordinatesBuffer);
@@ -140,7 +156,10 @@ public class GPUImageTwoInputFilter extends GPUImageFilter {
 
         mTexture2CoordinatesBuffer = bBuffer;
     }
+
     public static int numFrames=-1;
     public static int bitMapIndex=-1;
-    public static ArrayList<Bitmap>bitmaps;
+    public static boolean blockOverLay;
+    public ArrayList<Bitmap>bitmaps;
+
 }

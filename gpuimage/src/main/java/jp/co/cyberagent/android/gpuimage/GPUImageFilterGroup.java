@@ -85,8 +85,19 @@ public class GPUImageFilterGroup extends GPUImageFilter {
         if (aFilter == null) {
             return;
         }
+        remoteFilter(aFilter.getClass());
         mFilters.add(aFilter);
         updateMergedFilters();
+    }
+    public void remoteFilter(Class claz ){
+        int size=getFilters().size();
+        for(int i=0;i<size;i++){
+            GPUImageFilter aFilter=mFilters.get(i);
+            if(claz==aFilter.getClass()){
+                mFilters.remove(i);
+                break;
+            }
+        }
     }
 
     /*
@@ -185,32 +196,38 @@ public class GPUImageFilterGroup extends GPUImageFilter {
     @Override
     public void onDraw(final int textureId, final FloatBuffer cubeBuffer,
                        final FloatBuffer textureBuffer) {
-        runPendingOnDrawTasks();
-        if (!isInitialized() || mFrameBuffers == null || mFrameBufferTextures == null) {
-            return;
-        }
-        if (mMergedFilters != null) {
-            int size = mMergedFilters.size();
-            int previousTexture = textureId;
-            for (int i = 0; i < size; i++) {
-                GPUImageFilter filter = mMergedFilters.get(i);
-                boolean isNotLast = i < size - 1;
-                if (isNotLast) {
-                    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[i]);
-                    GLES20.glClearColor(0, 0, 0, 0);
-                }
+        synchronized (this) {
+            runPendingOnDrawTasks();
+            if (!isInitialized() || mFrameBuffers == null || mFrameBufferTextures == null) {
+                return;
+            }
+            if (mMergedFilters != null) {
+                int size = mMergedFilters.size();
 
-                if (i == 0) {
-                    filter.onDraw(previousTexture, cubeBuffer, textureBuffer);
-                } else if (i == size - 1) {
-                    filter.onDraw(previousTexture, mGLCubeBuffer, (size % 2 == 0) ? mGLTextureFlipBuffer : mGLTextureBuffer);
-                } else {
-                    filter.onDraw(previousTexture, mGLCubeBuffer, mGLTextureBuffer);
-                }
+                int previousTexture = textureId;
+                for (int i = 0; i < size; i++) {
+                    GPUImageFilter filter = mMergedFilters.get(i);
+                    boolean isNotLast = i < size - 1;
+                    if (isNotLast) {
+                        if(i==mFrameBuffers.length){
+                            return;
+                        }
+                        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[i]);
+                        GLES20.glClearColor(0, 0, 0, 0);
+                    }
 
-                if (isNotLast) {
-                    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-                    previousTexture = mFrameBufferTextures[i];
+                    if (i == 0) {
+                        filter.onDraw(previousTexture, cubeBuffer, textureBuffer);
+                    } else if (i == size - 1) {
+                        filter.onDraw(previousTexture, mGLCubeBuffer, (size % 2 == 0) ? mGLTextureFlipBuffer : mGLTextureBuffer);
+                    } else {
+                        filter.onDraw(previousTexture, mGLCubeBuffer, mGLTextureBuffer);
+                    }
+
+                    if (isNotLast) {
+                        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+                        previousTexture = mFrameBufferTextures[i];
+                    }
                 }
             }
         }

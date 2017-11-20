@@ -16,6 +16,10 @@
 
 package jp.co.cyberagent.android.gpuimage;
 
+import android.graphics.Bitmap;
+
+import java.util.ArrayList;
+
 public class GPUImageOverlayBlendFilter extends GPUImageTwoInputFilter {
     public static final String OVERLAY_BLEND_FRAGMENT_SHADER = "varying highp vec2 textureCoordinate;\n" +
             " varying highp vec2 textureCoordinate2;\n" +

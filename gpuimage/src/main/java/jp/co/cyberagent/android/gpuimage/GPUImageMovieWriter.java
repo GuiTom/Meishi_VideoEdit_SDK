@@ -84,7 +84,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
         //releaseEncodeSurface();
     }
 
-    public void startRecording(final String outputPath, final int width, final int height, final int degree) {
+    public void startRecording(final String outputPath, final int width, final int height, final int degree, final String musicPath) {
         runOnDraw(new Runnable() {
             @Override
             public void run() {
@@ -98,7 +98,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                     // for video capturing
                     mVideoEncoder = new MediaVideoEncoder(mMuxer, mMediaEncoderListener, width, height);
                     // for audio capturing
-                    mAudioEncoder = new MediaAudioEncoder(mMuxer, mMediaEncoderListener);
+                    mAudioEncoder = new MediaAudioEncoder(mMuxer,musicPath, mMediaEncoderListener);
 
                     mMuxer.prepare();
                     mMuxer.startRecording();

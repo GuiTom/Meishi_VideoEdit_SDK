@@ -49,28 +49,30 @@ public class MediaAudioEncoder extends MediaEncoder {
     private static final int BIT_RATE = 64000;
     public static final int SAMPLES_PER_FRAME = 1024;    // AAC, bytes/frame/channel
     public static final int FRAMES_PER_BUFFER = 25;     // AAC, frame/buffer/sec
+    private final String musicPath;
 
     private AudioThread mAudioThread = null;
-    private boolean userLocalMusic;
+
     private MediaExtractor mediaExtractor;
     private MediaFormat mediaFormat;
     private MediaCodec mAudioDecoder;
 
-    public MediaAudioEncoder(final MediaMuxerWrapper muxer, final MediaEncoderListener listener) {
+    public MediaAudioEncoder(final MediaMuxerWrapper muxer,final String musicPath, final MediaEncoderListener listener) {
         super(muxer, listener);
+        this.musicPath=musicPath;
     }
 
     @Override
     protected void prepare() throws IOException {
         if (DEBUG) Log.v(TAG, "prepare:");
-        this.userLocalMusic=true;
-        if(this.userLocalMusic){
+
+        if(this.musicPath!=null){
             int sampleRate=0;
             int bitRate=0;
             int channelcount=0;
-            String fileName= Environment.getExternalStorageDirectory()+"/sample.mp3";
+//            String fileName= Environment.getExternalStorageDirectory()+"/sample.mp3";
             mediaExtractor=new MediaExtractor();
-            mediaExtractor.setDataSource(fileName);
+            mediaExtractor.setDataSource(musicPath);
             int trackCount=mediaExtractor.getTrackCount();
             for(int i=0;i<trackCount;i++){
                 mediaFormat=mediaExtractor.getTrackFormat(i);
@@ -157,7 +159,7 @@ public class MediaAudioEncoder extends MediaEncoder {
     private class AudioThread extends Thread {
         @Override
         public void run() {
-            if (MediaAudioEncoder.this.userLocalMusic) {
+            if (MediaAudioEncoder.this.musicPath!=null) {
                 long pts = 0;
 
                 mAudioDecoder.start();
@@ -191,6 +193,15 @@ public class MediaAudioEncoder extends MediaEncoder {
                 long startMs = System.currentTimeMillis();
 
                 while (mIsCapturing && !mRequestStop && !mIsEOS) {
+                    if(mBlockCapturing) {
+                        synchronized (mSync) {
+                            try {
+                                mSync.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                     System.out.println("index===>" + "acde");
                     if (!mIsEOS) {
 

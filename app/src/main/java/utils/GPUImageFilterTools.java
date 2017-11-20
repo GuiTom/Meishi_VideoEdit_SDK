@@ -19,6 +19,7 @@ package utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.opengl.Matrix;
@@ -27,12 +28,17 @@ import jp.co.cyberagent.android.gpuimage.*;
 import tech.qt.com.meishivideoeditsdk.R;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class GPUImageFilterTools {
+    private static ArrayList<Bitmap> bitmaps;
+
     public static void showDialog(final Context context,
-            final OnGpuImageFilterChosenListener listener) {
+                                  final OnGpuImageFilterChosenListener listener) {
         final FilterList filters = new FilterList();
         filters.addFilter("无滤镜", FilterType.NONE);
         filters.addFilter("美颜", FilterType.BUEATYFACE);
@@ -60,30 +66,30 @@ public class GPUImageFilterTools {
         filters.addFilter("Vignette", FilterType.VIGNETTE);
         filters.addFilter("ToneCurve", FilterType.TONE_CURVE);
 
-        filters.addFilter("Blend (Difference)", FilterType.BLEND_DIFFERENCE);
-        filters.addFilter("Blend (Source Over)", FilterType.BLEND_SOURCE_OVER);
-        filters.addFilter("Blend (Color Burn)", FilterType.BLEND_COLOR_BURN);
-        filters.addFilter("Blend (Color Dodge)", FilterType.BLEND_COLOR_DODGE);
-        filters.addFilter("Blend (Darken)", FilterType.BLEND_DARKEN);
-        filters.addFilter("Blend (Dissolve)", FilterType.BLEND_DISSOLVE);
-        filters.addFilter("Blend (Exclusion)", FilterType.BLEND_EXCLUSION);
-        filters.addFilter("Blend (Hard Light)", FilterType.BLEND_HARD_LIGHT);
-        filters.addFilter("Blend (Lighten)", FilterType.BLEND_LIGHTEN);
-        filters.addFilter("Blend (Add)", FilterType.BLEND_ADD);
-        filters.addFilter("Blend (Divide)", FilterType.BLEND_DIVIDE);
-        filters.addFilter("Blend (Multiply)", FilterType.BLEND_MULTIPLY);
-        filters.addFilter("Blend (Overlay)", FilterType.BLEND_OVERLAY);
-        filters.addFilter("Blend (Screen)", FilterType.BLEND_SCREEN);
-        filters.addFilter("Blend (Alpha)", FilterType.BLEND_ALPHA);
-        filters.addFilter("Blend (Color)", FilterType.BLEND_COLOR);
-        filters.addFilter("Blend (Hue)", FilterType.BLEND_HUE);
-        filters.addFilter("Blend (Saturation)", FilterType.BLEND_SATURATION);
-        filters.addFilter("Blend (Luminosity)", FilterType.BLEND_LUMINOSITY);
-        filters.addFilter("Blend (Linear Burn)", FilterType.BLEND_LINEAR_BURN);
-        filters.addFilter("Blend (Soft Light)", FilterType.BLEND_SOFT_LIGHT);
-        filters.addFilter("Blend (Subtract)", FilterType.BLEND_SUBTRACT);
-        filters.addFilter("Blend (Chroma Key)", FilterType.BLEND_CHROMA_KEY);
-        filters.addFilter("Blend (Normal)", FilterType.BLEND_NORMAL);
+//        filters.addFilter("Blend (Difference)", FilterType.BLEND_DIFFERENCE);
+//        filters.addFilter("Blend (Source Over)", FilterType.BLEND_SOURCE_OVER);
+//        filters.addFilter("Blend (Color Burn)", FilterType.BLEND_COLOR_BURN);
+//        filters.addFilter("Blend (Color Dodge)", FilterType.BLEND_COLOR_DODGE);
+//        filters.addFilter("Blend (Darken)", FilterType.BLEND_DARKEN);
+//        filters.addFilter("Blend (Dissolve)", FilterType.BLEND_DISSOLVE);
+//        filters.addFilter("Blend (Exclusion)", FilterType.BLEND_EXCLUSION);
+//        filters.addFilter("Blend (Hard Light)", FilterType.BLEND_HARD_LIGHT);
+//        filters.addFilter("Blend (Lighten)", FilterType.BLEND_LIGHTEN);
+//        filters.addFilter("Blend (Add)", FilterType.BLEND_ADD);
+//        filters.addFilter("Blend (Divide)", FilterType.BLEND_DIVIDE);
+//        filters.addFilter("Blend (Multiply)", FilterType.BLEND_MULTIPLY);
+//        filters.addFilter("Blend (Overlay)", FilterType.BLEND_OVERLAY);
+//        filters.addFilter("Blend (Screen)", FilterType.BLEND_SCREEN);
+//        filters.addFilter("Blend (Alpha)", FilterType.BLEND_ALPHA);
+//        filters.addFilter("Blend (Color)", FilterType.BLEND_COLOR);
+//        filters.addFilter("Blend (Hue)", FilterType.BLEND_HUE);
+//        filters.addFilter("Blend (Saturation)", FilterType.BLEND_SATURATION);
+//        filters.addFilter("Blend (Luminosity)", FilterType.BLEND_LUMINOSITY);
+//        filters.addFilter("Blend (Linear Burn)", FilterType.BLEND_LINEAR_BURN);
+//        filters.addFilter("Blend (Soft Light)", FilterType.BLEND_SOFT_LIGHT);
+//        filters.addFilter("Blend (Subtract)", FilterType.BLEND_SUBTRACT);
+//        filters.addFilter("Blend (Chroma Key)", FilterType.BLEND_CHROMA_KEY);
+//        filters.addFilter("Blend (Normal)", FilterType.BLEND_NORMAL);
 
         filters.addFilter("Lookup (Amatorka)", FilterType.LOOKUP_AMATORKA);
         filters.addFilter("Gaussian Blur", FilterType.GAUSSIAN_BLUR);
@@ -119,7 +125,7 @@ public class GPUImageFilterTools {
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Choose a filter");
+        builder.setTitle("选择一个滤镜");
         builder.setItems(filters.names.toArray(new String[filters.names.size()]),
                 new DialogInterface.OnClickListener() {
                     @Override
@@ -130,7 +136,142 @@ public class GPUImageFilterTools {
                 });
         builder.create().show();
     }
+    public static void showCoverDialog(final Context context,
+                                  final OnGpuImageCoverChosenListener listener) {
 
+        final CoverList coverList = new CoverList();
+        coverList.addCover("无",CoverType.NONE);
+        coverList.addCover("霓虹灯",CoverType.NIHONGDENG);
+        coverList.addCover("七彩光",CoverType.QICAIGUANG);
+        coverList.addCover("下雪了",CoverType.XIAXUELE);
+        coverList.addCover("烟花",CoverType.YANHUA);
+        coverList.addCover("萤火虫",CoverType.YINGHUOCHONG);
+        coverList.addCover("蝴蝶",CoverType.HUDIE);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("选择一个遮罩");
+
+        builder.setItems(coverList.names.toArray(new String[coverList.names.size()]),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int item) {
+                        GPUImageOverlayBlendFilter gpuImageOverlayBlendFilter=(GPUImageOverlayBlendFilter)createFilterForType(context,FilterType.BLEND_OVERLAY);
+                        int frameNum=60;
+                        GPUImageOverlayBlendFilter.blockOverLay=true;
+                        if(bitmaps!=null&&bitmaps.size()>0){
+                            int size=bitmaps.size();
+                            for(Bitmap bitmap:bitmaps){
+                                bitmap.recycle();
+                            }
+                        }
+
+                        bitmaps=null;
+                        System.gc();
+                        CoverType coverType=coverList.covers.get(item);
+
+                        if(coverType==CoverType.NIHONGDENG){
+                            bitmaps=new ArrayList<Bitmap>();
+                            for(int i=0;i<frameNum;i++){
+                                    frameNum=30;
+                                String fileName=String.format("images_nihongdeng/image_%d.png",(i+1));
+
+                                try {
+                                    InputStream is = context.getAssets().open(fileName);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                    bitmaps.add(bitmap);
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else if(coverType==CoverType.QICAIGUANG){
+                            bitmaps=new ArrayList<Bitmap>();
+                            frameNum=30;
+                            for(int i=0;i<frameNum;i++){
+
+                                String fileName=String.format("images_qicaiguang/image_%d.png",(i+1));
+
+                                try {
+                                    InputStream is = context.getAssets().open(fileName);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                    bitmaps.add(bitmap);
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else if(coverType==CoverType.XIAXUELE){
+                            bitmaps=new ArrayList<Bitmap>();
+                            frameNum=30;
+                            for(int i=0;i<frameNum;i++){
+
+                                String fileName=String.format("images_xiaxuele/image_%d.png",(i+1));
+
+                                try {
+                                    InputStream is = context.getAssets().open(fileName);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                    bitmaps.add(bitmap);
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else if(coverType==CoverType.YANHUA){
+                            bitmaps=new ArrayList<Bitmap>();
+                            frameNum=30;
+                            for(int i=0;i<frameNum;i++){
+
+                                String fileName=String.format("images_yanhua/image_%d.png",(i+1));
+
+                                try {
+                                    InputStream is = context.getAssets().open(fileName);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                    bitmaps.add(bitmap);
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else if(coverType==CoverType.YINGHUOCHONG){
+                            bitmaps=new ArrayList<Bitmap>();
+                            frameNum=30;
+                            for(int i=0;i<frameNum;i++){
+                                String fileName=String.format("images_yinghuochong/image_%d.png",(i+1));
+                                try {
+                                    InputStream is = context.getAssets().open(fileName);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                    bitmaps.add(bitmap);
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else if(coverType==CoverType.HUDIE){
+                            bitmaps=new ArrayList<Bitmap>();
+                            frameNum=30;
+                            for(int i=0;i<frameNum;i++){
+                                String fileName=String.format("images_hudie/image_%d.png",(i+1));
+                                try {
+                                    InputStream is = context.getAssets().open(fileName);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                    bitmaps.add(bitmap);
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else if(coverType==CoverType.NONE){
+                            gpuImageOverlayBlendFilter=null;
+                        }
+                        if(gpuImageOverlayBlendFilter!=null) {
+                            gpuImageOverlayBlendFilter.bitmaps = bitmaps;
+                        }
+
+                        listener.onGpuImageCoverChosenListener(
+                                gpuImageOverlayBlendFilter);
+                    }
+                });
+        builder.create().show();
+    }
     private static GPUImageFilter createFilterForType(final Context context, final FilterType type) {
         switch (type) {
             case CONTRAST:
@@ -319,7 +460,7 @@ public class GPUImageFilterTools {
     private static GPUImageFilter createBlendFilter(Context context, Class<? extends GPUImageTwoInputFilter> filterClass) {
         try {
             GPUImageTwoInputFilter filter = filterClass.newInstance();
-            filter.setBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.lookup_amatorka));
+//            filter.setBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.lookup_amatorka));
             return filter;
         } catch (Exception e) {
             e.printStackTrace();
@@ -330,7 +471,9 @@ public class GPUImageFilterTools {
     public interface OnGpuImageFilterChosenListener {
         void onGpuImageFilterChosenListener(GPUImageFilter filter);
     }
-
+    public interface OnGpuImageCoverChosenListener {
+        void onGpuImageCoverChosenListener(GPUImageFilter filter);
+    }
     private enum FilterType {
 
        NONE,BUEATYFACE, CONTRAST, GRAYSCALE, SHARPEN, SEPIA, SOBEL_EDGE_DETECTION, THREE_X_THREE_CONVOLUTION, FILTER_GROUP, EMBOSS, POSTERIZE, GAMMA, BRIGHTNESS, INVERT, HUE, PIXELATION,
@@ -349,6 +492,22 @@ public class GPUImageFilterTools {
             names.add(name);
             filters.add(filter);
         }
+
+    }
+    private enum CoverType {
+
+        NONE,NIHONGDENG,QICAIGUANG,XIAXUELE,YANHUA,YINGHUOCHONG,HUDIE
+    }
+
+    private static class CoverList {
+        public List<String> names = new LinkedList<String>();
+        public List<CoverType> covers = new LinkedList<CoverType>();
+
+        public void addCover(final String name, final CoverType coverType) {
+            names.add(name);
+            covers.add(coverType);
+        }
+
     }
 
     public static class FilterAdjuster {

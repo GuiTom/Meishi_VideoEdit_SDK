@@ -48,10 +48,7 @@ public class MediaMuxerWrapper {
 
     public MediaMuxerWrapper(String outputPath,int degree) throws IOException {
         mOutputPath = outputPath;
-        File file=new File(outputPath);
-        if(!file.exists()){
-            file.createNewFile();
-        }
+
         mMediaMuxer = new MediaMuxer(mOutputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         mMediaMuxer.setOrientationHint(degree);
         mEncoderCount = mStatredCount = 0;

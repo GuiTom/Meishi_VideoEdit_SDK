@@ -132,7 +132,7 @@ public class CameraLandscapeActivity extends Activity {
                     if(motionEvent.getAction()==MotionEvent.ACTION_DOWN){//按下
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Stoped) {
                             videoOutPutPath = Environment.getExternalStorageDirectory() + "/outPut.mp4";
-                            mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree);
+                            mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree,null);
                         }else if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Paused) {
                            mMovieWriter.resumeRecording();
                         }

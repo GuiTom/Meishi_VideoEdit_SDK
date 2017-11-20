@@ -1,38 +1,33 @@
 package tech.qt.com.meishivideoeditsdk;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
-import android.os.Build;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
-import android.widget.Toast;
+import android.widget.Switch;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Permission;
 import java.util.ArrayList;
 
-import VideoHandle.EpVideo;
 import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilterGroup;
 import jp.co.cyberagent.android.gpuimage.GPUImageMovieWriter;
+import jp.co.cyberagent.android.gpuimage.GPUImageOverlayBlendFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
 import utils.CameraHelper;
 import utils.CameraLoader;
@@ -64,8 +59,11 @@ public class CameraProtraitActivity extends Activity {
     private int videoHeight;
     private int videoWidth;
     private static final int PERMISSIONS_REQUEST = 1;
-
-
+    public File musicFile;
+    public String musicPath;
+    private GPUImageFilterGroup filters;
+    private GPUImageOverlayBlendFilter gpuImageOverlayBlendFilter;
+    private Switch switchButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,30 +138,37 @@ public class CameraProtraitActivity extends Activity {
                 stopRecording();
             }
         };
-        //                           //设置遮罩
-//        String borderPath= Environment.getExternalStorageDirectory()+"/border1";
-        int frameNum=30;
-        GPUImageTwoInputFilter.bitmaps=new ArrayList<Bitmap>();
-        for(int i=0;i<frameNum;i++){
-//            String filePath=borderPath+String.format("/%04d.png",(i+1));
-//            BitmapDrawable bitmapDrawable= (BitmapDrawable) BitmapDrawable.createFromPath(filePath);
-//            Bitmap bitmap=bitmapDrawable.getBitmap();
-//            GPUImageTwoInputFilter.bitmaps.add(bitmap);
-            String fileName=String.format("images_yanhua/image_%d.png",(i+1));
+        final File dir = CameraProtraitActivity.this.getFilesDir();
+        dir.mkdirs();
+        musicFile = new File(dir, "sample.mp3");
+        try {
+            prepareSampleMovie(musicFile);//将Raw 下面的视频文件复制到当前路径
+        } catch (IOException e) {
 
-            try {
-                InputStream is = getApplicationContext().getAssets().open(fileName);
-                Bitmap bitmap = BitmapFactory.decodeStream(is);
-                GPUImageTwoInputFilter.bitmaps.add(bitmap);
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
         }
+
+//        musicPath=musicFile.getAbsolutePath();
         mCameraHelper = new CameraHelper(this);
         mCamera = new CameraLoader(mCameraHelper,mGPUImage,this);
     }
-
+    private final void prepareSampleMovie(File path) throws IOException {
+        final Activity activity = this;
+        if (!path.exists()) {
+//            if (DEBUG) Log.i(TAG, "copy sample movie file from res/raw to app private storage");
+            final BufferedInputStream in = new BufferedInputStream(activity.getResources().openRawResource(R.raw.sample));
+            final BufferedOutputStream out = new BufferedOutputStream(activity.openFileOutput(path.getName(), Context.MODE_PRIVATE));
+            byte[] buf = new byte[8192];
+            int size = in.read(buf);
+            while (size > 0) {
+                out.write(buf, 0, size);
+                size = in.read(buf);
+            }
+            in.close();
+            out.flush();
+            out.close();
+        }
+    }
     private void setUpIdsAndListeners() {
             captureButton=(Button)findViewById(R.id.button3);
             progressBar=(ProgressBar)findViewById(R.id.progressBar);
@@ -175,20 +180,31 @@ public class CameraProtraitActivity extends Activity {
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Stoped) {
 //                            videoOutPutPath = Environment.getExternalStorageDirectory() + "/outPut.mp4";
                             videoOutPutPath = FileUtils.getCaptureFile(Environment.DIRECTORY_MOVIES, ".mp4").toString();
-                            mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree);
+                            mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree,CameraProtraitActivity.this.musicPath);
                         }else if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Paused) {
-//                           mMovieWriter.resumeRecording();
+                           mMovieWriter.resumeRecording();
                         }
 
                     }else if(motionEvent.getAction()==MotionEvent.ACTION_UP){//抬起
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Capturing) {
-//                            mMovieWriter.pauseRecording();
+                            mMovieWriter.pauseRecording();
                         }
                     }
                     return false;
                 }
             });
+            switchButton=(Switch)findViewById(R.id.switch1);
+            switchButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked){
+                        musicPath=musicFile.getAbsolutePath();
 
+                    }else {
+                        musicPath=null;
+                    }
+                }
+            });
             filterSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -208,11 +224,6 @@ public class CameraProtraitActivity extends Activity {
                 }
             });
     }
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE" };
-
 
 
     private void stopRecording(){
@@ -231,7 +242,16 @@ public class CameraProtraitActivity extends Activity {
                 GPUImageFilterTools.showDialog(this, new GPUImageFilterTools.OnGpuImageFilterChosenListener() {
                     @Override
                     public void onGpuImageFilterChosenListener(final GPUImageFilter filter) {
-                        switchFilterTo(filter);
+                        switchFilterTo(filter,false);
+                    }
+                });
+                break;
+            case R.id.button8://选择遮罩
+                GPUImageFilterTools.showCoverDialog(this, new GPUImageFilterTools.OnGpuImageCoverChosenListener() {
+                    @Override
+                    public void onGpuImageCoverChosenListener(final GPUImageFilter filter) {
+                        switchFilterTo(filter,true);
+                        GPUImageOverlayBlendFilter.blockOverLay=false;
                     }
                 });
                 break;
@@ -241,21 +261,44 @@ public class CameraProtraitActivity extends Activity {
         }
     }
 
-    private void switchFilterTo(final GPUImageFilter filter) {
-        if (mFilter == null
-                || (filter != null && !mFilter.getClass().equals(filter.getClass()))) {
-            mFilter = filter;
+    private void switchFilterTo(final GPUImageFilter filter,boolean isCover) {
 
-            GPUImageFilterGroup filters = new GPUImageFilterGroup();
-            filters.addFilter(mFilter);
-            filters.addFilter(mMovieWriter);
+            if(filters==null){
+                filters = new GPUImageFilterGroup();
+            }
 
-            mGPUImage.setFilter(filters);
+            synchronized (filters) {
+                if (isCover) {
+                    if (gpuImageOverlayBlendFilter != null && gpuImageOverlayBlendFilter != filter) {
+                        gpuImageOverlayBlendFilter.destroy();
+                        filters.remoteFilter(gpuImageOverlayBlendFilter.getClass());
+                    }
+                    gpuImageOverlayBlendFilter = (GPUImageOverlayBlendFilter) filter;
+
+                    filters.addFilter(filter);
+                } else {
+                    if (mFilter != null && mFilter != filter) {
+                        mFilter.destroy();
+                        filters.remoteFilter(mFilter.getClass());
+                    }
+                    mFilter = filter;
+                    filters.addFilter(mFilter);
+
+//                if(gpuImageOverlayBlendFilter!=null){
+//                    filters.addFilter(gpuImageOverlayBlendFilter);
+//                }
+                }
+
+                filters.addFilter(mMovieWriter);
+
+                mGPUImage.setFilter(filters);
+            }
             mFilterAdjuster = new GPUImageFilterTools.FilterAdjuster(mFilter);
 
 
-        }
+
     }
+
 
 
 }

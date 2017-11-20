@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
 
         //录制
         lData.add(new Item("竖屏"));
-        lData.add(new Item("横屏"));
+//        lData.add(new Item("横屏"));
 
 
         iData.add(lData);
