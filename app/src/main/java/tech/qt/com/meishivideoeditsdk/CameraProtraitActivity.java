@@ -1,12 +1,19 @@
 package tech.qt.com.meishivideoeditsdk;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
+import android.os.Build;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -14,9 +21,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Permission;
 import java.util.ArrayList;
 
 import VideoHandle.EpVideo;
@@ -27,12 +36,13 @@ import jp.co.cyberagent.android.gpuimage.GPUImageMovieWriter;
 import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
 import utils.CameraHelper;
 import utils.CameraLoader;
+import utils.FileUtils;
 import utils.GPUImageFilterTools;
 import utils.GPUImageFilterTools.FilterAdjuster;
 
 
 
-public class CameraProtraitActivity extends AppCompatActivity {
+public class CameraProtraitActivity extends Activity {
 
     private Button captureButton;
 
@@ -53,6 +63,9 @@ public class CameraProtraitActivity extends AppCompatActivity {
     private int videoDegree;
     private int videoHeight;
     private int videoWidth;
+    private static final int PERMISSIONS_REQUEST = 1;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +75,7 @@ public class CameraProtraitActivity extends AppCompatActivity {
         getInputParams();
         setUpIdsAndListeners();
         initCamera();
+
     }
 
     private void getInputParams() {
@@ -159,7 +173,8 @@ public class CameraProtraitActivity extends AppCompatActivity {
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     if(motionEvent.getAction()==MotionEvent.ACTION_DOWN){//按下
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Stoped) {
-                            videoOutPutPath = Environment.getExternalStorageDirectory() + "/outPut.mp4";
+//                            videoOutPutPath = Environment.getExternalStorageDirectory() + "/outPut.mp4";
+                            videoOutPutPath = FileUtils.getCaptureFile(Environment.DIRECTORY_MOVIES, ".mp4").toString();
                             mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree);
                         }else if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Paused) {
 //                           mMovieWriter.resumeRecording();
@@ -193,6 +208,12 @@ public class CameraProtraitActivity extends AppCompatActivity {
                 }
             });
     }
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            "android.permission.READ_EXTERNAL_STORAGE",
+            "android.permission.WRITE_EXTERNAL_STORAGE" };
+
+
 
     private void stopRecording(){
         mMovieWriter.stopRecording();

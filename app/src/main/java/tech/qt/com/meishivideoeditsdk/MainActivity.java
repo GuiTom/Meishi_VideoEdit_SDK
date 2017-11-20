@@ -1,5 +1,6 @@
 package tech.qt.com.meishivideoeditsdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,7 @@ import tech.qt.com.meishivideoeditsdk.wiget.Group;
 import tech.qt.com.meishivideoeditsdk.wiget.Item;
 import tech.qt.com.meishivideoeditsdk.wiget.MyBaseExpandableListAdapter;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private ArrayList<Group> gData = null;
     private ArrayList<ArrayList<Item>> iData = null;

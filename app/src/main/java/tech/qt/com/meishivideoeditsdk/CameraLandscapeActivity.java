@@ -1,5 +1,6 @@
 package tech.qt.com.meishivideoeditsdk;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
@@ -23,7 +24,7 @@ import utils.GPUImageFilterTools.FilterAdjuster;
 
 
 
-public class CameraLandscapeActivity extends AppCompatActivity {
+public class CameraLandscapeActivity extends Activity {
 
     private Button captureButton;
 

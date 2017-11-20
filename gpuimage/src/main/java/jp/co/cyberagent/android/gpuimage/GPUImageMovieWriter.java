@@ -126,8 +126,10 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                     },0,200);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
                     recordStatus = RecordStatus.Stoped;
+//                    e.printStackTrace();
+                    throw new Error(e);
+
                 }
             }
         });

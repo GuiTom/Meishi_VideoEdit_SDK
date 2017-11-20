@@ -2,11 +2,12 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
     defaultConfig {
-        applicationId "com.qt.shortvideo.demo"
+        //读写权限居然跟包名有关系，醉了
+        applicationId "com.qt.tech.shortvideo"
         minSdkVersion 18
-        targetSdkVersion 23
+        targetSdkVersion 21
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
