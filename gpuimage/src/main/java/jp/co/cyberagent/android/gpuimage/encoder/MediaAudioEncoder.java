@@ -27,12 +27,16 @@ import java.nio.ByteBuffer;
 
 import android.annotation.TargetApi;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
+import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
+import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.media.MediaRecorder;
+import android.os.Environment;
 import android.util.Log;
 
 @TargetApi(18)
@@ -47,6 +51,10 @@ public class MediaAudioEncoder extends MediaEncoder {
     public static final int FRAMES_PER_BUFFER = 25;     // AAC, frame/buffer/sec
 
     private AudioThread mAudioThread = null;
+    private boolean userLocalMusic;
+    private MediaExtractor mediaExtractor;
+    private MediaFormat mediaFormat;
+    private MediaCodec mAudioDecoder;
 
     public MediaAudioEncoder(final MediaMuxerWrapper muxer, final MediaEncoderListener listener) {
         super(muxer, listener);
@@ -55,33 +63,65 @@ public class MediaAudioEncoder extends MediaEncoder {
     @Override
     protected void prepare() throws IOException {
         if (DEBUG) Log.v(TAG, "prepare:");
-        mTrackIndex = -1;
-        mMuxerStarted = mIsEOS = false;
-        // prepare MediaCodec for AAC encoding of audio data from inernal mic.
-        final MediaCodecInfo audioCodecInfo = selectAudioCodec(MIME_TYPE);
-        if (audioCodecInfo == null) {
-            Log.e(TAG, "Unable to find an appropriate codec for " + MIME_TYPE);
-            return;
-        }
-        if (DEBUG) Log.i(TAG, "selected codec: " + audioCodecInfo.getName());
+        this.userLocalMusic=true;
+        if(this.userLocalMusic){
+            int sampleRate=0;
+            int bitRate=0;
+            int channelcount=0;
+            String fileName= Environment.getExternalStorageDirectory()+"/sample.mp3";
+            mediaExtractor=new MediaExtractor();
+            mediaExtractor.setDataSource(fileName);
+            int trackCount=mediaExtractor.getTrackCount();
+            for(int i=0;i<trackCount;i++){
+                mediaFormat=mediaExtractor.getTrackFormat(i);
+                if(mediaFormat.getString(MediaFormat.KEY_MIME).startsWith("audio/")){
+                    sampleRate =  mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+                    bitRate = mediaFormat.getInteger(MediaFormat.KEY_BIT_RATE);
+                    channelcount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+                    mediaExtractor.selectTrack(i);
+                    break;
+                }
+            }
+            mAudioDecoder = MediaCodec.createDecoderByType(mediaFormat.getString(MediaFormat.KEY_MIME));
+            mAudioDecoder.configure(mediaFormat, null, null, 0);
+            final MediaFormat audioFormat = MediaFormat.createAudioFormat(MIME_TYPE, sampleRate, channelcount);
+            audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
+            audioFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, bitRate);
 
-        final MediaFormat audioFormat = MediaFormat.createAudioFormat(MIME_TYPE, SAMPLE_RATE, 1);
-        audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        //audioFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_MONO);
-        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE);
-        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
+            mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
+            mMediaCodec.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            mMediaCodec.start();
+        }else {
+
+            mTrackIndex = -1;
+            mMuxerStarted = mIsEOS = false;
+            // prepare MediaCodec for AAC encoding of audio data from inernal mic.
+            final MediaCodecInfo audioCodecInfo = selectAudioCodec(MIME_TYPE);
+            if (audioCodecInfo == null) {
+                Log.e(TAG, "Unable to find an appropriate codec for " + MIME_TYPE);
+                return;
+            }
+            if (DEBUG) Log.i(TAG, "selected codec: " + audioCodecInfo.getName());
+
+            final MediaFormat audioFormat = MediaFormat.createAudioFormat(MIME_TYPE, SAMPLE_RATE, 1);
+            audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+            //audioFormat.setInteger(MediaFormat.KEY_CHANNEL_MASK, AudioFormat.CHANNEL_IN_MONO);
+            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE);
+            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
 //        audioFormat.setLong(MediaFormat.KEY_MAX_INPUT_SIZE, inputFile.length());
 //      audioFormat.setLong(MediaFormat.KEY_DURATION, (long)durationInMs );
-        if (DEBUG) Log.i(TAG, "format: " + audioFormat);
-        mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
-        mMediaCodec.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-        mMediaCodec.start();
-        if (DEBUG) Log.i(TAG, "prepare finishing");
-        if (mListener != null) {
-            try {
-                mListener.onPrepared(this);
-            } catch (final Exception e) {
-                Log.e(TAG, "prepare:", e);
+            if (DEBUG) Log.i(TAG, "format: " + audioFormat);
+            mMediaCodec = MediaCodec.createEncoderByType(MIME_TYPE);
+            mMediaCodec.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            mMediaCodec.start();
+            if (DEBUG) Log.i(TAG, "prepare finishing");
+            if (mListener != null) {
+                try {
+                    mListener.onPrepared(this);
+                } catch (final Exception e) {
+                    Log.e(TAG, "prepare:", e);
+                }
             }
         }
     }
@@ -117,71 +157,173 @@ public class MediaAudioEncoder extends MediaEncoder {
     private class AudioThread extends Thread {
         @Override
         public void run() {
-            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-            try {
-                final int min_buffer_size = AudioRecord.getMinBufferSize(
-                        SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
-                        AudioFormat.ENCODING_PCM_16BIT);
-                int buffer_size = SAMPLES_PER_FRAME * FRAMES_PER_BUFFER;
-                if (buffer_size < min_buffer_size)
-                    buffer_size = ((min_buffer_size / SAMPLES_PER_FRAME) + 1) * SAMPLES_PER_FRAME * 2;
+            if (MediaAudioEncoder.this.userLocalMusic) {
+                long pts = 0;
 
-                AudioRecord audioRecord = null;
-                for (final int source : AUDIO_SOURCES) {
-                    try {
-                        audioRecord = new AudioRecord(
-                                source, SAMPLE_RATE,
-                                AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buffer_size);
-                        if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED)
-                            audioRecord = null;
-                    } catch (final Exception e) {
-                        audioRecord = null;
-                    }
-                    if (audioRecord != null) break;
+                mAudioDecoder.start();
+
+                int channelCount = mediaFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+
+                int mAudioSampleRate = mediaFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+                final int min_buf_size = AudioTrack.getMinBufferSize(mAudioSampleRate,
+                        (channelCount == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO),
+                        AudioFormat.ENCODING_PCM_16BIT);
+                final int max_input_size = mAudioDecoder.getInputBuffers().length;
+                int mAudioInputBufSize = min_buf_size > 0 ? min_buf_size * 4 : max_input_size;
+
+                AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+                        mAudioSampleRate,
+                        channelCount == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO,
+                        AudioFormat.ENCODING_PCM_16BIT,
+                        mAudioInputBufSize,
+                        AudioTrack.MODE_STREAM);
+                try {
+                    audioTrack.play();
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                    audioTrack.release();
                 }
-                if (audioRecord != null) {
-                    try {
-                        if (mIsCapturing) {
-                            if (DEBUG) Log.v(TAG, "AudioThread:start audio recording");
-                            final ByteBuffer buf = ByteBuffer.allocateDirect(SAMPLES_PER_FRAME);
-                            int readBytes;
-                            int errorCount = 0;
-                            audioRecord.startRecording();
-                            try {
-                                for (; mIsCapturing && !mRequestStop && !mIsEOS ;) {
-                                    // read audio data from internal mic
-                                    buf.clear();
-                                    readBytes = audioRecord.read(buf, SAMPLES_PER_FRAME);
-                                    if (readBytes > 0) {
-                                        // set audio data to encoder
-                                        buf.position(readBytes);
-                                        buf.flip();
-                                        encode(buf, readBytes, getPTSUs());
-                                        frameAvailableSoon();
-                                    } else {
-                                        errorCount++;
-                                        if (errorCount >= 3) {
-                                            Log.e(TAG, "audio recorder error..");
-                                            mInputError = true;
-                                            break;
-                                        }
-                                    }
-                                }
-                                frameAvailableSoon();
-                            } finally {
-                                audioRecord.stop();
+
+                ByteBuffer[] inputBuffers = mAudioDecoder.getInputBuffers();
+                ByteBuffer[] outputBuffers = mAudioDecoder.getOutputBuffers();
+                MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+//                    boolean isEOS = false;
+                long startMs = System.currentTimeMillis();
+
+                while (mIsCapturing && !mRequestStop && !mIsEOS) {
+                    System.out.println("index===>" + "acde");
+                    if (!mIsEOS) {
+
+                        int inIndex = mAudioDecoder.dequeueInputBuffer(0);
+                        if (inIndex >= 0) {
+
+                            ByteBuffer buffer = inputBuffers[inIndex];
+                            int trackIndex = mediaExtractor.getSampleTrackIndex();
+
+                            System.out.println("index A===>" + mediaExtractor.getSampleTrackIndex());
+                            int sampleSize = mediaExtractor.readSampleData(buffer, 0);
+                            if (sampleSize < 0) {
+                                Log.d("DecodeActivity", "InputBuffer BUFFER_FLAG_END_OF_STREAM");
+                                mAudioDecoder.queueInputBuffer(inIndex, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                                mIsEOS = true;
+                            } else {
+                                mAudioDecoder.queueInputBuffer(inIndex, 0, sampleSize, mediaExtractor.getSampleTime(), 0);
+                                mediaExtractor.advance();
                             }
                         }
-                    } finally {
-                        audioRecord.release();
                     }
-                } else {
-                    Log.e(TAG, "failed to initialize AudioRecord");
+
+                    int outIndex = mAudioDecoder.dequeueOutputBuffer(info, 10000);
+                    switch (outIndex) {
+                        case MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED:
+                            Log.d("DecodeActivity", "INFO_OUTPUT_BUFFERS_CHANGED");
+                            outputBuffers = mAudioDecoder.getOutputBuffers();
+                            break;
+                        case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
+                            Log.d("DecodeActivity", "New format " + mAudioDecoder.getOutputFormat());
+                            break;
+                        case MediaCodec.INFO_TRY_AGAIN_LATER:
+                            Log.d("DecodeActivity", "dequeueOutputBuffer timed out!");
+                            break;
+                        default:
+
+                            ByteBuffer buffer = outputBuffers[outIndex];
+                            Log.v("DecodeActivity", "We can't use this buffer but render it due to the API limit, " + buffer);
+                            // We use a very simple clock to keep the video FPS, or the video
+                            // playback will be too fast
+                            int realBufferSize = info.size;
+                            final byte[] chunk = new byte[realBufferSize];
+                            int position = buffer.position();
+                            buffer.get(chunk);
+
+                            audioTrack.write(chunk, 0, realBufferSize);
+                            buffer.position(position);
+                            buffer.position();
+                            encode(buffer, realBufferSize, getPTSUs());
+                            frameAvailableSoon();
+                            buffer.clear();
+                            mAudioDecoder.releaseOutputBuffer(outIndex, false);
+                            break;
+                    }
+
+                    // All decoded frames have been rendered, we can stop playing now
+                    if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        Log.d("DecodeActivity", "OutputBuffer BUFFER_FLAG_END_OF_STREAM");
+                        break;
+                    }
                 }
-            } catch (final Exception e) {
-                Log.e(TAG, "AudioThread#run", e);
+
+                mAudioDecoder.stop();
+                mAudioDecoder.release();
+
+            } else {
+
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
+                try {
+                    final int min_buffer_size = AudioRecord.getMinBufferSize(
+                            SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,
+                            AudioFormat.ENCODING_PCM_16BIT);
+                    int buffer_size = SAMPLES_PER_FRAME * FRAMES_PER_BUFFER;
+                    if (buffer_size < min_buffer_size)
+                        buffer_size = ((min_buffer_size / SAMPLES_PER_FRAME) + 1) * SAMPLES_PER_FRAME * 2;
+
+                    AudioRecord audioRecord = null;
+                    for (final int source : AUDIO_SOURCES) {
+                        try {
+                            audioRecord = new AudioRecord(
+                                    source, SAMPLE_RATE,
+                                    AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buffer_size);
+                            if (audioRecord.getState() != AudioRecord.STATE_INITIALIZED)
+                                audioRecord = null;
+                        } catch (final Exception e) {
+                            audioRecord = null;
+                        }
+                        if (audioRecord != null) break;
+                    }
+                    if (audioRecord != null) {
+                        try {
+                            if (mIsCapturing) {
+                                if (DEBUG) Log.v(TAG, "AudioThread:start audio recording");
+                                final ByteBuffer buf = ByteBuffer.allocateDirect(SAMPLES_PER_FRAME);
+                                int readBytes;
+                                int errorCount = 0;
+                                audioRecord.startRecording();
+                                try {
+                                    for (; mIsCapturing && !mRequestStop && !mIsEOS; ) {
+                                        // read audio data from internal mic
+                                        buf.clear();
+                                        readBytes = audioRecord.read(buf, SAMPLES_PER_FRAME);
+                                        if (readBytes > 0) {
+                                            // set audio data to encoder
+                                            buf.position(readBytes);
+                                            buf.flip();
+                                            encode(buf, readBytes, getPTSUs());
+                                            frameAvailableSoon();
+                                        } else {
+                                            errorCount++;
+                                            if (errorCount >= 3) {
+                                                Log.e(TAG, "audio recorder error..");
+                                                mInputError = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    frameAvailableSoon();
+                                } finally {
+                                    audioRecord.stop();
+                                }
+                            }
+                        } finally {
+                            audioRecord.release();
+                        }
+                    } else {
+                        Log.e(TAG, "failed to initialize AudioRecord");
+                    }
+                } catch (final Exception e) {
+                    Log.e(TAG, "AudioThread#run", e);
+                }
+                if (DEBUG) Log.v(TAG, "AudioThread:finished");
             }
-            if (DEBUG) Log.v(TAG, "AudioThread:finished");
         }
     }
 

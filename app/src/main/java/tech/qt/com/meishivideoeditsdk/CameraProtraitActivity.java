@@ -162,12 +162,12 @@ public class CameraProtraitActivity extends AppCompatActivity {
                             videoOutPutPath = Environment.getExternalStorageDirectory() + "/outPut.mp4";
                             mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree);
                         }else if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Paused) {
-                           mMovieWriter.resumeRecording();
+//                           mMovieWriter.resumeRecording();
                         }
 
                     }else if(motionEvent.getAction()==MotionEvent.ACTION_UP){//抬起
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Capturing) {
-                            mMovieWriter.pauseRecording();
+//                            mMovieWriter.pauseRecording();
                         }
                     }
                     return false;
