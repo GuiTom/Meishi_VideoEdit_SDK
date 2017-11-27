@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.opengl.EGL14;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,6 +83,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
         super.onDraw(textureId, cubeBuffer, textureBuffer);
 
         if (recordStatus==RecordStatus.Capturing) {
+
             // create encoder surface
             if (mCodecInput == null) {
                 mEGLCore = new EglCore(EGL14.eglGetCurrentContext(), EglCore.FLAG_RECORDABLE);
@@ -99,8 +101,18 @@ public class GPUImageMovieWriter extends GPUImageFilter {
 
         // Make screen surface be current surface
         mEGL.eglMakeCurrent(mEGLDisplay, mEGLScreenSurface, mEGLScreenSurface, mEGLContext);
-    }
+        checkEglError("12345==>");
 
+    }
+    private void checkEglError(String msg) {
+        int error;
+        if ((error = mEGL.eglGetError()) != EGL14.EGL_SUCCESS) {
+//            throw new RuntimeException(msg + ": m EGL error: 0x" + Integer.toHexString(error));
+            mEGLDisplay = mEGL.eglGetCurrentDisplay();
+            mEGLContext = mEGL.eglGetCurrentContext();
+            mEGLScreenSurface = mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW);
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -258,6 +270,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
             mCodecInput.release();
             mCodecInput = null;
         }
+
     }
 
     /**

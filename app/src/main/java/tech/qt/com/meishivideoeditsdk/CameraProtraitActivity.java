@@ -66,6 +66,7 @@ public class CameraProtraitActivity extends Activity {
     private GPUImageFilterGroup filters;
     private GPUImageOverlayBlendFilter gpuImageOverlayBlendFilter;
     private Switch switchButton;
+    private GLSurfaceView surfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,15 +103,18 @@ public class CameraProtraitActivity extends Activity {
     protected void onResume() {
         super.onResume();
         mGPUImage.setFilter(mMovieWriter);
+//        surfaceView.onResume();
+
         progressBar.setProgress(0);
         mCamera.onResume();
     }
+
 
     @Override
     protected void onPause() {
         mCamera.onPause();
         super.onPause();
-
+//        surfaceView.onPause();
         if (mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Capturing) {
             mMovieWriter.stopRecording();
         }
@@ -118,10 +122,9 @@ public class CameraProtraitActivity extends Activity {
 
     private void initCamera() {
         mGPUImage = new GPUImage(this);
-        mGPUImage.setGLSurfaceView((GLSurfaceView) findViewById(R.id.surfaceView));
-
+        mGPUImage.setGLSurfaceView(surfaceView);
         mMovieWriter = new GPUImageMovieWriter(getApplicationContext());
-        mMovieWriter.maxDuration=100;//多少秒
+        mMovieWriter.maxDuration=200;//多少秒
         mMovieWriter.recordCallBack=new GPUImageMovieWriter.RecordCallBack() {
             public int realProgres;
             @Override
@@ -192,6 +195,7 @@ public class CameraProtraitActivity extends Activity {
             captureButton=(Button)findViewById(R.id.button3);
             progressBar=(ProgressBar)findViewById(R.id.progressBar);
             filterSeekBar=(SeekBar)findViewById(R.id.seekBar);
+        surfaceView = (GLSurfaceView)findViewById(R.id.surfaceView);
             captureButton.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
