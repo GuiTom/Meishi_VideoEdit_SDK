@@ -118,7 +118,7 @@ public class VideoJoinActivity extends Activity {
 //                effectLayer.getTimeRange();
 
 
-                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer, listener);
+//                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer, listener);
                 switchButtonEnabled(true);
             }
         });

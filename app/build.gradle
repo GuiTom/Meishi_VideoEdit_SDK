@@ -24,7 +24,6 @@ android {
         }
     }
 
-
 }
 
 dependencies {
@@ -36,5 +35,4 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile files('libs/classees2.jar')
 }

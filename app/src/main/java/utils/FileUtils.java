@@ -46,7 +46,7 @@ public class FileUtils {
      * get current date and time as String
      * @return
      */
-    private static final String getDateTimeString() {
+    public static final String getDateTimeString() {
         final GregorianCalendar now = new GregorianCalendar();
         return new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US).format(now.getTime());
     }

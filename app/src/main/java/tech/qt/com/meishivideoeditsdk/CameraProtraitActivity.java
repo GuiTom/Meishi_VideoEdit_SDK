@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +16,7 @@ import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -118,8 +120,8 @@ public class CameraProtraitActivity extends Activity {
         mGPUImage = new GPUImage(this);
         mGPUImage.setGLSurfaceView((GLSurfaceView) findViewById(R.id.surfaceView));
 
-        mMovieWriter = new GPUImageMovieWriter();
-        mMovieWriter.maxDuration=10;//多少秒
+        mMovieWriter = new GPUImageMovieWriter(getApplicationContext());
+        mMovieWriter.maxDuration=100;//多少秒
         mMovieWriter.recordCallBack=new GPUImageMovieWriter.RecordCallBack() {
             public int realProgres;
             @Override
@@ -133,10 +135,29 @@ public class CameraProtraitActivity extends Activity {
                     }
                 });
             }
+
             @Override
-            public void onRecordEnd() {
-                stopRecording();
+            public void onRecordTimeEnd() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),"已达到最大视频时长",Toast.LENGTH_LONG);
+                    }
+                });
             }
+
+            @Override
+            public void onRecordFinish(String filePath) {
+                Intent intent=new Intent(getApplicationContext(),VideoPlayerActivity.class);
+                intent.putExtra("videoPath",videoOutPutPath);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRecordFinish() {
+
+            }
+
         };
         final File dir = CameraProtraitActivity.this.getFilesDir();
         dir.mkdirs();
@@ -144,11 +165,9 @@ public class CameraProtraitActivity extends Activity {
         try {
             prepareSampleMovie(musicFile);//将Raw 下面的视频文件复制到当前路径
         } catch (IOException e) {
-
-
+            Log.e("123",Log.getStackTraceString(e));
         }
 
-//        musicPath=musicFile.getAbsolutePath();
         mCameraHelper = new CameraHelper(this);
         mCamera = new CameraLoader(mCameraHelper,mGPUImage,this);
     }
@@ -178,16 +197,17 @@ public class CameraProtraitActivity extends Activity {
                 public boolean onTouch(View view, MotionEvent motionEvent) {
                     if(motionEvent.getAction()==MotionEvent.ACTION_DOWN){//按下
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Stoped) {
-//                            videoOutPutPath = Environment.getExternalStorageDirectory() + "/outPut.mp4";
-                            videoOutPutPath = FileUtils.getCaptureFile(Environment.DIRECTORY_MOVIES, ".mp4").toString();
-                            mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree,CameraProtraitActivity.this.musicPath);
-                        }else if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Paused) {
-                           mMovieWriter.resumeRecording();
+
+//                            videoOutPutPath = FileUtils.getCaptureFile(Environment.DIRECTORY_MOVIES, ".mp4").toString();
+                            videoOutPutPath = Environment.getExternalStorageDirectory()+"/"+FileUtils.getDateTimeString()+".mp4";
+                            mMovieWriter.startRecording(videoWidth, videoHeight,videoDegree,CameraProtraitActivity.this.musicPath);
+                            mMovieWriter.outputVideoFile = videoOutPutPath;
+
                         }
 
                     }else if(motionEvent.getAction()==MotionEvent.ACTION_UP){//抬起
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Capturing) {
-                            mMovieWriter.pauseRecording();
+                            mMovieWriter.stopRecording();
                         }
                     }
                     return false;
@@ -226,17 +246,15 @@ public class CameraProtraitActivity extends Activity {
     }
 
 
-    private void stopRecording(){
-        mMovieWriter.stopRecording();
+    private void finishRecording(){
+        mMovieWriter.finishRecording();
 
-        Intent intent=new Intent(this,VideoPlayerActivity.class);
-        intent.putExtra("videoPath",videoOutPutPath);
-        startActivity(intent);
+
     }
     public void onClick(View view){
         switch (view.getId()){
             case R.id.button4://完成
-                stopRecording();
+                finishRecording();
                 break;
             case R.id.button5://选择滤镜
                 GPUImageFilterTools.showDialog(this, new GPUImageFilterTools.OnGpuImageFilterChosenListener() {

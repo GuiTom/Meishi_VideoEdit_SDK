@@ -98,7 +98,7 @@ public class CameraLandscapeActivity extends Activity {
         mGPUImage = new GPUImage(this);
         mGPUImage.setGLSurfaceView((GLSurfaceView) findViewById(R.id.surfaceView));
 
-        mMovieWriter = new GPUImageMovieWriter();
+        mMovieWriter = new GPUImageMovieWriter(getApplicationContext());
         mMovieWriter.maxDuration=10;//多少秒
         mMovieWriter.recordCallBack=new GPUImageMovieWriter.RecordCallBack() {
             public int realProgres;
@@ -113,10 +113,23 @@ public class CameraLandscapeActivity extends Activity {
                     }
                 });
             }
+
             @Override
-            public void onRecordEnd() {
-                stopRecording();
+            public void onRecordTimeEnd() {
+
             }
+
+            @Override
+            public void onRecordFinish(String filePath) {
+
+            }
+
+            @Override
+            public void onRecordFinish() {
+
+            }
+
+
         };
         mCameraHelper = new CameraHelper(this);
         mCamera = new CameraLoader(mCameraHelper,mGPUImage,this);
@@ -132,14 +145,15 @@ public class CameraLandscapeActivity extends Activity {
                     if(motionEvent.getAction()==MotionEvent.ACTION_DOWN){//按下
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Stoped) {
                             videoOutPutPath = Environment.getExternalStorageDirectory() + "/outPut.mp4";
-                            mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree,null);
+//                            mMovieWriter.startRecording(videoOutPutPath, videoWidth, videoHeight,videoDegree,null);
                         }else if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Paused) {
-                           mMovieWriter.resumeRecording();
+//                           mMovieWriter.resumeRecording();
                         }
 
                     }else if(motionEvent.getAction()==MotionEvent.ACTION_UP){//抬起
                         if(mMovieWriter.recordStatus== GPUImageMovieWriter.RecordStatus.Capturing) {
-                            mMovieWriter.pauseRecording();
+//                            mMovieWriter.pauseRecording();
+                            mMovieWriter.stopRecording();
                         }
                     }
                     return false;
