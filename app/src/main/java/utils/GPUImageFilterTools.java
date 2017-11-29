@@ -154,7 +154,7 @@ public class GPUImageFilterTools {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int item) {
-                        GPUImageOverlayBlendFilter gpuImageOverlayBlendFilter=(GPUImageOverlayBlendFilter)createFilterForType(context,FilterType.BLEND_OVERLAY);
+                        GPUImageScreenBlendFilter gpuImageScreenBlendFilter=(GPUImageScreenBlendFilter)createFilterForType(context,FilterType.BLEND_SCREEN);
                         int frameNum=60;
                         GPUImageOverlayBlendFilter.blockOverLay=true;
                         if(bitmaps!=null&&bitmaps.size()>0){
@@ -260,14 +260,14 @@ public class GPUImageFilterTools {
                                 }
                             }
                         }else if(coverType==CoverType.NONE){
-                            gpuImageOverlayBlendFilter=null;
+                            gpuImageScreenBlendFilter=null;
                         }
-                        if(gpuImageOverlayBlendFilter!=null) {
-                            gpuImageOverlayBlendFilter.bitmaps = bitmaps;
+                        if(gpuImageScreenBlendFilter!=null) {
+                            gpuImageScreenBlendFilter.bitmaps = bitmaps;
                         }
 
                         listener.onGpuImageCoverChosenListener(
-                                gpuImageOverlayBlendFilter);
+                                gpuImageScreenBlendFilter);
                     }
                 });
         builder.create().show();

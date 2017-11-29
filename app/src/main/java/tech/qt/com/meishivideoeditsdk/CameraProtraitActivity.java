@@ -65,7 +65,7 @@ public class CameraProtraitActivity extends Activity {
     public File musicFile;
     public String musicPath;
     private GPUImageFilterGroup filters;
-    private GPUImageOverlayBlendFilter gpuImageOverlayBlendFilter;
+    private GPUImageFilter gpuImageFilter;
     private Switch switchButton;
     private GLSurfaceView surfaceView;
     private TextView timeText;
@@ -310,11 +310,11 @@ public class CameraProtraitActivity extends Activity {
 
             synchronized (filters) {
                 if (isCover) {
-                    if (gpuImageOverlayBlendFilter != null && gpuImageOverlayBlendFilter != filter) {
-                        gpuImageOverlayBlendFilter.destroy();
-                        filters.remoteFilter(gpuImageOverlayBlendFilter.getClass());
+                    if (gpuImageFilter != null && gpuImageFilter != filter) {
+                        gpuImageFilter.destroy();
+                        filters.remoteFilter(gpuImageFilter.getClass());
                     }
-                    gpuImageOverlayBlendFilter = (GPUImageOverlayBlendFilter) filter;
+                    gpuImageFilter =  filter;
 
                     filters.addFilter(filter);
                 } else {
