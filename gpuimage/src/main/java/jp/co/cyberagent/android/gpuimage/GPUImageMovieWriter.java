@@ -40,15 +40,18 @@ public class GPUImageMovieWriter extends GPUImageFilter {
     private WindowSurface mCodecInput;
     public String outputVideoFile;
     private ArrayList<Uri> uriList;
+
+    private ArrayList<Long>times;
+    private ArrayList<Long>audioPts;
     private int videoFileIndex = -1;
     private String tmpVideoFilePath;
+    private long lastAudioPts;
 
     public interface RecordCallBack{
         void onRecordProgress(float progress);
         void onRecordTimeEnd();
         void onRecordFinish(String filePath);
 
-        void onRecordFinish();
     }
     public GPUImageMovieWriter(Context context){
         mContext=context;
@@ -75,6 +78,8 @@ public class GPUImageMovieWriter extends GPUImageFilter {
         mEGLContext = mEGL.eglGetCurrentContext();
         mEGLScreenSurface = mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW);
         uriList = new ArrayList<Uri>();
+        times = new ArrayList<Long>();
+        audioPts = new ArrayList<Long>();
     }
 
     @Override
@@ -96,7 +101,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                 mCodecInput.swapBuffers();
                 mVideoEncoder.frameAvailableSoon();
             }
-
+            checkEglError("123442==>");
         }
 
         // Make screen surface be current surface
@@ -107,7 +112,6 @@ public class GPUImageMovieWriter extends GPUImageFilter {
     private void checkEglError(String msg) {
         int error;
         if ((error = mEGL.eglGetError()) != EGL14.EGL_SUCCESS) {
-//            throw new RuntimeException(msg + ": m EGL error: 0x" + Integer.toHexString(error));
             mEGLDisplay = mEGL.eglGetCurrentDisplay();
             mEGLContext = mEGL.eglGetCurrentContext();
             mEGLScreenSurface = mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW);
@@ -128,14 +132,19 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                 }
                 recordStatus = RecordStatus.Capturing;
                 videoFileIndex ++;
+                times.add(new Long(currentMillis));
+                audioPts.add(new Long(lastAudioPts));
                 File dic = new File(Environment.getExternalStorageDirectory(),"tmpVideo");
-                if(dic.exists()){
-                    dic.delete();
+                if(!dic.exists()){
+//                    dic.delete();
+                    dic.mkdir();
                 }
-                dic.mkdir();
 
                 tmpVideoFilePath = dic.toString()+"/"+videoFileIndex+".mp4";
-
+                File file = new File(tmpVideoFilePath);
+                if(file.exists()){
+                    file.delete();
+                }
 //                File dir= mContext.getDir("tmpVideo", MODE_PRIVATE);
 //                File file = new File(dir,videoFileIndex + ".mp4");
 //                tmpVideoFilePath = file.getAbsolutePath();
@@ -148,6 +157,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                     // for audio capturing
                     mAudioEncoder = new MediaAudioEncoder(mMuxer,musicPath, mMediaEncoderListener);
 
+                    mAudioEncoder.startPts = lastAudioPts;
                     mMuxer.prepare();
                     mMuxer.startRecording();
                     if(timer==null){
@@ -160,7 +170,6 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                                 currentMillis += 200;
                                 if (currentMillis >= maxDuration * 1000) {
                                     if (recordCallBack != null) {
-
                                         recordCallBack.onRecordTimeEnd();
                                     }
                                 } else {
@@ -222,6 +231,8 @@ public class GPUImageMovieWriter extends GPUImageFilter {
 
                 timer.cancel();
                 timer=null;
+                lastAudioPts = mMuxer.getSampleTime();
+
                 mMuxer.stopRecording();
                 recordStatus=RecordStatus.Stoped;
                 releaseEncodeSurface();
@@ -229,10 +240,44 @@ public class GPUImageMovieWriter extends GPUImageFilter {
             }
         });
     }
+    public void fallBack() {
+        runOnDraw(new Runnable() {
+            @Override
+            public void run() {
+                if(videoFileIndex>-1) {
+                    videoFileIndex--;
+                }
+                if(times.size()>0) {
+                    Long time = times.remove(times.size() - 1);
+                    currentMillis = time.longValue();
+                    if (recordCallBack != null) {
+                        recordCallBack.onRecordProgress((float) currentMillis / (maxDuration * 1000));
+                    }
+                }
+                if(audioPts.size()>0){
+                    Long pts = audioPts.remove(audioPts.size()-1);
+                    lastAudioPts = pts.longValue();
+                }
+                if(uriList.size()>0) {
+                   Uri uri = uriList.remove(uriList.size() - 1);
+                   File file = new File(uri.getPath());
+                   if(file.exists()){
+                       file.delete();
+                   }
+                }
+            }
+        });
+    }
     public void finishRecording() {
         currentMillis=0;
         videoFileIndex=-1;
-
+        lastAudioPts = 0;
+        times = new ArrayList<Long>();
+        audioPts = new ArrayList<Long>();
+        File file = new File(outputVideoFile);
+        if(file.exists()){
+            file.delete();
+        }
         VideoTranscoder.getInstance().transcodeVideo(mContext, uriList, outputVideoFile,
                 null, null, true, new VideoTranscoder.Listener() {
                     @Override
@@ -242,10 +287,17 @@ public class GPUImageMovieWriter extends GPUImageFilter {
 
                     @Override
                     public void onTranscodeCompleted() {
+
+//                        for(Uri uri:uriList){
+//                            File file = new File(uri.getPath());
+//                            if(file.exists()){
+//                                file.delete();
+//                            }
+//                        }
+                        uriList = new ArrayList<Uri>();
                         if(recordCallBack!=null){
                             recordCallBack.onRecordFinish(outputVideoFile);
                         }
-                        uriList = new ArrayList<Uri>();
                     }
 
                     @Override

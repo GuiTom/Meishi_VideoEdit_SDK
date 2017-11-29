@@ -39,6 +39,8 @@ import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
 
+import static android.media.MediaExtractor.SEEK_TO_CLOSEST_SYNC;
+
 @TargetApi(18)
 public class MediaAudioEncoder extends MediaEncoder {
     private static final boolean DEBUG = false;
@@ -56,7 +58,7 @@ public class MediaAudioEncoder extends MediaEncoder {
     private MediaExtractor mediaExtractor;
     private MediaFormat mediaFormat;
     private MediaCodec mAudioDecoder;
-
+    public long startPts;
     public MediaAudioEncoder(final MediaMuxerWrapper muxer,final String musicPath, final MediaEncoderListener listener) {
         super(muxer, listener);
         this.musicPath=musicPath;
@@ -73,6 +75,7 @@ public class MediaAudioEncoder extends MediaEncoder {
 //            String fileName= Environment.getExternalStorageDirectory()+"/sample.mp3";
             mediaExtractor=new MediaExtractor();
             mediaExtractor.setDataSource(musicPath);
+
             int trackCount=mediaExtractor.getTrackCount();
             for(int i=0;i<trackCount;i++){
                 mediaFormat=mediaExtractor.getTrackFormat(i);
@@ -84,6 +87,7 @@ public class MediaAudioEncoder extends MediaEncoder {
                     break;
                 }
             }
+
             mAudioDecoder = MediaCodec.createDecoderByType(mediaFormat.getString(MediaFormat.KEY_MIME));
             mAudioDecoder.configure(mediaFormat, null, null, 0);
             final MediaFormat audioFormat = MediaFormat.createAudioFormat(MIME_TYPE, sampleRate, channelcount);
@@ -191,6 +195,7 @@ public class MediaAudioEncoder extends MediaEncoder {
                 MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
 //                    boolean isEOS = false;
                 long startMs = System.currentTimeMillis();
+                mediaExtractor.seekTo(startPts,SEEK_TO_CLOSEST_SYNC);
 
                 while (mIsCapturing && !mRequestStop && !mIsEOS) {
                     if(mBlockCapturing) {
@@ -266,6 +271,7 @@ public class MediaAudioEncoder extends MediaEncoder {
 
                 mAudioDecoder.stop();
                 mAudioDecoder.release();
+                mediaExtractor.release();
 
             } else {
 
@@ -366,6 +372,12 @@ public class MediaAudioEncoder extends MediaEncoder {
             }
         }
         return result;
+    }
+    public long getSampleTime() {
+        if(mediaExtractor!=null){
+            return mediaExtractor.getSampleTime();
+        }
+        return 0;
     }
 
 }

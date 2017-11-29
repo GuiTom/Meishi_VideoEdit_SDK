@@ -124,12 +124,6 @@ public class CameraLandscapeActivity extends Activity {
 
             }
 
-            @Override
-            public void onRecordFinish() {
-
-            }
-
-
         };
         mCameraHelper = new CameraHelper(this);
         mCamera = new CameraLoader(mCameraHelper,mGPUImage,this);

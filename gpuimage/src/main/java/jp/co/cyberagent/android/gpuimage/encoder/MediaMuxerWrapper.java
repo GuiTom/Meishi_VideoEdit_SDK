@@ -92,7 +92,13 @@ public class MediaMuxerWrapper {
             mAudioEncoder.stopRecording();
         mAudioEncoder = null;
     }
+    public long getSampleTime(){
 
+        if(mAudioEncoder!=null){
+            return mAudioEncoder.getSampleTime();
+        }
+      return 0;
+    }
     public synchronized boolean isStarted() {
         return mIsStarted;
     }

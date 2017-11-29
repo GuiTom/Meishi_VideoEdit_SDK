@@ -442,9 +442,14 @@ public abstract class MediaEncoder implements Runnable {
         result-=totalPauseInterval;
         if (result < prevOutputPTSUs)
             result = (prevOutputPTSUs - result) + result;
+        Log.e("pts===>",result+"");
         return result;
     }
 
+    public long getSampleTime() {
+
+        return 0;
+    }
     protected void inputError() {
         final MediaMuxerWrapper muxer = mMuxer;
         if (muxer != null) {
