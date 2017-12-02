@@ -172,7 +172,7 @@ public class GPUImageFilterTools {
                             bitmaps=new ArrayList<Bitmap>();
                             for(int i=0;i<frameNum;i++){
                                     frameNum=30;
-                                String fileName=String.format("images_nihongdeng/image_%d.png",(i+1));
+                                String fileName=String.format("images_nihongdeng/image_%d.jpg",(i+1));
 
                                 try {
                                     InputStream is = context.getAssets().open(fileName);
@@ -188,7 +188,7 @@ public class GPUImageFilterTools {
                             frameNum=30;
                             for(int i=0;i<frameNum;i++){
 
-                                String fileName=String.format("images_qicaiguang/image_%d.png",(i+1));
+                                String fileName=String.format("images_qicaiguang/image_%d.jpg",(i+1));
 
                                 try {
                                     InputStream is = context.getAssets().open(fileName);
@@ -204,7 +204,7 @@ public class GPUImageFilterTools {
                             frameNum=30;
                             for(int i=0;i<frameNum;i++){
 
-                                String fileName=String.format("images_xiaxuele/image_%d.png",(i+1));
+                                String fileName=String.format("images_xiaxuele/image_%d.jpg",(i+1));
 
                                 try {
                                     InputStream is = context.getAssets().open(fileName);
@@ -220,7 +220,7 @@ public class GPUImageFilterTools {
                             frameNum=30;
                             for(int i=0;i<frameNum;i++){
 
-                                String fileName=String.format("images_yanhua/image_%d.png",(i+1));
+                                String fileName=String.format("images_yanhua/image_%d.jpg",(i+1));
 
                                 try {
                                     InputStream is = context.getAssets().open(fileName);
@@ -235,7 +235,7 @@ public class GPUImageFilterTools {
                             bitmaps=new ArrayList<Bitmap>();
                             frameNum=30;
                             for(int i=0;i<frameNum;i++){
-                                String fileName=String.format("images_yinghuochong/image_%d.png",(i+1));
+                                String fileName=String.format("images_yinghuochong/image_%d.jpg",(i+1));
                                 try {
                                     InputStream is = context.getAssets().open(fileName);
                                     Bitmap bitmap = BitmapFactory.decodeStream(is);
@@ -247,9 +247,9 @@ public class GPUImageFilterTools {
                             }
                         }else if(coverType==CoverType.HUDIE){
                             bitmaps=new ArrayList<Bitmap>();
-                            frameNum=30;
+                            frameNum=49;
                             for(int i=0;i<frameNum;i++){
-                                String fileName=String.format("images_hudie/image_%d.png",(i+1));
+                                String fileName=String.format("images_hudie/image_%d.jpg",(i+1));
                                 try {
                                     InputStream is = context.getAssets().open(fileName);
                                     Bitmap bitmap = BitmapFactory.decodeStream(is);

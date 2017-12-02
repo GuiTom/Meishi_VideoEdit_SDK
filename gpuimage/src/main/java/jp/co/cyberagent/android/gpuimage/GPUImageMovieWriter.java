@@ -112,6 +112,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
     private void checkEglError(String msg) {
         int error;
         if ((error = mEGL.eglGetError()) != EGL14.EGL_SUCCESS) {
+            mEGL = (EGL10) EGLContext.getEGL();
             mEGLDisplay = mEGL.eglGetCurrentDisplay();
             mEGLContext = mEGL.eglGetCurrentContext();
             mEGLScreenSurface = mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW);
