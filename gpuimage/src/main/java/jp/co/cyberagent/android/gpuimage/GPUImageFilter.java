@@ -38,9 +38,10 @@ public class GPUImageFilter {
             "    textureCoordinate = inputTextureCoordinate.xy;\n" +
             "}";
     public static final String NO_FILTER_FRAGMENT_SHADER = "" +
+            "#extension GL_OES_EGL_image_external : require\n" +
             "varying highp vec2 textureCoordinate;\n" +
             " \n" +
-            "uniform sampler2D inputImageTexture;\n" +
+            "uniform samplerExternalOES inputImageTexture;\n" +
             " \n" +
             "void main()\n" +
             "{\n" +

@@ -68,7 +68,7 @@ public class GPUImage {
 
         mContext = context;
         mFilter = new GPUImageFilter();
-        mRenderer = new GPUImageRenderer(mFilter);
+        mRenderer = new GPUImageRenderer(mFilter,this);
     }
 
     /**
@@ -100,16 +100,6 @@ public class GPUImage {
         mGlSurfaceView.requestRender();
     }
 
-    /**
-     * Sets the background color
-     *
-     * @param red red color value
-     * @param green green color value
-     * @param blue red color value
-     */
-    public void setBackgroundColor(float red, float green, float blue) {
-        mRenderer.setBackgroundColor(red, green, blue);
-    }
 
     /**
      * Request the preview to be rendered again.
@@ -139,12 +129,9 @@ public class GPUImage {
      */
     public void setUpCamera(final Camera camera, final int degrees, final boolean flipHorizontal,
             final boolean flipVertical) {
-        mGlSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             setUpCameraGingerbread(camera);
-        } else {
-            camera.setPreviewCallback(mRenderer);
-            camera.startPreview();
         }
         Rotation rotation = Rotation.NORMAL;
         switch (degrees) {
@@ -301,7 +288,7 @@ public class GPUImage {
             }
         }
 
-        GPUImageRenderer renderer = new GPUImageRenderer(mFilter);
+        GPUImageRenderer renderer = new GPUImageRenderer(mFilter,this);
         renderer.setRotation(Rotation.NORMAL,
                 mRenderer.isFlippedHorizontally(), mRenderer.isFlippedVertically());
         renderer.setScaleType(mScaleType);
@@ -335,21 +322,21 @@ public class GPUImage {
      */
     public static void getBitmapForMultipleFilters(final Bitmap bitmap,
             final List<GPUImageFilter> filters, final ResponseListener<Bitmap> listener) {
-        if (filters.isEmpty()) {
-            return;
-        }
-        GPUImageRenderer renderer = new GPUImageRenderer(filters.get(0));
-        renderer.setImageBitmap(bitmap, false);
-        PixelBuffer buffer = new PixelBuffer(bitmap.getWidth(), bitmap.getHeight());
-        buffer.setRenderer(renderer);
-
-        for (GPUImageFilter filter : filters) {
-            renderer.setFilter(filter);
-            listener.response(buffer.getBitmap());
-            filter.destroy();
-        }
-        renderer.deleteImage();
-        buffer.destroy();
+//        if (filters.isEmpty()) {
+//            return;
+//        }
+//        GPUImageRenderer renderer = new GPUImageRenderer(filters.get(0),this);
+//        renderer.setImageBitmap(bitmap, false);
+//        PixelBuffer buffer = new PixelBuffer(bitmap.getWidth(), bitmap.getHeight());
+//        buffer.setRenderer(renderer);
+//
+//        for (GPUImageFilter filter : filters) {
+//            renderer.setFilter(filter);
+//            listener.response(buffer.getBitmap());
+//            filter.destroy();
+//        }
+//        renderer.deleteImage();
+//        buffer.destroy();
     }
 
     /**
@@ -575,18 +562,19 @@ public class GPUImage {
 
         @Override
         protected Bitmap doInBackground(Void... params) {
-            if (mRenderer != null && mRenderer.getFrameWidth() == 0) {
-                try {
-                    synchronized (mRenderer.mSurfaceChangedWaiter) {
-                        mRenderer.mSurfaceChangedWaiter.wait(3000);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            mOutputWidth = getOutputWidth();
-            mOutputHeight = getOutputHeight();
-            return loadResizedImage();
+//            if (mRenderer != null && mRenderer.getFrameWidth() == 0) {
+//                try {
+//                    synchronized (mRenderer.mSurfaceChangedWaiter) {
+//                        mRenderer.mSurfaceChangedWaiter.wait(3000);
+//                    }
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            mOutputWidth = getOutputWidth();
+//            mOutputHeight = getOutputHeight();
+//            return loadResizedImage();
+            return null;
         }
 
         @Override

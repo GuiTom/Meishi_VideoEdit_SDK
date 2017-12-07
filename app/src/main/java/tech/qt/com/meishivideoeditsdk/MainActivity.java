@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
 //                Toast.makeText(mContext, "你点击了：" + iData.get(groupPosition).get(childPosition).getiName(), Toast.LENGTH_SHORT).show();
                 if(groupPosition==0){
                     if(childPosition==0){
-                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
+                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
                         intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
                         startActivity(intent);
                     }else if(childPosition==1){
