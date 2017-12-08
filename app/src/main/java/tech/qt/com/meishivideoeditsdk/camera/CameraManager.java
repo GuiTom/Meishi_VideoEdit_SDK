@@ -10,7 +10,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
  */
 
 public class CameraManager {
-    private Camera mCamera;
+    private CameraWraper mCamera;
     private int mCameraId = -1;
     private GLSurfaceView glSurfaceView;
     private static CameraManager manager;
@@ -22,13 +22,13 @@ public class CameraManager {
         }
         return manager;
     }
-    public Camera openCamera(int facingTpe){
+    public CameraWraper openCamera(int facingTpe){
         int cameraCount = Camera.getNumberOfCameras();
         for(int i=0;i<cameraCount;i++){
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
             Camera.getCameraInfo(i,cameraInfo);
             if(cameraInfo.facing == facingTpe){
-                mCamera = Camera.open(i);
+                mCamera = CameraWraper.open(i);
                 mCameraId = i;
                 return mCamera;
             }
@@ -38,18 +38,17 @@ public class CameraManager {
 
     public void setGlSurfaceView(GLSurfaceView glSurfaceView) {
         this.glSurfaceView = glSurfaceView;
+        this.glSurfaceView.setEGLContextClientVersion(2);
         this.glSurfaceView.setRenderer(new GLRender(mCamera,glSurfaceView));
     }
     public void onPause(){
         mCamera.stopPreview();
-
-        glSurfaceView.onPause();
+//        glSurfaceView.onPause();
     }
     public void onResume(){
-        if(mCameraId > -1){
-            mCamera.startPreview();
-            glSurfaceView.onResume();
-        }
+        mCamera.startPreview();
+//        glSurfaceView.onResume();
+
     }
     public void onDestory(){
         mCamera.release();

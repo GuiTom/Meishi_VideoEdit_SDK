@@ -23,9 +23,11 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     public SurfaceTexture mSurfaceTexture;
     private int mCameraTextureId;
     private GLSurfaceView glSurfaceView;
-    private Camera mCamera;
+    private CameraWraper mCamera;
 
+    public GLRender(){
 
+    }
     private static final String vts
             = "uniform mat4 uMVPMatrix;\n"
             + "uniform mat4 uTexMatrix;\n"
@@ -37,7 +39,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
             + "	gl_Position = uMVPMatrix * aPosition;\n"
             + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
             + "}\n";
-    private static final String fgs
+    private static final String fgs//绘制视频层的
             = "#extension GL_OES_EGL_image_external : require\n"
             + "precision mediump float;\n"
             + "uniform samplerExternalOES sTexture;\n"
@@ -65,7 +67,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     private FloatBuffer pVertex;
     private FloatBuffer pTexCoord;
 
-    public GLRender(Camera camera,GLSurfaceView glSurfaceView){
+    public GLRender(CameraWraper camera,GLSurfaceView glSurfaceView){
         mCamera = camera;
         this.glSurfaceView = glSurfaceView;
     }
@@ -92,11 +94,9 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
         mTextureCoordLoc = GLES20.glGetAttribLocation(mProgramId,"aTextureCoord");
         mTextureLoc = GLES20.glGetUniformLocation(mProgramId,"sTexture");
 
-        try {
-            mCamera.setPreviewTexture(mSurfaceTexture);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        mCamera.setPreviewTexture(mSurfaceTexture);
+
         mCamera.startPreview();
     }
     @Override

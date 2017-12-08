@@ -58,8 +58,12 @@
         <activity
             android:name=".VideoPlayerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".VideoCutActivity" />
-        <activity android:name=".CameraProtraitActivity2"></activity>
+        <activity android:name=".VideoCutActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".CameraProtraitActivity2"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>
