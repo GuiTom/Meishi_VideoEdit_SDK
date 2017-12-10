@@ -91,26 +91,26 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         CameraManager.getManager().setFilter(mMovieWriter);
     }
     public void onClick(View view){
-        switch (view.getId()){
-            case R.id.imageButton2:
-                if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
-                    if(mMovieWriter.outputVideoFile==null) {
-                        String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
-                        File file = new File(videoOutPutPath);
-                        if (file.exists()) {
-                            file.delete();
-                        }
-                        mMovieWriter.outputVideoFile = videoOutPutPath;
-                    }
-                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,null);
-                }else {
-                    mMovieWriter.stopRecording();
-                }
-                break;
-            case R.id.imageButton3:
-
-                break;
-        }
+//        switch (view.getId()){
+//            case R.id.imageButton2:
+//                if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
+//                    if(mMovieWriter.outputVideoFile==null) {
+//                        String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
+//                        File file = new File(videoOutPutPath);
+//                        if (file.exists()) {
+//                            file.delete();
+//                        }
+//                        mMovieWriter.outputVideoFile = videoOutPutPath;
+//                    }
+//                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,null);
+//                }else {
+//                    mMovieWriter.stopRecording();
+//                }
+//                break;
+//            case R.id.imageButton3:
+//
+//                break;
+//        }
     }
     @Override
     protected void onResume() {
