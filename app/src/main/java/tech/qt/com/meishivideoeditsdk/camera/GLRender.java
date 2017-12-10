@@ -15,6 +15,8 @@ import java.nio.FloatBuffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
+
 /**
  * Created by chenchao on 2017/12/5.
  */
@@ -24,6 +26,9 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     private int mCameraTextureId;
     private GLSurfaceView glSurfaceView;
     private CameraWraper mCamera;
+    private GPUFilter mFilter;
+    private int mViewWidth;
+    private int mViewHeight;
 
     public GLRender(){
 
@@ -77,30 +82,33 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
         mSurfaceTexture = new SurfaceTexture(mCameraTextureId);
         mSurfaceTexture.setOnFrameAvailableListener(this);
 
-       mProgramId = OpenGLUtils.loadShader(vts,fgs);
-
-        pVertex = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        pVertex.put(VERTICES);
-        pVertex.flip();
-        pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        pTexCoord.put(TEXCOORD);
-        pTexCoord.flip();
-        GLES20.glUseProgram(mProgramId);
-        mMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uMVPMatrix");
-        mPositionLoc = GLES20.glGetAttribLocation(mProgramId,"aPosition");
-        mTexMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uTexMatrix");
-        mTextureCoordLoc = GLES20.glGetAttribLocation(mProgramId,"aTextureCoord");
-        mTextureLoc = GLES20.glGetUniformLocation(mProgramId,"sTexture");
-
-
+//        mProgramId = OpenGLUtils.loadShader(vts,fgs);
+//
+//        pVertex = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
+//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+//        pVertex.put(VERTICES);
+//        pVertex.flip();
+//        pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
+//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+//        pTexCoord.put(TEXCOORD);
+//        pTexCoord.flip();
+//        GLES20.glUseProgram(mProgramId);
+//        mMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uMVPMatrix");
+//        mPositionLoc = GLES20.glGetAttribLocation(mProgramId,"aPosition");
+//        mTexMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uTexMatrix");
+//        mTextureCoordLoc = GLES20.glGetAttribLocation(mProgramId,"aTextureCoord");
+//        mTextureLoc = GLES20.glGetUniformLocation(mProgramId,"sTexture");
+        if(mFilter!=null){
+            mFilter.init();
+        }
         mCamera.setPreviewTexture(mSurfaceTexture);
 
         mCamera.startPreview();
     }
     @Override
     public void onSurfaceChanged(GL10 gl10, int i, int i1) {
+        mViewWidth = i;
+        mViewHeight  = i1;
         GLES20.glViewport(0,0,i,i1);
     }
 
@@ -111,31 +119,18 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     }
 
     private void drawVideoFrame() {
-        mSurfaceTexture.getTransformMatrix(mTexMatrix);
-        Matrix.setIdentityM(mMvpMatrix,0);
-        OpenGLUtils.checkGlError("3");
-        GLES20.glUseProgram(mProgramId);
-        GLES20.glVertexAttribPointer(mPositionLoc,2, GLES20.GL_FLOAT,false,VERTEX_SZ,pVertex);
-        OpenGLUtils.checkGlError("6");
-        GLES20.glVertexAttribPointer(mTextureCoordLoc,2,GLES20.GL_FLOAT,false,VERTEX_SZ,pTexCoord);
-        OpenGLUtils.checkGlError("5");
-        GLES20.glEnableVertexAttribArray(mPositionLoc);
-        GLES20.glEnableVertexAttribArray(mTextureCoordLoc);
-        GLES20.glUniformMatrix4fv(mMVPMatrixLoc,1,false,mMvpMatrix,0);
-        OpenGLUtils.checkGlError("4");
-        GLES20.glUniformMatrix4fv(mTexMatrixLoc,1,false,mTexMatrix,0);
-        OpenGLUtils.checkGlError("2");
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,mCameraTextureId);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP,0,VERTEX_NUM);
-//        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,0);
-        OpenGLUtils.checkGlError("1");
-        GLES20.glUseProgram(0);
+        if(mFilter!=null) {
+
+            mFilter.onDrawFrame(mCameraTextureId, mSurfaceTexture,mViewWidth,mViewHeight);
+        }
     }
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-
         glSurfaceView.requestRender();
+    }
+
+    public void setmFilter(GPUFilter mFilter) {
+        this.mFilter = mFilter;
     }
 }

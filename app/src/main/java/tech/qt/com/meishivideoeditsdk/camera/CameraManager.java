@@ -4,6 +4,7 @@ import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
 
 /**
  * Created by chenchao on 2017/12/6.
@@ -15,12 +16,17 @@ public class CameraManager {
     private GLSurfaceView glSurfaceView;
     private static CameraManager manager;
 //    private boolean preViewRuning;
-    private GPUImageFilter mFilter;
+
+    private GLRender mRender;
+
     public static CameraManager getManager(){
         if(manager==null){
             manager = new CameraManager();
         }
         return manager;
+    }
+    public void CameraManger(){
+
     }
     public CameraWraper openCamera(int facingTpe){
         int cameraCount = Camera.getNumberOfCameras();
@@ -37,10 +43,13 @@ public class CameraManager {
     }
 
     public void setGlSurfaceView(GLSurfaceView glSurfaceView) {
+
         this.glSurfaceView = glSurfaceView;
         this.glSurfaceView.setEGLContextClientVersion(2);
-        this.glSurfaceView.setRenderer(new GLRender(mCamera,glSurfaceView));
+        mRender = new GLRender(mCamera,glSurfaceView);
+        this.glSurfaceView.setRenderer(mRender);
     }
+
     public void onPause(){
         mCamera.stopPreview();
 //        glSurfaceView.onPause();
@@ -49,6 +58,9 @@ public class CameraManager {
         mCamera.startPreview();
 //        glSurfaceView.onResume();
 
+    }
+    public void setFilter(GPUFilter filter){
+        mRender.setmFilter(filter);
     }
     public void onDestory(){
         mCamera.release();

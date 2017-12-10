@@ -121,6 +121,12 @@ public class EglSurfaceBase {
     public void makeCurrent() {
         mEglCore.makeCurrent(mEGLSurface);
     }
+    /**
+     * Makes our EGL context and surface current.
+     */
+    public void makeNothingCurrent() {
+        mEglCore.makeNothingCurrent();
+    }
 
     /**
      * Makes our EGL context and surface current for drawing, using the supplied surface
