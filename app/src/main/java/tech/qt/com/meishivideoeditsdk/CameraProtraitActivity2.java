@@ -11,6 +11,7 @@ import android.view.SurfaceView;
 import android.view.View;
 
 import java.io.File;
+import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
@@ -18,6 +19,9 @@ import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import tech.qt.com.meishivideoeditsdk.camera.CameraWraper;
 import tech.qt.com.meishivideoeditsdk.camera.filter.MovieWriter;
 import utils.FileUtils;
+
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO;
 
 public class CameraProtraitActivity2 extends AppCompatActivity {
 
@@ -67,19 +71,28 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
     private void openCamera() {
 
-        mCamera = CameraManager.getManager().openCamera(Camera.CameraInfo.CAMERA_FACING_BACK);
-        Camera.Parameters params = mCamera.getParameters();
-        params.setPreviewSize(1080,720);
-        params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
+        mCamera = CameraManager.getManager().openCamera( Camera.CameraInfo.CAMERA_FACING_FRONT);
+        Camera.Parameters parameters = mCamera.getParameters();
+        List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
+        Camera.Size size = CameraManager.getClosestSupportedSize(sizes,1280,720);
+        if(parameters.getSupportedFocusModes().contains(FOCUS_MODE_CONTINUOUS_VIDEO)){
+            parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_VIDEO);
+        }
+        parameters.setPreviewSize(size.width,size.height);
+
+        parameters.setPreviewFrameRate(25);
+        parameters.setRecordingHint(true);
+
+        mCamera.setParameters(parameters);
         mCamera.setDisplayOrientation(90);
-        mCamera.setParameters(params);
+
         CameraManager.getManager().setGlSurfaceView(glSurfaceView);
         mMovieWriter = new MovieWriter(getApplicationContext());
         CameraManager.getManager().setFilter(mMovieWriter);
     }
     public void onClick(View view){
         switch (view.getId()){
-            case R.id.button10:
+            case R.id.imageButton2:
                 if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
                     if(mMovieWriter.outputVideoFile==null) {
                         String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
@@ -94,7 +107,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                     mMovieWriter.stopRecording();
                 }
                 break;
-            case R.id.button11:
+            case R.id.imageButton3:
 
                 break;
         }
