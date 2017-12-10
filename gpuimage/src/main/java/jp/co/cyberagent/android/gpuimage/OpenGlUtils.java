@@ -159,7 +159,15 @@ public class OpenGlUtils {
         GLES20.glDeleteShader(iFShader);
         return iProgId;
     }
-
+    public static int checkGlError(String op) {
+        int error;
+        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+            Log.e("GPUImageFilter", op + ": glError " + error);
+            return error;
+//            throw new RuntimeException(op + ": glError " + error);
+        }
+        return 0;
+    }
     public static float rnd(final float min, final float max) {
         float fRandNum = (float) Math.random();
         return min + (max - min) * fRandNum;

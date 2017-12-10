@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.Surface;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
@@ -36,7 +39,9 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     public static int videoProtrait=0;
     public static int videoLandscape=1;
     public static int videoSquare=2;
+    private ProgressBar progressBar;
 
+    private long startTime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,11 +72,12 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     private void setUpUIComponentIds() {
 
         glSurfaceView = (GLSurfaceView)findViewById(R.id.surfaceView);
+        progressBar = (ProgressBar)findViewById(R.id.progressBar3);
     }
 
     private void openCamera() {
 
-        mCamera = CameraManager.getManager().openCamera( Camera.CameraInfo.CAMERA_FACING_FRONT);
+        mCamera = CameraManager.getManager().openCamera( Camera.CameraInfo.CAMERA_FACING_BACK);
         Camera.Parameters parameters = mCamera.getParameters();
         List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
         Camera.Size size = CameraManager.getClosestSupportedSize(sizes,1280,720);
@@ -88,29 +94,93 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
         CameraManager.getManager().setGlSurfaceView(glSurfaceView);
         mMovieWriter = new MovieWriter(getApplicationContext());
+        mMovieWriter.maxDuration = 100;
         CameraManager.getManager().setFilter(mMovieWriter);
+        mMovieWriter.recordCallBack = new MovieWriter.RecordCallBack() {
+            @Override
+            public void onRecordProgress(final float progress) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int _progress =(int)(progress * progressBar.getMax());
+                        progressBar.setProgress(_progress);
+                    }
+                });
+            }
+
+            @Override
+            public void onRecordTimeEnd() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),"已达到最大视频时长",Toast.LENGTH_LONG);
+                        mMovieWriter.stopRecording();
+                    }
+                });
+            }
+
+            @Override
+            public void onRecordFinish(String filePath) {
+
+                mMovieWriter.outputVideoFile = null;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),"拼接用时"+(System.currentTimeMillis()-startTime),Toast.LENGTH_LONG);
+                    }
+                });
+                Intent intent=new Intent(getApplicationContext(),VideoPlayerActivity.class);
+                intent.putExtra("videoPath",filePath);
+                startActivity(intent);
+            }
+        };
+
+    }
+    private void finishRecording(){
+        mMovieWriter.finishRecording();
+        startTime = System.currentTimeMillis();
     }
     public void onClick(View view){
-//        switch (view.getId()){
-//            case R.id.imageButton2:
-//                if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
-//                    if(mMovieWriter.outputVideoFile==null) {
-//                        String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
-//                        File file = new File(videoOutPutPath);
-//                        if (file.exists()) {
-//                            file.delete();
-//                        }
-//                        mMovieWriter.outputVideoFile = videoOutPutPath;
-//                    }
-//                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,null);
-//                }else {
-//                    mMovieWriter.stopRecording();
-//                }
-//                break;
-//            case R.id.imageButton3:
-//
-//                break;
-//        }
+        ImageButton imageButton = (ImageButton)view;
+        switch (imageButton.getId()){
+            case R.id.imageButton14://录制
+                if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
+                    if(mMovieWriter.outputVideoFile==null) {
+                        String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
+                        File file = new File(videoOutPutPath);
+                        if (file.exists()) {
+                            file.delete();
+                        }
+                        mMovieWriter.outputVideoFile = videoOutPutPath;
+                    }
+                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,null);
+                }else {
+                    mMovieWriter.stopRecording();
+                }
+                break;
+            case R.id.imageButton15://删除
+
+                break;
+            case R.id.imageButton16://结束录制
+                    finishRecording();
+                break;
+
+            case R.id.imageButton17://添加滤镜
+
+                break;
+            case R.id.imageButton18://添加特效
+
+                break;
+            case R.id.imageButton19://添加音乐
+
+                break;
+            case R.id.imageButton20://切换美颜
+
+                break;
+            case R.id.imageButton21://切换摄像头前后
+
+                break;
+        }
     }
     @Override
     protected void onResume() {
@@ -128,6 +198,6 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-
+//        mMovieWriter.releasePriviewSurface();
     }
 }

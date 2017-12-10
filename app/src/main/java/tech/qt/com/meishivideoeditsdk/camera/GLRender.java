@@ -6,6 +6,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -82,28 +83,14 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
         mSurfaceTexture = new SurfaceTexture(mCameraTextureId);
         mSurfaceTexture.setOnFrameAvailableListener(this);
 
-//        mProgramId = OpenGLUtils.loadShader(vts,fgs);
-//
-//        pVertex = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
-//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-//        pVertex.put(VERTICES);
-//        pVertex.flip();
-//        pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
-//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-//        pTexCoord.put(TEXCOORD);
-//        pTexCoord.flip();
-//        GLES20.glUseProgram(mProgramId);
-//        mMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uMVPMatrix");
-//        mPositionLoc = GLES20.glGetAttribLocation(mProgramId,"aPosition");
-//        mTexMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uTexMatrix");
-//        mTextureCoordLoc = GLES20.glGetAttribLocation(mProgramId,"aTextureCoord");
-//        mTextureLoc = GLES20.glGetUniformLocation(mProgramId,"sTexture");
+
         if(mFilter!=null){
             mFilter.init();
         }
         mCamera.setPreviewTexture(mSurfaceTexture);
 
         mCamera.startPreview();
+        Log.e("onSurfaceCreated","1");
     }
     @Override
     public void onSurfaceChanged(GL10 gl10, int i, int i1) {
@@ -127,6 +114,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+        Log.e("request Render","1");
         glSurfaceView.requestRender();
     }
 

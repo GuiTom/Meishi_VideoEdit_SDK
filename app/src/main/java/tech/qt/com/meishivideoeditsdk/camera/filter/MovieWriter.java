@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.opengl.EGL14;
 import android.opengl.GLES20;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import jp.co.cyberagent.android.gpuimage.encoder.MediaEncoder;
 import jp.co.cyberagent.android.gpuimage.encoder.MediaMuxerWrapper;
 import jp.co.cyberagent.android.gpuimage.encoder.MediaVideoEncoder;
 import jp.co.cyberagent.android.gpuimage.encoder.WindowSurface;
+import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
 import transcoder.VideoTranscoder;
 
 /**
@@ -71,7 +73,7 @@ public class MovieWriter extends GPUFilter {
         void onRecordTimeEnd();
         void onRecordFinish(String filePath);
     }
-    public GPUImageMovieWriter.RecordCallBack recordCallBack;
+    public RecordCallBack recordCallBack;
 
     public MovieWriter(Context context)
     {
@@ -81,13 +83,18 @@ public class MovieWriter extends GPUFilter {
     @Override
     public void init(){
         super.init();
+        resetGL();
+        uriList = new ArrayList<Uri>();
+        times = new ArrayList<Long>();
+        audioPts = new ArrayList<Long>();
+    }
+    private void resetGL(){
+
         mEGL = (EGL10) EGLContext.getEGL();
         mEGLDisplay = mEGL.eglGetCurrentDisplay();
         mEGLContext = mEGL.eglGetCurrentContext();
         mEGLScreenSurface = mEGL.eglGetCurrentSurface(EGL10.EGL_DRAW);
-        uriList = new ArrayList<Uri>();
-        times = new ArrayList<Long>();
-        audioPts = new ArrayList<Long>();
+
     }
     @Override
     public void onDrawFrame(int textureId, SurfaceTexture st, int mViewWidth, int mViewHeight){
@@ -99,7 +106,6 @@ public class MovieWriter extends GPUFilter {
             if (mCodecInput == null) {
                 mEGLCore = new EglCore(EGL14.eglGetCurrentContext(), EglCore.FLAG_RECORDABLE);
                 mCodecInput = new WindowSurface(mEGLCore, mVideoEncoder.getSurface(), false);
-
             }
             // Draw on encoder surface
             mCodecInput.makeCurrent();
@@ -110,17 +116,21 @@ public class MovieWriter extends GPUFilter {
                 mCodecInput.swapBuffers();
                 mVideoEncoder.frameAvailableSoon();
             }
-//           mCodecInput.makeNothingCurrent();
 
         }
         // Make screen surface be current surface
         mEGL.eglMakeCurrent(mEGLDisplay, mEGLScreenSurface, mEGLScreenSurface, mEGLContext);
+//        if(OpenGLUtils.checkGlError("makeCurrent") != 1){
+//            Log.e("mEGL.eglMakeCurrent","error");
+//        }
         GLES20.glViewport(0,0,mViewWidth,mViewHeight);
     }
     public void startRecording(final int width, final int height, final int degree, final String musicPath) {
         runOnDraw(new Runnable() {
+
             @Override
             public void run() {
+                resetGL();
                 if (recordStatus!= RecordStatus.Stoped) {
                     return;
                 }
@@ -271,6 +281,13 @@ public class MovieWriter extends GPUFilter {
         if(file.exists()){
             file.delete();
         }
+        if(uriList.size() == 1){
+            if(recordCallBack!=null){
+                recordCallBack.onRecordFinish(uriList.get(0).getPath());
+            }
+            uriList = new ArrayList<Uri>();
+            return;
+        }
         VideoTranscoder.getInstance().transcodeVideo(mContext, uriList, outputVideoFile,
                 null, null, true, new VideoTranscoder.Listener() {
                     @Override
@@ -299,6 +316,7 @@ public class MovieWriter extends GPUFilter {
                     }
                 });
     }
+
     private void releaseEncodeSurface() {
         if (mEGLCore != null) {
             mEGLCore.makeNothingCurrent();
@@ -309,6 +327,7 @@ public class MovieWriter extends GPUFilter {
             mCodecInput.release();
             mCodecInput = null;
         }
+
     }
 
     /**
