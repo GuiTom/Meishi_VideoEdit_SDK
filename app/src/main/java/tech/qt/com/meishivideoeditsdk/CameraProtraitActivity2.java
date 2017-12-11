@@ -22,6 +22,7 @@ import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import tech.qt.com.meishivideoeditsdk.camera.CameraWraper;
 import tech.qt.com.meishivideoeditsdk.camera.filter.MovieWriter;
 import utils.FileUtils;
+import utils.GPUImageFilterTools;
 
 import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
 import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO;
@@ -175,7 +176,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
                 break;
             case R.id.imageButton20://切换美颜
-
+                GPUImageFilterTools.showCoverDialog();
                 break;
             case R.id.imageButton21://切换摄像头前后
 
@@ -195,9 +196,4 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         CameraManager.getManager().onPause();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-//        mMovieWriter.releasePriviewSurface();
-    }
 }

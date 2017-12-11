@@ -31,12 +31,28 @@ public class GPUTowInputFilter extends GPUFilter {
             "    textureCoordinate = inputTextureCoordinate.xy;\n" +
             "    textureCoordinate2 = inputTextureCoordinate2.xy;\n" +
             "}";
+    protected static final String vtss
+            = "uniform mat4 uMVPMatrix;\n"
+            + "uniform mat4 uTexMatrix;\n"
+
+            + "attribute highp vec4 aPosition;\n"
+            + "attribute highp vec4 aTextureCoord;\n"
+
+            + "varying highp vec2 vTextureCoord;\n"
+            + "varying highp vec2 vTextureCoord2;\n"
+            + "\n"
+            + "void main() {\n"
+            + "	gl_Position = uMVPMatrix * aPosition;\n"
+            + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
+            + "	vTextureCoord2 = aTextureCoord.xy;\n"
+            + "}\n";
+
     private int mFilterSecondTextureCoordinateAttribute;
     private int mFilterInputTextureUniform2;
     private int mFilterSourceTexture2;
     private FloatBuffer mTexture2CoordinatesBuffer;
-    public GPUTowInputFilter(){
-        super(VERTEX_SHADER,fgs);
+    public GPUTowInputFilter(String fragShader){
+        super(VERTEX_SHADER,fragShader);
     }
     @Override
     public void init() {
