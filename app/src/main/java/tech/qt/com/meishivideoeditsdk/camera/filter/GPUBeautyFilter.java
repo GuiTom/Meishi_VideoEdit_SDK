@@ -10,12 +10,14 @@ import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
 
 public class GPUBeautyFilter extends GPUFilter {
     protected String getFragmentShader(){
+
         String fgs//绘制视频层的
-             =   "#extension GL_OES_EGL_image_external : require\n"
-                + "precision mediump float;\n"+
+             =  "#extension GL_OES_EGL_image_external : require\n" +
+                "precision mediump float;\n" +
+                "uniform "+samplerTypeValue+" sTexture;\n"+
                 "   varying highp vec2 textureCoordinate;\n" +
                 "\n" +
-                "    uniform "+samplerTypeValue+" inputImageTexture;\n" +
+                "    uniform sampler2D inputImageTexture;\n" +
                 "\n" +
                 "    uniform highp vec2 singleStepOffset;\n" +
                 "    uniform highp vec4 params;\n" +

@@ -53,6 +53,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     private GPUFilter gpuBlendScreenFilter;
     private GPUFilter gpuBeautyFilter;
     private Camera.Size preViewSize;
+    private int facingType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +71,8 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         videoDegree=0;
         if(videoShapeType==videoProtrait){
             videoDegree=0;
-            videoWidth=540;
-            videoHeight=960;
+            videoWidth=720;
+            videoHeight=1080;
         }else if(videoShapeType==videoLandscape){
             videoDegree=90;
             videoWidth=540;
@@ -88,8 +89,8 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     }
 
     private void openCamera() {
-
-        mCamera = CameraManager.getManager().openCamera( Camera.CameraInfo.CAMERA_FACING_BACK);
+        facingType = Camera.CameraInfo.CAMERA_FACING_FRONT;
+        mCamera = CameraManager.getManager().openCamera( facingType);
         Camera.Parameters parameters = mCamera.getParameters();
         List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
          preViewSize = CameraManager.getClosestSupportedSize(sizes,1280,720);
@@ -178,7 +179,6 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
             case R.id.imageButton16://结束录制
                     finishRecording();
                 break;
-
             case R.id.imageButton17://添加滤镜
 
                 break;
@@ -186,7 +186,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                 GPUFilterTool.showCoverDialog(this, new GPUFilterTool.onGpuFilterChosenListener() {
                     @Override
                     public void onGpuFilterChosenListener(GPUFilter filter) {
-                        imageButton.setSelected(!imageButton.isSelected());
+                        imageButton.setSelected(true);
 
                         gpuBlendScreenFilter = filter;
 
@@ -200,15 +200,41 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
                 break;
             case R.id.imageButton20://切换美颜
-                imageButton.setSelected(!imageButton.isSelected());
+                boolean isSelected = imageButton.isSelected();
+                imageButton.setSelected(true);
 
-                if(gpuBeautyFilter== null){
-                    gpuBeautyFilter = new GPUBeautyFilter();
-                }
-                addFilters();
+//                if(gpuBeautyFilter== null){
+//                    gpuBeautyFilter = new GPUBeautyFilter();
+//                }
+//                addFilters();
                 break;
             case R.id.imageButton21://切换摄像头前后
+                if(facingType == Camera.CameraInfo.CAMERA_FACING_BACK){
+                    facingType = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                }else {
+                    facingType = Camera.CameraInfo.CAMERA_FACING_BACK;
+                }
+                CameraManager.getManager().onPause();
+                CameraManager.getManager().releaseCamera();
 
+                mCamera = CameraManager.getManager().openCamera( facingType);
+                Camera.Parameters parameters = mCamera.getParameters();
+                List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
+                preViewSize = CameraManager.getClosestSupportedSize(sizes,1280,720);
+                if(parameters.getSupportedFocusModes().contains(FOCUS_MODE_CONTINUOUS_VIDEO)){
+                    parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_VIDEO);
+                }
+                parameters.setPreviewSize(preViewSize.width,preViewSize.height);
+
+                parameters.setPreviewFrameRate(25);
+                parameters.setRecordingHint(true);
+
+                mCamera.setParameters(parameters);
+                mCamera.setDisplayOrientation(90);
+
+
+                CameraManager.getManager().setFilter(mMovieWriter);
+                CameraManager.getManager().onResume();
                 break;
         }
     }

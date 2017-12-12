@@ -1,5 +1,6 @@
 package tech.qt.com.meishivideoeditsdk.camera;
 
+import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.GLSurfaceView;
 
@@ -7,7 +8,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
 
 /**
@@ -40,12 +43,40 @@ public class CameraManager {
             if(cameraInfo.facing == facingTpe){
                 mCamera = CameraWraper.open(i);
                 mCameraId = i;
-                return mCamera;
+                break;
             }
         }
-        return null;
+        if(mRender!=null){
+            mRender.setmCamera(mCamera);
+        }
+        return mCamera;
     }
-
+//    public CameraWraper switchCamera(int facingTpe){
+//        boolean isPreViewing = false;
+//        SurfaceTexture surfaceTexture = null;
+//        if(mCamera!=null) {
+//            isPreViewing = mCamera.isPreViewing;
+//            surfaceTexture = mCamera.getmSufaceTexTure();
+//        }
+//        releaseCamera();
+//        int cameraCount = Camera.getNumberOfCameras();
+//        for(int i=0;i<cameraCount;i++){
+//            Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+//            Camera.getCameraInfo(i,cameraInfo);
+//            if(cameraInfo.facing == facingTpe){
+//                mCamera = CameraWraper.open(i);
+//                mCameraId = i;
+//                break;
+//            }
+//        }
+//        if(mCamera!=null) {
+//            mCamera.setPreviewTexture(surfaceTexture);
+//            if (mCamera.isPreViewing) {
+//                mCamera.startPreview();
+//            }
+//        }
+//        return mCamera;
+//    }
     public void setGlSurfaceView(GLSurfaceView glSurfaceView) {
 
         this.glSurfaceView = glSurfaceView;
@@ -66,10 +97,21 @@ public class CameraManager {
     public void setFilter(GPUFilter filter){
         mRender.setmFilter(filter);
     }
+//    public void setCamera(CameraWraper camera){
+//        mRender.setmCamera(camera);
+//    }
     public void onDestory(){
+        releaseCamera();
+        glSurfaceView.setRenderer(null);
+
+    }
+    public void releaseCamera(){
+        if(mCamera == null) return;
+        if(mCamera.isPreViewing){
+            mCamera.stopPreview();
+        }
         mCamera.release();
         mCamera = null;
-        glSurfaceView.setRenderer(null);
     }
     public static Camera.Size getClosestSupportedSize(List<Camera.Size> supportedSizes, final int requestedWidth, final int requestedHeight) {
         return (Camera.Size) Collections.min(supportedSizes, new Comparator<Camera.Size>() {

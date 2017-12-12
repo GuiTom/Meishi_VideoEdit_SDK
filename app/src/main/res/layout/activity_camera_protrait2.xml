@@ -129,6 +129,7 @@
         android:layout_marginEnd="25dp"
         android:layout_marginStart="60dp"
         android:layout_marginTop="50dp"
+        android:onClick="onClick"
         android:background="@android:color/transparent"
         app:layout_constraintEnd_toStartOf="@+id/imageButton21"
         app:layout_constraintHorizontal_bias="0.605"

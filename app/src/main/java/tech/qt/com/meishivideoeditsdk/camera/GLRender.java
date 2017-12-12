@@ -27,6 +27,20 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     public SurfaceTexture mSurfaceTexture;
     private int mCameraTextureId;
     private GLSurfaceView glSurfaceView;
+
+
+    public void setmCamera(final CameraWraper mCamera) {
+            runOnDraw(new Runnable() {
+                @Override
+                public void run() {
+                    mCamera.setPreviewTexture(mSurfaceTexture);
+                    mCamera.startPreview();
+                }
+            });
+
+           this.mCamera = mCamera;
+    }
+
     private CameraWraper mCamera;
     private GPUFilter mFilter;
     public static int mViewWidth;
@@ -82,7 +96,9 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         mCameraTextureId = OpenGLUtils.generateOES_SurfaceTexture();
-        mSurfaceTexture = new SurfaceTexture(mCameraTextureId);
+        if(mSurfaceTexture ==null) {
+            mSurfaceTexture = new SurfaceTexture(mCameraTextureId);
+        }
         mSurfaceTexture.setOnFrameAvailableListener(this);
 
 

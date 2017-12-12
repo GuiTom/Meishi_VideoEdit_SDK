@@ -13,6 +13,13 @@ import java.io.IOException;
 public class CameraWraper {
     public Camera camera;
     public boolean isPreViewing;
+
+    public SurfaceTexture getmSufaceTexTure() {
+        return mSufaceTexTure;
+    }
+
+    private SurfaceTexture mSufaceTexTure;
+
     public CameraWraper(){
 
     }
@@ -31,6 +38,7 @@ public class CameraWraper {
         isPreViewing = false;
     }
     public void setPreviewTexture(SurfaceTexture st){
+        mSufaceTexTure = st;
         try {
             camera.setPreviewTexture(st);
         } catch (IOException e) {
