@@ -114,7 +114,12 @@ public class GPUFilter {
     }
     public void onDrawFrame(int textureId, SurfaceTexture st, int mViewWidth, int mViewHeight){
         runPendingOnDrawTasks();
-        st.getTransformMatrix(mTexMatrix);
+
+        if(mSamplerType == SamplerType.SamplerExternalOES) {
+            st.getTransformMatrix(mTexMatrix);
+        }else {
+            Matrix.setIdentityM(mTexMatrix,0);
+        }
         Matrix.setIdentityM(mMvpMatrix,0);
         OpenGLUtils.checkGlError("3");
         GLES20.glUseProgram(mProgramId);
@@ -154,8 +159,7 @@ public class GPUFilter {
         }
         OpenGLUtils.checkGlError("1");
         GLES20.glUseProgram(0);
-//        GPUImageFilter;
-//        GPUImageTwoInputFilter;
+
     }
     protected void onDrawForeround() {}
     public int getProgram() {

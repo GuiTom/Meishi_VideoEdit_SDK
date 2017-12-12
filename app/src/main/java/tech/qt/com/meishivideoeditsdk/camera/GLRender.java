@@ -29,8 +29,8 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     private GLSurfaceView glSurfaceView;
     private CameraWraper mCamera;
     private GPUFilter mFilter;
-    private int mViewWidth;
-    private int mViewHeight;
+    public static int mViewWidth;
+    public static int mViewHeight;
     private LinkedList<Runnable> mRunOnDraw;
     public GLRender(){
 

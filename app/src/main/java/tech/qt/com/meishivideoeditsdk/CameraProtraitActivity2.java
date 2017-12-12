@@ -20,6 +20,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
 import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import tech.qt.com.meishivideoeditsdk.camera.CameraWraper;
+import tech.qt.com.meishivideoeditsdk.camera.GLRender;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBlendScreenFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
@@ -212,7 +213,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         }
     }
     public void addFilters(){
-        mCamera.stopPreview();
+//        mCamera.stopPreview();
         if(gpuGourpFilter==null) {
             gpuGourpFilter = new GPUGourpFilter();
         }
@@ -230,10 +231,10 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
             mMovieWriter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
             gpuGourpFilter.addFilter(mMovieWriter);
         }
-        gpuGourpFilter.filtersChanged(preViewSize.width,preViewSize.height);
+        gpuGourpFilter.filtersChanged(GLRender.mViewWidth,GLRender.mViewHeight);
         CameraManager.getManager().setFilter(gpuGourpFilter);
 
-        mCamera.startPreview();
+//        mCamera.startPreview();
     }
     @Override
     protected void onResume() {

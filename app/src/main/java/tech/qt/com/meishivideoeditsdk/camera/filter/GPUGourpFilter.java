@@ -72,34 +72,6 @@ public class GPUGourpFilter extends GPUFilter {
                         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTextures[i], 0);
                         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
                         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-//                    }
-//                    else {
-//                        OpenGLUtils.checkGlError("x1");
-//                        GLES11Ext.glGenFramebuffersOES(1, mFrameBuffers, i);
-//
-//                        OpenGLUtils.checkGlError("x3");
-//                        GLES20.glGenTextures(1, mFrameBufferTextures, i);
-//                        OpenGLUtils.checkGlError("x4");
-//                        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, mFrameBufferTextures[i]);
-//                        OpenGLUtils.checkGlError("x5");
-//                        GLES20.glTexImage2D(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0,  GLES11Ext.GL_RGBA8_OES, width, height, 0,  GLES11Ext.GL_RGBA8_OES, GLES20.GL_UNSIGNED_BYTE, null);
-//                        OpenGLUtils.checkGlError("x6");
-//                        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-//                        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-//                        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-//                        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-//                        OpenGLUtils.checkGlError("x7");
-//                        GLES11Ext.glBindFramebufferOES(GLES11Ext.GL_FRAMEBUFFER_OES, mFrameBuffers[i]);
-//                        GLES11Ext.glFramebufferTexture2DOES(GLES11Ext.GL_FRAMEBUFFER_OES,
-//                                GLES11Ext.GL_COLOR_ATTACHMENT0_OES,
-//                                GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-//                                mFrameBufferTextures[i],
-//                                0);
-//                        OpenGLUtils.checkGlError("x8");
-//                        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
-//                        GLES11Ext.glBindFramebufferOES(GLES11Ext.GL_FRAMEBUFFER_OES, 0);
-//                    }
-//                    isInitlized = true;
                 }
             }
         });
