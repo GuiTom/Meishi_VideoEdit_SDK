@@ -20,6 +20,11 @@ import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
 import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import tech.qt.com.meishivideoeditsdk.camera.CameraWraper;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBlendScreenFilter;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilterTool;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUGourpFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.MovieWriter;
 import utils.FileUtils;
 import utils.GPUImageFilterTools;
@@ -43,6 +48,9 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private long startTime;
+    private GPUGourpFilter gpuGourpFilter;
+    private GPUFilter gpuBlendScreenFilter;
+    private GPUFilter gpuBeautyFilter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +104,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         CameraManager.getManager().setGlSurfaceView(glSurfaceView);
         mMovieWriter = new MovieWriter(getApplicationContext());
         mMovieWriter.maxDuration = 100;
+        mMovieWriter.setFirstLayer(true);
         CameraManager.getManager().setFilter(mMovieWriter);
         mMovieWriter.recordCallBack = new MovieWriter.RecordCallBack() {
             @Override
@@ -142,7 +151,8 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         startTime = System.currentTimeMillis();
     }
     public void onClick(View view){
-        ImageButton imageButton = (ImageButton)view;
+//        Toast.makeText(getApplicationContext(),"xab",Toast.LENGTH_LONG);
+        final ImageButton imageButton = (ImageButton)view;
         switch (imageButton.getId()){
             case R.id.imageButton14://录制
                 if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
@@ -170,18 +180,57 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
                 break;
             case R.id.imageButton18://添加特效
+                GPUFilterTool.showCoverDialog(this, new GPUFilterTool.onGpuFilterChosenListener() {
+                    @Override
+                    public void onGpuFilterChosenListener(GPUFilter filter) {
+                        imageButton.setSelected(!imageButton.isSelected());
+
+                        gpuBlendScreenFilter = filter;
+
+                        addFilters();
+                    }
+                });
+
 
                 break;
             case R.id.imageButton19://添加音乐
 
                 break;
             case R.id.imageButton20://切换美颜
-                GPUImageFilterTools.showCoverDialog();
+                imageButton.setSelected(!imageButton.isSelected());
+
+                if(gpuBeautyFilter== null){
+                    gpuBeautyFilter = new GPUBeautyFilter();
+                }
+                addFilters();
                 break;
             case R.id.imageButton21://切换摄像头前后
 
                 break;
         }
+    }
+    public void addFilters(){
+        mCamera.stopPreview();
+        if(gpuGourpFilter==null) {
+            gpuGourpFilter = new GPUGourpFilter();
+        }
+        gpuGourpFilter.removeAllFilter();
+
+        if(gpuBeautyFilter!=null){
+            gpuBeautyFilter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
+            gpuGourpFilter.addFilter(gpuBeautyFilter);
+        }
+        if(gpuBlendScreenFilter!=null) {
+            gpuBlendScreenFilter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
+            gpuGourpFilter.addFilter(gpuBlendScreenFilter);
+        }
+        if(mMovieWriter!=null){
+            mMovieWriter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
+            gpuGourpFilter.addFilter(mMovieWriter);
+        }
+        CameraManager.getManager().setFilter(gpuGourpFilter);
+        gpuGourpFilter.filtersChanged(videoWidth,videoHeight);
+        mCamera.startPreview();
     }
     @Override
     protected void onResume() {

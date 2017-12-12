@@ -162,7 +162,7 @@ public class OpenGlUtils {
     public static int checkGlError(String op) {
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-            Log.e("GPUImageFilter", op + ": glError " + error);
+            Log.e("GPUFilter", op + ": glError " + error);
             return error;
 //            throw new RuntimeException(op + ": glError " + error);
         }

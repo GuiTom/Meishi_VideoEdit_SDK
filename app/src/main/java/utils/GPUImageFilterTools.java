@@ -123,7 +123,6 @@ public class GPUImageFilterTools {
 
         filters.addFilter("Transform (2-D)", FilterType.TRANSFORM2D);
 
-
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("选择一个滤镜");
         builder.setItems(filters.names.toArray(new String[filters.names.size()]),
@@ -135,6 +134,7 @@ public class GPUImageFilterTools {
                     }
                 });
         builder.create().show();
+
     }
     public static void showCoverDialog(final Context context,
                                   final OnGpuImageCoverChosenListener listener) {

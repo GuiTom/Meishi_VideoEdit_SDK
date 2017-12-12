@@ -18,19 +18,19 @@ import jp.co.cyberagent.android.gpuimage.OpenGlUtils;
  */
 
 public class GPUTowInputFilter extends GPUFilter {
-    private static final String VERTEX_SHADER = "attribute vec4 position;\n" +
-            "attribute vec4 inputTextureCoordinate;\n" +
-            "attribute vec4 inputTextureCoordinate2;\n" +
-            " \n" +
-            "varying vec2 textureCoordinate;\n" +
-            "varying vec2 textureCoordinate2;\n" +
-            " \n" +
-            "void main()\n" +
-            "{\n" +
-            "    gl_Position = position;\n" +
-            "    textureCoordinate = inputTextureCoordinate.xy;\n" +
-            "    textureCoordinate2 = inputTextureCoordinate2.xy;\n" +
-            "}";
+//    private static final String VERTEX_SHADER = "attribute vec4 position;\n" +
+//            "attribute vec4 inputTextureCoordinate;\n" +
+//            "attribute vec4 inputTextureCoordinate2;\n" +
+//            " \n" +
+//            "varying vec2 textureCoordinate;\n" +
+//            "varying vec2 textureCoordinate2;\n" +
+//            " \n" +
+//            "void main()\n" +
+//            "{\n" +
+//            "    gl_Position = position;\n" +
+//            "    textureCoordinate = inputTextureCoordinate.xy;\n" +
+//            "    textureCoordinate2 = inputTextureCoordinate2.xy;\n" +
+//            "}";
     protected static final String vtss
             = "uniform mat4 uMVPMatrix;\n"
             + "uniform mat4 uTexMatrix;\n"
@@ -47,38 +47,37 @@ public class GPUTowInputFilter extends GPUFilter {
             + "	vTextureCoord2 = aTextureCoord.xy;\n"
             + "}\n";
 
-    private int mFilterSecondTextureCoordinateAttribute;
-    private int mFilterInputTextureUniform2;
-    private int mFilterSourceTexture2;
-    private FloatBuffer mTexture2CoordinatesBuffer;
+
+//    private int mTexture2CoordLoc = -1;
+    private int mTexture2Loc = -1;
+    private int mFilterSourceTexture2 = OpenGlUtils.NO_TEXTURE;
+//    private FloatBuffer mTexture2CoordinatesBuffer;
     public GPUTowInputFilter(String fragShader){
-        super(VERTEX_SHADER,fragShader);
+        super(vtss,fragShader);
+
     }
     @Override
     public void init() {
         super.init();
-
-        mTexture2CoordinatesBuffer = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        mTexture2CoordinatesBuffer.put(TEXCOORD);
-        mTexture2CoordinatesBuffer.flip();
-
-        mFilterSecondTextureCoordinateAttribute = GLES20.glGetAttribLocation(getProgram(), "inputTextureCoordinate2");
-        mFilterInputTextureUniform2 = GLES20.glGetUniformLocation(getProgram(), "inputImageTexture2"); // This does assume a name of "inputImageTexture2" for second input texture in the fragment shader
-        GLES20.glEnableVertexAttribArray(mFilterSecondTextureCoordinateAttribute);
+        OpenGlUtils.checkGlError("a1");
+        mTexture2Loc = GLES20.glGetUniformLocation(getProgram(), "sTexture2"); // This does assume a name of "inputImageTexture2" for second input texture in the fragment shader
+        OpenGlUtils.checkGlError("a2");
 
     }
 
     @Override
     protected void onDrawForeround() {
+        OpenGlUtils.checkGlError("a3");
         GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
-        if(mFilterSourceTexture2== OpenGlUtils.NO_TEXTURE){
+        if(mFilterSourceTexture2 == OpenGlUtils.NO_TEXTURE){
             mFilterSourceTexture2=OpenGlUtils.generateTexture();
         }
-        GLES20.glEnableVertexAttribArray(mFilterSecondTextureCoordinateAttribute);
+        OpenGlUtils.checkGlError("a4");
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFilterSourceTexture2);
-        GLES20.glUniform1i(mFilterInputTextureUniform2, 3);
+        OpenGlUtils.checkGlError("a5");
+        GLES20.glUniform1i(mTexture2Loc, 3);
+
         try {
             if (bitmaps != null) {
                 numFrames++;
@@ -97,12 +96,12 @@ public class GPUTowInputFilter extends GPUFilter {
         }catch (Exception e){
             Log.e("TowInput",Log.getStackTraceString(e));
         }
-        mTexture2CoordinatesBuffer.position(0);
-        GLES20.glVertexAttribPointer(mFilterSecondTextureCoordinateAttribute, 2, GLES20.GL_FLOAT, false, 0, mTexture2CoordinatesBuffer);
+        OpenGlUtils.checkGlError("a6");
 
     }
+
     public static int numFrames=-1;
     public static int bitMapIndex=-1;
     public static boolean blockOverLay;
-    public ArrayList<Bitmap> bitmaps;
+    public  static ArrayList<Bitmap> bitmaps;
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageOverlayBlendFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
 import utils.GPUImageFilterTools;
@@ -36,10 +37,82 @@ public class GPUFilterTool {
             covers.add(coverType);
             resNames.add(resName);
         }
-
+    }
+    public interface onGpuFilterChosenListener {
+        void onGpuFilterChosenListener(GPUFilter filter);
     }
     public static void showCoverDialog(final Context context,
-                                       final GPUImageFilterTools.OnGpuImageCoverChosenListener listener) {
+                                       final onGpuFilterChosenListener listener) {
+
+        final CoverList coverList = new CoverList();
+        coverList.addCover("无", CoverType.NONE,"none");
+        coverList.addCover("霓虹灯", CoverType.NIHONGDENG,"nihongdeng");
+        coverList.addCover("七彩光",CoverType.QICAIGUANG,"qicaiguang");
+        coverList.addCover("下雪了", CoverType.XIAXUELE,"xiaxuele");
+        coverList.addCover("烟花", CoverType.YANHUA,"yanhua");
+        coverList.addCover("萤火虫", CoverType.YINGHUOCHONG,"yinghuochong");
+        coverList.addCover("蝴蝶", CoverType.HUDIE,"hudie");
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("选择一个遮罩");
+
+        builder.setItems(coverList.names.toArray(new String[coverList.names.size()]),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int item) {
+                        ArrayList<Bitmap>bitmaps = null;
+                        gpuTowInputFilter = new GPUBlendScreenFilter();
+                        if(gpuTowInputFilter == null){
+                            gpuTowInputFilter = new GPUBlendScreenFilter();
+                        }else{
+                            bitmaps = GPUTowInputFilter.bitmaps;
+                        }
+
+                        int frameNum=60;
+                        GPUBlendScreenFilter.blockOverLay=true;
+                        if(bitmaps!=null&&bitmaps.size()>0){
+                            int size=bitmaps.size();
+                            for(Bitmap bitmap:bitmaps){
+                                bitmap.recycle();
+                            }
+                        }
+
+                        bitmaps=null;
+
+                        CoverType coverType=coverList.covers.get(item);
+                        String resName = coverList.resNames.get(item);
+                        String folderName = "images_"+resName;
+
+                        try {
+                            frameNum = context.getAssets().list(folderName).length;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        if(coverType!= CoverType.NONE){
+                            bitmaps=new ArrayList<Bitmap>();
+                            for(int i=0;i<frameNum;i++){
+
+                                String fileName=String.format("images_%s/image_%d.jpg",resName,(i+1));
+
+                                try {
+                                    InputStream is = context.getAssets().open(fileName);
+                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
+                                    bitmaps.add(bitmap);
+                                    is.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        GPUTowInputFilter.bitmaps = bitmaps;
+                        listener.onGpuFilterChosenListener(gpuTowInputFilter);
+
+                    }
+                });
+
+        builder.create().show();
+    }
+    public static void showFilterDialog(final Context context,
+                                       final onGpuFilterChosenListener listener) {
 
         final CoverList coverList = new CoverList();
         coverList.addCover("无", CoverType.NONE,"none");
@@ -76,10 +149,17 @@ public class GPUFilterTool {
 
                         CoverType coverType=coverList.covers.get(item);
                         String resName = coverList.resNames.get(item);
+                        String folderName = "images_"+resName;
+
+                        try {
+                            frameNum = context.getAssets().list(folderName).length;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         if(coverType!= CoverType.NONE){
                             bitmaps=new ArrayList<Bitmap>();
                             for(int i=0;i<frameNum;i++){
-                                frameNum=30;
+
                                 String fileName=String.format("images_%s/image_%d.jpg",resName,(i+1));
 
                                 try {
@@ -93,6 +173,7 @@ public class GPUFilterTool {
                             }
                         }
                         gpuTowInputFilter.bitmaps = bitmaps;
+                        listener.onGpuFilterChosenListener(gpuTowInputFilter);
 
                     }
                 });

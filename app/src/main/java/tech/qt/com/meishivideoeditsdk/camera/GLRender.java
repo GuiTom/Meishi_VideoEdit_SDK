@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.LinkedList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -30,7 +31,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     private GPUFilter mFilter;
     private int mViewWidth;
     private int mViewHeight;
-
+    private LinkedList<Runnable> mRunOnDraw;
     public GLRender(){
 
     }
@@ -76,6 +77,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     public GLRender(CameraWraper camera,GLSurfaceView glSurfaceView){
         mCamera = camera;
         this.glSurfaceView = glSurfaceView;
+        mRunOnDraw = new LinkedList<>();
     }
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
@@ -107,7 +109,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
 
     private void drawVideoFrame() {
         if(mFilter!=null) {
-
+            runPendingOnDrawTasks();
             mFilter.onDrawFrame(mCameraTextureId, mSurfaceTexture,mViewWidth,mViewHeight);
         }
     }
@@ -118,7 +120,23 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
         glSurfaceView.requestRender();
     }
 
-    public void setmFilter(GPUFilter mFilter) {
+    public void setmFilter(final GPUFilter mFilter) {
         this.mFilter = mFilter;
+        runOnDraw(new Runnable() {
+            @Override
+            public void run() {
+                mFilter.init();
+            }
+        });
+    }
+    public void runPendingOnDrawTasks() {
+        while (!mRunOnDraw.isEmpty()) {
+            mRunOnDraw.removeFirst().run();
+        }
+    }
+    protected void runOnDraw(final Runnable runnable) {
+        synchronized (mRunOnDraw) {
+            mRunOnDraw.addLast(runnable);
+        }
     }
 }
