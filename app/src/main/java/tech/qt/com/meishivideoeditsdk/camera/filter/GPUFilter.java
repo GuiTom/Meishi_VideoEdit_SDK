@@ -93,7 +93,9 @@ public class GPUFilter {
     }
     public void init(){
         mRunOnDraw = new LinkedList<Runnable>();
-
+        if(mProgramId > 0){
+            GLES20.glDeleteProgram(mProgramId);
+        }
         mProgramId = OpenGLUtils.loadShader(mVertexShader,mFragmentShader);
 
         pVertex = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
@@ -169,6 +171,9 @@ public class GPUFilter {
         while (!mRunOnDraw.isEmpty()) {
             mRunOnDraw.removeFirst().run();
         }
+    }
+    protected void release(){
+
     }
     protected void runOnDraw(final Runnable runnable) {
         synchronized (mRunOnDraw) {

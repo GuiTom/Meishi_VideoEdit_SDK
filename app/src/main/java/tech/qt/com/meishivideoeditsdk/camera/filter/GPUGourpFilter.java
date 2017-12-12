@@ -27,6 +27,7 @@ public class GPUGourpFilter extends GPUFilter {
     }
 
     public void removeAllFilter(){
+
         mfilters.clear();
     }
     public GPUGourpFilter(){
@@ -52,8 +53,9 @@ public class GPUGourpFilter extends GPUFilter {
         runOnDraw(new Runnable() {
             @Override
             public void run() {
-
+                release();
                 int size = mfilters.size();
+
                 mFrameBuffers = new int[size - 1];
                 mFrameBufferTextures = new int[size - 1];
 
@@ -107,6 +109,20 @@ public class GPUGourpFilter extends GPUFilter {
                 }
             }
         }
+    }
+    @Override
+    public void release(){
+
+                if(mFrameBuffers!=null&&mFrameBuffers.length>0) {
+                    GLES20.glDeleteFramebuffers(mFrameBuffers.length, mFrameBuffers, 0);
+                    mFrameBuffers = null;
+                }
+
+                if(mFrameBufferTextures!=null&&mFrameBufferTextures.length>0)
+                {
+                    GLES20.glDeleteTextures(mFrameBufferTextures.length, mFrameBufferTextures, 0);
+                }
+
     }
 
 }

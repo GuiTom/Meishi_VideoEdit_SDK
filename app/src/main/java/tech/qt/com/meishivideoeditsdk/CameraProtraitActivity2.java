@@ -29,6 +29,7 @@ import tech.qt.com.meishivideoeditsdk.camera.filter.GPUGourpFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.MovieWriter;
 import utils.FileUtils;
 import utils.GPUImageFilterTools;
+import utils.UIUtils;
 
 import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
 import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO;
@@ -54,6 +55,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     private GPUFilter gpuBeautyFilter;
     private Camera.Size preViewSize;
     private int facingType;
+    private String musicPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +73,8 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         videoDegree=0;
         if(videoShapeType==videoProtrait){
             videoDegree=0;
-            videoWidth=720;
-            videoHeight=1080;
+            videoWidth=540;
+            videoHeight=960;
         }else if(videoShapeType==videoLandscape){
             videoDegree=90;
             videoWidth=540;
@@ -168,19 +170,26 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                         }
                         mMovieWriter.outputVideoFile = videoOutPutPath;
                     }
-                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,null);
+                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,musicPath);
+                    imageButton.setSelected(!imageButton.isSelected());
                 }else {
                     mMovieWriter.stopRecording();
+                    imageButton.setSelected(!imageButton.isSelected());
                 }
                 break;
-            case R.id.imageButton15://删除
-
+            case R.id.imageButton15://回删
+                mMovieWriter.fallBack();
                 break;
             case R.id.imageButton16://结束录制
                     finishRecording();
                 break;
             case R.id.imageButton17://添加滤镜
-
+                GPUFilterTool.showFilterDialog(this, new GPUFilterTool.onGpuFilterChosenListener() {
+                    @Override
+                    public void onGpuFilterChosenListener(GPUFilter filter) {
+                        imageButton.setSelected(true);
+                    }
+                });
                 break;
             case R.id.imageButton18://添加特效
                 GPUFilterTool.showCoverDialog(this, new GPUFilterTool.onGpuFilterChosenListener() {
@@ -191,6 +200,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                         gpuBlendScreenFilter = filter;
 
                         addFilters();
+                        imageButton.setSelected(true);
                     }
                 });
 
@@ -198,10 +208,17 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                 break;
             case R.id.imageButton19://添加音乐
 
+                UIUtils.showMusicDialog(this, new UIUtils.OnMusicChosenListener() {
+                    @Override
+                    public void onMusicChosenListener(String path) {
+                        musicPath = path;
+                        imageButton.setSelected(true);
+                    }
+                });
                 break;
             case R.id.imageButton20://切换美颜
                 boolean isSelected = imageButton.isSelected();
-                imageButton.setSelected(true);
+                imageButton.setSelected(!isSelected);
 
 //                if(gpuBeautyFilter== null){
 //                    gpuBeautyFilter = new GPUBeautyFilter();
@@ -235,6 +252,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
                 CameraManager.getManager().setFilter(mMovieWriter);
                 CameraManager.getManager().onResume();
+                imageButton.setSelected(!imageButton.isSelected());
                 break;
         }
     }

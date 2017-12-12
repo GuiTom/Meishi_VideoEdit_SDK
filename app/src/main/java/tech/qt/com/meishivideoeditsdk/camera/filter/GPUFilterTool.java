@@ -12,11 +12,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageOverlayBlendFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
-import utils.GPUImageFilterTools;
-
 /**
  * Created by chenchao on 2017/12/11.
  */
@@ -24,17 +19,13 @@ import utils.GPUImageFilterTools;
 public class GPUFilterTool {
     private static GPUBlendScreenFilter gpuTowInputFilter;
 
-    private enum CoverType {
-
-        NONE,NIHONGDENG,QICAIGUANG,XIAXUELE,YANHUA,YINGHUOCHONG,HUDIE
-    }
-    private static class CoverList {
+    private static class FilterList {
         public List<String> names = new LinkedList<String>();
-        public List<CoverType> covers = new LinkedList<CoverType>();
+
         public List<String> resNames = new LinkedList<String>();
-        public void addCover(final String name, final CoverType coverType,String resName) {
+        public void addCover(final String name,String resName) {
             names.add(name);
-            covers.add(coverType);
+
             resNames.add(resName);
         }
     }
@@ -44,18 +35,18 @@ public class GPUFilterTool {
     public static void showCoverDialog(final Context context,
                                        final onGpuFilterChosenListener listener) {
 
-        final CoverList coverList = new CoverList();
-        coverList.addCover("无", CoverType.NONE,"none");
-        coverList.addCover("霓虹灯", CoverType.NIHONGDENG,"nihongdeng");
-        coverList.addCover("七彩光",CoverType.QICAIGUANG,"qicaiguang");
-        coverList.addCover("下雪了", CoverType.XIAXUELE,"xiaxuele");
-        coverList.addCover("烟花", CoverType.YANHUA,"yanhua");
-        coverList.addCover("萤火虫", CoverType.YINGHUOCHONG,"yinghuochong");
-        coverList.addCover("蝴蝶", CoverType.HUDIE,"hudie");
+        final FilterList filterList = new FilterList();
+        filterList.addCover("无", "none");
+        filterList.addCover("霓虹灯", "nihongdeng");
+        filterList.addCover("七彩光","qicaiguang");
+        filterList.addCover("下雪了", "xiaxuele");
+        filterList.addCover("烟花", "yanhua");
+        filterList.addCover("萤火虫", "yinghuochong");
+        filterList.addCover("蝴蝶","hudie");
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("选择一个遮罩");
 
-        builder.setItems(coverList.names.toArray(new String[coverList.names.size()]),
+        builder.setItems(filterList.names.toArray(new String[filterList.names.size()]),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int item) {
@@ -78,8 +69,8 @@ public class GPUFilterTool {
 
                         bitmaps=null;
 
-                        CoverType coverType=coverList.covers.get(item);
-                        String resName = coverList.resNames.get(item);
+
+                        String resName = filterList.resNames.get(item);
                         String folderName = "images_"+resName;
 
                         try {
@@ -87,7 +78,7 @@ public class GPUFilterTool {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        if(coverType!= CoverType.NONE){
+                        if(!resName.contentEquals("none")){
                             bitmaps=new ArrayList<Bitmap>();
                             for(int i=0;i<frameNum;i++){
 
@@ -114,69 +105,33 @@ public class GPUFilterTool {
     public static void showFilterDialog(final Context context,
                                        final onGpuFilterChosenListener listener) {
 
-        final CoverList coverList = new CoverList();
-        coverList.addCover("无", CoverType.NONE,"none");
-        coverList.addCover("霓虹灯", CoverType.NIHONGDENG,"nihongdeng");
-        coverList.addCover("七彩光",CoverType.QICAIGUANG,"qicaiguang");
-        coverList.addCover("下雪了", CoverType.XIAXUELE,"xiaxuele");
-        coverList.addCover("烟花", CoverType.YANHUA,"yanhua");
-        coverList.addCover("萤火虫", CoverType.YINGHUOCHONG,"yinghuochong");
-        coverList.addCover("蝴蝶", CoverType.HUDIE,"hudie");
+        final FilterList filterList = new FilterList();
+        filterList.addCover("无", "none");
+        filterList.addCover("往事", "nihongdeng");
+        filterList.addCover("黑白控","qicaiguang");
+        filterList.addCover("复古", "xiaxuele");
+        filterList.addCover("思念", "yanhua");
+        filterList.addCover("炫彩", "yinghuochong");
+        filterList.addCover("唯美","hudie");
+        filterList.addCover("时光","hudie");
+        filterList.addCover("阳光","hudie");
+        filterList.addCover("那一年","hudie");
+        filterList.addCover("冰激凌","hudie");
+        filterList.addCover("薄荷糖","hudie");
+        filterList.addCover("蓝调","hudie");
+        filterList.addCover("自然","hudie");
+        filterList.addCover("红润","hudie");
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("选择一个遮罩");
+        builder.setTitle("选择一个滤镜");
 
-        builder.setItems(coverList.names.toArray(new String[coverList.names.size()]),
+        builder.setItems(filterList.names.toArray(new String[filterList.names.size()]),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int item) {
-                        ArrayList<Bitmap>bitmaps = null;
-                        if(gpuTowInputFilter == null){
-                            gpuTowInputFilter = new GPUBlendScreenFilter();
-                        }else{
-                            bitmaps = gpuTowInputFilter.bitmaps;
-                        }
-
-                        int frameNum=60;
-                        GPUBlendScreenFilter.blockOverLay=true;
-                        if(bitmaps!=null&&bitmaps.size()>0){
-                            int size=bitmaps.size();
-                            for(Bitmap bitmap:bitmaps){
-                                bitmap.recycle();
-                            }
-                        }
-
-                        bitmaps=null;
-
-                        CoverType coverType=coverList.covers.get(item);
-                        String resName = coverList.resNames.get(item);
-                        String folderName = "images_"+resName;
-
-                        try {
-                            frameNum = context.getAssets().list(folderName).length;
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        if(coverType!= CoverType.NONE){
-                            bitmaps=new ArrayList<Bitmap>();
-                            for(int i=0;i<frameNum;i++){
-
-                                String fileName=String.format("images_%s/image_%d.jpg",resName,(i+1));
-
-                                try {
-                                    InputStream is = context.getAssets().open(fileName);
-                                    Bitmap bitmap = BitmapFactory.decodeStream(is);
-                                    bitmaps.add(bitmap);
-                                    is.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                        gpuTowInputFilter.bitmaps = bitmaps;
-                        listener.onGpuFilterChosenListener(gpuTowInputFilter);
 
                     }
                 });
+
         builder.create().show();
     }
 }
