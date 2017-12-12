@@ -18,44 +18,31 @@ import jp.co.cyberagent.android.gpuimage.OpenGlUtils;
  */
 
 public class GPUTowInputFilter extends GPUFilter {
-//    private static final String VERTEX_SHADER = "attribute vec4 position;\n" +
-//            "attribute vec4 inputTextureCoordinate;\n" +
-//            "attribute vec4 inputTextureCoordinate2;\n" +
-//            " \n" +
-//            "varying vec2 textureCoordinate;\n" +
-//            "varying vec2 textureCoordinate2;\n" +
-//            " \n" +
-//            "void main()\n" +
-//            "{\n" +
-//            "    gl_Position = position;\n" +
-//            "    textureCoordinate = inputTextureCoordinate.xy;\n" +
-//            "    textureCoordinate2 = inputTextureCoordinate2.xy;\n" +
-//            "}";
-    protected static final String vtss
-            = "uniform mat4 uMVPMatrix;\n"
-            + "uniform mat4 uTexMatrix;\n"
-
-            + "attribute highp vec4 aPosition;\n"
-            + "attribute highp vec4 aTextureCoord;\n"
-
-            + "varying highp vec2 vTextureCoord;\n"
-            + "varying highp vec2 vTextureCoord2;\n"
-            + "\n"
-            + "void main() {\n"
-            + "	gl_Position = uMVPMatrix * aPosition;\n"
-            + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
-            + "	vTextureCoord2 = aTextureCoord.xy;\n"
-            + "}\n";
 
 
-//    private int mTexture2CoordLoc = -1;
+    @Override
+    protected String getVertexShader(){
+        String vts
+                = "uniform mat4 uMVPMatrix;\n"
+                + "uniform mat4 uTexMatrix;\n"
+
+                + "attribute highp vec4 aPosition;\n"
+                + "attribute highp vec4 aTextureCoord;\n"
+
+                + "varying highp vec2 vTextureCoord;\n"
+                + "varying highp vec2 vTextureCoord2;\n"
+                + "\n"
+                + "void main() {\n"
+                + "	gl_Position = uMVPMatrix * aPosition;\n"
+                + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
+                + "	vTextureCoord2 = aTextureCoord.xy;\n"
+                + "}\n";
+        return vts;
+    }
+
     private int mTexture2Loc = -1;
     private int mFilterSourceTexture2 = OpenGlUtils.NO_TEXTURE;
-//    private FloatBuffer mTexture2CoordinatesBuffer;
-    public GPUTowInputFilter(String fragShader){
-        super(vtss,fragShader);
 
-    }
     @Override
     public void init() {
         super.init();

@@ -51,21 +51,7 @@ public class MovieWriter extends GPUFilter {
     private Context mContext;
     private int mVideoHeight;
     private int mVideoWidth;
-    protected static final String fgs2D//绘制视频层的
-            = "precision mediump float;\n"
-            + "uniform sampler2D sTexture;\n"
-            + "varying highp vec2 vTextureCoord;\n"
-            + "void main() {\n"
-            + "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n"
-            + "}";
-    protected static final String fgsExt_OES//绘制视频层的
-            = "#extension GL_OES_EGL_image_external : require\n"
-            + "precision mediump float;\n"
-            + "uniform samplerExternalOES sTexture;\n"
-            + "varying highp vec2 vTextureCoord;\n"
-            + "void main() {\n"
-            + "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n"
-            + "}";
+
 
     public enum RecordStatus {
         Stoped,Paused,Capturing
@@ -96,17 +82,11 @@ public class MovieWriter extends GPUFilter {
         super();
         mContext = context;
     }
-    @Override
-    public void setFirstLayer(boolean isFirstLayer){
-        if(isFirstLayer == false){
-            this.mFragmentShader = fgs2D;
-        }else {
-            this.mFragmentShader = fgsExt_OES;
-        }
-    }
+
     @Override
     public void init(){
         super.init();
+
         resetGL();
         uriList = new ArrayList<Uri>();
         times = new ArrayList<Long>();

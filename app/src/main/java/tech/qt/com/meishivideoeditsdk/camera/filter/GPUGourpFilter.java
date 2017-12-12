@@ -17,7 +17,7 @@ import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
 
 public class GPUGourpFilter extends GPUFilter {
     private List<GPUFilter>mfilters;
-    private boolean isInitlized;
+//    private boolean isInitlized;
 
     public void addFilter(GPUFilter gpuFilter){
         mfilters.add(gpuFilter);
@@ -48,7 +48,7 @@ public class GPUGourpFilter extends GPUFilter {
         }
     }
     public void filtersChanged(final int width, final int height){
-        //genFrameBuffers
+
         runOnDraw(new Runnable() {
             @Override
             public void run() {

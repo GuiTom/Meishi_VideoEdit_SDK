@@ -51,6 +51,8 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     private GPUGourpFilter gpuGourpFilter;
     private GPUFilter gpuBlendScreenFilter;
     private GPUFilter gpuBeautyFilter;
+    private Camera.Size preViewSize;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,11 +91,11 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         mCamera = CameraManager.getManager().openCamera( Camera.CameraInfo.CAMERA_FACING_BACK);
         Camera.Parameters parameters = mCamera.getParameters();
         List<Camera.Size> sizes = parameters.getSupportedPreviewSizes();
-        Camera.Size size = CameraManager.getClosestSupportedSize(sizes,1280,720);
+         preViewSize = CameraManager.getClosestSupportedSize(sizes,1280,720);
         if(parameters.getSupportedFocusModes().contains(FOCUS_MODE_CONTINUOUS_VIDEO)){
             parameters.setFocusMode(FOCUS_MODE_CONTINUOUS_VIDEO);
         }
-        parameters.setPreviewSize(size.width,size.height);
+        parameters.setPreviewSize(preViewSize.width,preViewSize.height);
 
         parameters.setPreviewFrameRate(25);
         parameters.setRecordingHint(true);
@@ -228,8 +230,9 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
             mMovieWriter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
             gpuGourpFilter.addFilter(mMovieWriter);
         }
+        gpuGourpFilter.filtersChanged(preViewSize.width,preViewSize.height);
         CameraManager.getManager().setFilter(gpuGourpFilter);
-        gpuGourpFilter.filtersChanged(videoWidth,videoHeight);
+
         mCamera.startPreview();
     }
     @Override

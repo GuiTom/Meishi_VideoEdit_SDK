@@ -19,26 +19,50 @@ import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
  */
 
 public class GPUFilter {
-    protected static final String vts
-            = "uniform mat4 uMVPMatrix;\n"
-            + "uniform mat4 uTexMatrix;\n"
-            + "attribute highp vec4 aPosition;\n"
-            + "attribute highp vec4 aTextureCoord;\n"
-            + "varying highp vec2 vTextureCoord;\n"
-            + "\n"
-            + "void main() {\n"
-            + "	gl_Position = uMVPMatrix * aPosition;\n"
-            + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
-            + "}\n";
-    protected static final String fgs//绘制视频层的
-            = "#extension GL_OES_EGL_image_external : require\n"
-            + "precision mediump float;\n"
-            + "uniform sampler2D sTexture;\n"
-            + "varying highp vec2 vTextureCoord;\n"
-            + "void main() {\n"
-            + "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n"
-            + "}";
+    //samplerExternalOES|sampler2D
+    protected String samplerTypeValue ="sampler2D";
+    private SamplerType mSamplerType;
 
+    protected enum SamplerType {
+        Sampler2D,SamplerExternalOES
+    }
+    protected void setSamplerType(SamplerType samplerType){
+        if(samplerType == SamplerType.Sampler2D){
+                samplerTypeValue = "sampler2D";
+        }else if(samplerType == SamplerType.SamplerExternalOES){
+                samplerTypeValue = "samplerExternalOES";
+        }
+        mSamplerType = samplerType;
+    }
+    protected String getVertexShader(){
+        String vts
+                = "uniform mat4 uMVPMatrix;\n"
+                + "uniform mat4 uTexMatrix;\n"
+                + "attribute highp vec4 aPosition;\n"
+                + "attribute highp vec4 aTextureCoord;\n"
+                + "varying highp vec2 vTextureCoord;\n"
+                + "\n"
+                + "void main() {\n"
+                + "	gl_Position = uMVPMatrix * aPosition;\n"
+                + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
+                + "}\n";
+        return vts;
+    }
+    protected String getFragmentShader(){
+        String fgs//绘制视频层的
+                = "#extension GL_OES_EGL_image_external : require\n"
+                + "precision mediump float;\n"
+                + "uniform "+samplerTypeValue+" sTexture;\n"
+                + "varying highp vec2 vTextureCoord;\n"
+                + "void main() {\n"
+                + "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n"
+                + "}";
+        return fgs;
+    }
+    protected void setShader(String vs,String fs){
+        mVertexShader = vs;
+        mFragmentShader = fs;
+    }
     protected String mVertexShader;
     protected String mFragmentShader;
 
@@ -62,17 +86,10 @@ public class GPUFilter {
     private FloatBuffer pVertex;
     private FloatBuffer pTexCoord;
     protected LinkedList<Runnable> mRunOnDraw;
-    public GPUFilter(){
-        this(vts,fgs);
-    }
 
-    public GPUFilter(String vs,String fs){
-        mVertexShader = vs;
-        mFragmentShader = fs;
-
-    }
     public void setFirstLayer(boolean isFirstLayer){
-
+        setSamplerType(isFirstLayer?SamplerType.SamplerExternalOES:SamplerType.Sampler2D);
+        setShader(getVertexShader(),getFragmentShader());
     }
     public void init(){
         mRunOnDraw = new LinkedList<Runnable>();
@@ -118,13 +135,23 @@ public class GPUFilter {
         GLES20.glUniformMatrix4fv(mTexMatrixLoc,1,false,mTexMatrix,0);
         OpenGLUtils.checkGlError("2");
 
-
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,textureId);
+        if(mSamplerType == SamplerType.Sampler2D) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+        }else if(mSamplerType == SamplerType.SamplerExternalOES) {
+            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId);
+        }
 
         GLES20.glUniform1i(mTextureLoc, 0);
+        OpenGLUtils.checkGlError("1.1");
         onDrawForeround();
+        OpenGLUtils.checkGlError("1.2");
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP,0,VERTEX_NUM);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,0);
+        OpenGLUtils.checkGlError("1.3");
+        if(mSamplerType == SamplerType.Sampler2D) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        }else if(mSamplerType == SamplerType.SamplerExternalOES) {
+            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
+        }
         OpenGLUtils.checkGlError("1");
         GLES20.glUseProgram(0);
 //        GPUImageFilter;
