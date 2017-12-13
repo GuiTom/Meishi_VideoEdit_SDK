@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
 import jp.co.cyberagent.android.gpuimage.OpenGlUtils;
+import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
 
 /**
  * Created by chenchao on 2017/12/8.
@@ -46,23 +47,23 @@ public class GPUTowInputFilter extends GPUFilter {
     @Override
     public void init() {
         super.init();
-        OpenGlUtils.checkGlError("a1");
+//        OpenGlUtils.checkGlError("a1");
         mTexture2Loc = GLES20.glGetUniformLocation(getProgram(), "sTexture2"); // This does assume a name of "inputImageTexture2" for second input texture in the fragment shader
-        OpenGlUtils.checkGlError("a2");
+//        OpenGlUtils.checkGlError("a2");
 
     }
 
     @Override
     protected void onDrawForeround() {
-        OpenGlUtils.checkGlError("a3");
+        OpenGLUtils.checkGlError("a3");
         GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
         if(mFilterSourceTexture2 == OpenGlUtils.NO_TEXTURE){
             mFilterSourceTexture2=OpenGlUtils.generateTexture();
         }
-        OpenGlUtils.checkGlError("a4");
+        OpenGLUtils.checkGlError("a4");
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFilterSourceTexture2);
-        OpenGlUtils.checkGlError("a5");
+        OpenGLUtils.checkGlError("a5");
         GLES20.glUniform1i(mTexture2Loc, 3);
 
         try {
@@ -83,7 +84,7 @@ public class GPUTowInputFilter extends GPUFilter {
         }catch (Exception e){
             Log.e("TowInput",Log.getStackTraceString(e));
         }
-        OpenGlUtils.checkGlError("a6");
+        OpenGLUtils.checkGlError("a6");
 
     }
 

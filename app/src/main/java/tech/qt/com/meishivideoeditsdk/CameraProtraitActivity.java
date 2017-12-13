@@ -331,7 +331,7 @@ public class CameraProtraitActivity extends Activity {
 
                 mGPUImage.setFilter(filters);
             }
-            mFilterAdjuster = new GPUImageFilterTools.FilterAdjuster(mFilter);
+            mFilterAdjuster = new FilterAdjuster(mFilter);
 
 
 

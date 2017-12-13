@@ -21,7 +21,6 @@ import java.nio.IntBuffer;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.hardware.Camera.Size;
-import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
@@ -97,17 +96,7 @@ public class OpenGlUtils {
         }
         return textures[0];
     }
-    public static int generateOES_SurfaceTexture(int blockId) {
-        int texture[] = new int[1];
-        GLES20.glActiveTexture(blockId);
-        GLES20.glGenTextures(1, texture, 0);
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, texture[0]);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        return texture[0];
-    }
+
     public static int loadTextureAsBitmap(final IntBuffer data, final Size size, final int usedTexId) {
         Bitmap bitmap = Bitmap
                 .createBitmap(data.array(), size.width, size.height, Config.ARGB_8888);
@@ -159,15 +148,7 @@ public class OpenGlUtils {
         GLES20.glDeleteShader(iFShader);
         return iProgId;
     }
-    public static int checkGlError(String op) {
-        int error;
-        while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-            Log.e("GPUFilter", op + ": glError " + error);
-            return error;
-//            throw new RuntimeException(op + ": glError " + error);
-        }
-        return 0;
-    }
+
     public static float rnd(final float min, final float max) {
         float fRandNum = (float) Math.random();
         return min + (max - min) * fRandNum;

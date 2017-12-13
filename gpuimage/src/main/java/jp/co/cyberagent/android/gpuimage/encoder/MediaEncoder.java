@@ -442,7 +442,7 @@ public abstract class MediaEncoder implements Runnable {
         result-=totalPauseInterval;
         if (result < prevOutputPTSUs)
             result = (prevOutputPTSUs - result) + result;
-//        Log.e("pts===>",result+"");
+        Log.e("pts===>",result+"");
         return result;
     }
 

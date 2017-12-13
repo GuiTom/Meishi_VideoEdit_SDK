@@ -100,6 +100,16 @@ public class GPUImage {
         mGlSurfaceView.requestRender();
     }
 
+    /**
+     * Sets the background color
+     *
+     * @param red red color value
+     * @param green green color value
+     * @param blue red color value
+     */
+    public void setBackgroundColor(float red, float green, float blue) {
+        mRenderer.setBackgroundColor(red, green, blue);
+    }
 
     /**
      * Request the preview to be rendered again.
@@ -129,9 +139,12 @@ public class GPUImage {
      */
     public void setUpCamera(final Camera camera, final int degrees, final boolean flipHorizontal,
             final boolean flipVertical) {
-
+        mGlSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
             setUpCameraGingerbread(camera);
+        } else {
+            camera.setPreviewCallback(mRenderer);
+            camera.startPreview();
         }
         Rotation rotation = Rotation.NORMAL;
         switch (degrees) {
@@ -341,7 +354,7 @@ public class GPUImage {
 
     /**
      * Deprecated: Please use
-     * {@link GPUImageView#saveToPictures(String, String, jp.co.cyberagent.android.gpuimage.GPUImageView.OnPictureSavedListener)}
+     * {@link GPUImageView#saveToPictures(String, String, GPUImageView.OnPictureSavedListener)}
      *
      * Save current image with applied filter to Pictures. It will be stored on
      * the default Picture folder on the phone below the given folderName and
@@ -361,7 +374,7 @@ public class GPUImage {
 
     /**
      * Deprecated: Please use
-     * {@link GPUImageView#saveToPictures(String, String, jp.co.cyberagent.android.gpuimage.GPUImageView.OnPictureSavedListener)}
+     * {@link GPUImageView#saveToPictures(String, String, GPUImageView.OnPictureSavedListener)}
      *
      * Apply and save the given bitmap with applied filter to Pictures. It will
      * be stored on the default Picture folder on the phone below the given
@@ -562,19 +575,18 @@ public class GPUImage {
 
         @Override
         protected Bitmap doInBackground(Void... params) {
-//            if (mRenderer != null && mRenderer.getFrameWidth() == 0) {
-//                try {
-//                    synchronized (mRenderer.mSurfaceChangedWaiter) {
-//                        mRenderer.mSurfaceChangedWaiter.wait(3000);
-//                    }
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            mOutputWidth = getOutputWidth();
-//            mOutputHeight = getOutputHeight();
-//            return loadResizedImage();
-            return null;
+            if (mRenderer != null && mRenderer.getFrameWidth() == 0) {
+                try {
+                    synchronized (mRenderer.mSurfaceChangedWaiter) {
+                        mRenderer.mSurfaceChangedWaiter.wait(3000);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            mOutputWidth = getOutputWidth();
+            mOutputHeight = getOutputHeight();
+            return loadResizedImage();
         }
 
         @Override

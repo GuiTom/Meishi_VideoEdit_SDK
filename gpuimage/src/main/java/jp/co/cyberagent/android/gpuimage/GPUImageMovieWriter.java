@@ -53,11 +53,10 @@ public class GPUImageMovieWriter extends GPUImageFilter {
         void onRecordFinish(String filePath);
 
     }
-
-    public RecordCallBack recordCallBack;
     public GPUImageMovieWriter(Context context){
         mContext=context;
     }
+    public RecordCallBack recordCallBack;
     public enum RecordStatus {
         Stoped,Paused,Capturing
     }
@@ -138,14 +137,18 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                 audioPts.add(new Long(lastAudioPts));
                 File dic = new File(Environment.getExternalStorageDirectory(),"tmpVideo");
                 if(!dic.exists()){
+//                    dic.delete();
                     dic.mkdir();
                 }
+
                 tmpVideoFilePath = dic.toString()+"/"+videoFileIndex+".mp4";
                 File file = new File(tmpVideoFilePath);
                 if(file.exists()){
                     file.delete();
                 }
-
+//                File dir= mContext.getDir("tmpVideo", MODE_PRIVATE);
+//                File file = new File(dir,videoFileIndex + ".mp4");
+//                tmpVideoFilePath = file.getAbsolutePath();
 
                 try {
                     mMuxer = new MediaMuxerWrapper(tmpVideoFilePath,degree);
@@ -286,7 +289,12 @@ public class GPUImageMovieWriter extends GPUImageFilter {
                     @Override
                     public void onTranscodeCompleted() {
 
-
+//                        for(Uri uri:uriList){
+//                            File file = new File(uri.getPath());
+//                            if(file.exists()){
+//                                file.delete();
+//                            }
+//                        }
                         uriList = new ArrayList<Uri>();
                         if(recordCallBack!=null){
                             recordCallBack.onRecordFinish(outputVideoFile);

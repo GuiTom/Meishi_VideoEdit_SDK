@@ -33,8 +33,6 @@ import android.view.Surface;
 
 import java.io.IOException;
 
-import jp.co.cyberagent.android.gpuimage.OpenGlUtils;
-
 @TargetApi(18)
 public class MediaVideoEncoder extends MediaEncoder {
     private static final boolean DEBUG = false;
@@ -102,7 +100,6 @@ public class MediaVideoEncoder extends MediaEncoder {
         // get Surface for encoder input
         // this method only can call between #configure and #start
         mSurface = mMediaCodec.createInputSurface();    // API >= 18
-        OpenGlUtils.checkGlError("openGL");
         mMediaCodec.start();
         if (DEBUG) Log.i(TAG, "prepare finishing");
         if (mListener != null) {

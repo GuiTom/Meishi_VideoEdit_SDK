@@ -110,7 +110,7 @@ public class GPUImageTwoInputFilter extends GPUImageFilter {
                 mFilterSourceTexture2,mFilterSourceTexture2
         }, 0);
         mFilterSourceTexture2 = OpenGlUtils.NO_TEXTURE;
-
+        mFilterSourceTexture2 = OpenGlUtils.NO_TEXTURE;
     }
 
     @Override

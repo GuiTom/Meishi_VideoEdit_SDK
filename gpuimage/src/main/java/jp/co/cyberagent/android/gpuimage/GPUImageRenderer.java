@@ -320,7 +320,7 @@ public class GPUImageRenderer implements Renderer, PreviewCallback {
     }
 
     public void setRotationCamera(final Rotation rotation, final boolean flipHorizontal,
-                                  final boolean flipVertical) {
+            final boolean flipVertical) {
         setRotation(rotation, flipVertical, flipHorizontal);
     }
 
