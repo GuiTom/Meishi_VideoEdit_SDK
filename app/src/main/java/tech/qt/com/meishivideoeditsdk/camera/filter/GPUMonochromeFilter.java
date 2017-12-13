@@ -49,13 +49,11 @@ public class GPUMonochromeFilter extends GPUFilter {
         super.init();
         mIntensityLocation = GLES20.glGetUniformLocation(getProgram(), "intensity");
         mFilterColorLocation = GLES20.glGetUniformLocation(getProgram(), "filterColor");
-    }
-    @Override
-    public void onInitialized() {
-        super.onInitialized();
+
         setIntensity(1.0f);
         setColor(new float[]{ 0.6f, 0.45f, 0.3f, 1.f });
     }
+
     public void setIntensity(final float intensity) {
         mIntensity = intensity;
         setFloat(mIntensityLocation, mIntensity);

@@ -39,7 +39,7 @@ public class GPUTowInputFilter extends GPUFilter {
                 + "void main() {\n"
                 + "	gl_Position = uMVPMatrix * aPosition;\n"
                 + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
-                + "	vTextureCoord2 = aTextureCoord.xy;\n"
+                + "	vTextureCoord2 =  aTextureCoord.xy;\n"
                 + "}\n";
         return vts;
     }
@@ -50,9 +50,9 @@ public class GPUTowInputFilter extends GPUFilter {
     @Override
     public void init() {
         super.init();
-//        OpenGlUtils.checkGlError("a1");
+        OpenGLUtils.checkGlError("a1");
         mTexture2Loc = GLES20.glGetUniformLocation(getProgram(), "sTexture2"); // This does assume a name of "inputImageTexture2" for second input texture in the fragment shader
-//        OpenGlUtils.checkGlError("a2");
+        OpenGLUtils.checkGlError("a2");
 
     }
 
@@ -72,16 +72,22 @@ public class GPUTowInputFilter extends GPUFilter {
         try {
             if (bitmaps != null) {
                 numFrames++;
-                if (numFrames % 2 == 0) {
+                if (numFrames % 4 == 0) {
                     bitMapIndex++;
-                }
-                if (bitMapIndex > bitmaps.size() - 1) {
-                    bitMapIndex = 0;
-                }
-                Bitmap bitmap = bitmaps.get(bitMapIndex);
+                    if (bitMapIndex > bitmaps.size() - 1) {
+                        bitMapIndex = 0;
+                    }
+                    Bitmap bitmap = bitmaps.get(bitMapIndex);
 
-                if(!bitmap.isRecycled()) {
-                    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, bitmap, 0);
+                    if(!bitmap.isRecycled()) {
+                        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, bitmap, 0);
+                    }
+                }
+
+
+            }else {
+                if(mBitmap!=null){
+                    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, mBitmap, 0);
                 }
             }
         }catch (Exception e){
@@ -111,8 +117,9 @@ public class GPUTowInputFilter extends GPUFilter {
             }
         });
     }
-    public static int numFrames=-1;
-    public static int bitMapIndex=-1;
-    public static boolean blockOverLay;
-    public  static ArrayList<Bitmap> bitmaps;
+
+    public int numFrames=-1;
+    public int bitMapIndex=-1;
+    public boolean blockOverLay;
+    public ArrayList<Bitmap> bitmaps;
 }

@@ -2,7 +2,12 @@ package tech.qt.com.meishivideoeditsdk.camera.filter;
 
 import android.opengl.GLES20;
 
+import java.nio.FloatBuffer;
+
+import jp.co.cyberagent.android.gpuimage.GPUImage;
 import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
 
 /**
  * Created by chenchao on 2017/12/8.
@@ -15,9 +20,9 @@ public class GPUBeautyFilter extends GPUFilter {
              =  "#extension GL_OES_EGL_image_external : require\n" +
                 "precision mediump float;\n" +
                 "uniform "+samplerTypeValue+" sTexture;\n"+
-                "   varying highp vec2 textureCoordinate;\n" +
+                "   varying highp vec2 vTextureCoord;\n" +
                 "\n" +
-                "    uniform sampler2D inputImageTexture;\n" +
+                "    uniform sampler2D sTexture2;\n" +
                 "\n" +
                 "    uniform highp vec2 singleStepOffset;\n" +
                 "    uniform highp vec4 params;\n" +
@@ -39,57 +44,57 @@ public class GPUBeautyFilter extends GPUFilter {
                 "}\n" +
                 "\n" +
                 "    void main(){\n" +
-                "    highp vec3 centralColor = texture2D(inputImageTexture, textureCoordinate).rgb;\n" +
-                "    blurCoordinates[0] = textureCoordinate.xy + singleStepOffset * vec2(0.0, -10.0);\n" +
-                "    blurCoordinates[1] = textureCoordinate.xy + singleStepOffset * vec2(0.0, 10.0);\n" +
-                "    blurCoordinates[2] = textureCoordinate.xy + singleStepOffset * vec2(-10.0, 0.0);\n" +
-                "    blurCoordinates[3] = textureCoordinate.xy + singleStepOffset * vec2(10.0, 0.0);\n" +
-                "    blurCoordinates[4] = textureCoordinate.xy + singleStepOffset * vec2(5.0, -8.0);\n" +
-                "    blurCoordinates[5] = textureCoordinate.xy + singleStepOffset * vec2(5.0, 8.0);\n" +
-                "    blurCoordinates[6] = textureCoordinate.xy + singleStepOffset * vec2(-5.0, 8.0);\n" +
-                "    blurCoordinates[7] = textureCoordinate.xy + singleStepOffset * vec2(-5.0, -8.0);\n" +
-                "    blurCoordinates[8] = textureCoordinate.xy + singleStepOffset * vec2(8.0, -5.0);\n" +
-                "    blurCoordinates[9] = textureCoordinate.xy + singleStepOffset * vec2(8.0, 5.0);\n" +
-                "    blurCoordinates[10] = textureCoordinate.xy + singleStepOffset * vec2(-8.0, 5.0);\n" +
-                "    blurCoordinates[11] = textureCoordinate.xy + singleStepOffset * vec2(-8.0, -5.0);\n" +
-                "    blurCoordinates[12] = textureCoordinate.xy + singleStepOffset * vec2(0.0, -6.0);\n" +
-                "    blurCoordinates[13] = textureCoordinate.xy + singleStepOffset * vec2(0.0, 6.0);\n" +
-                "    blurCoordinates[14] = textureCoordinate.xy + singleStepOffset * vec2(6.0, 0.0);\n" +
-                "    blurCoordinates[15] = textureCoordinate.xy + singleStepOffset * vec2(-6.0, 0.0);\n" +
-                "    blurCoordinates[16] = textureCoordinate.xy + singleStepOffset * vec2(-4.0, -4.0);\n" +
-                "    blurCoordinates[17] = textureCoordinate.xy + singleStepOffset * vec2(-4.0, 4.0);\n" +
-                "    blurCoordinates[18] = textureCoordinate.xy + singleStepOffset * vec2(4.0, -4.0);\n" +
-                "    blurCoordinates[19] = textureCoordinate.xy + singleStepOffset * vec2(4.0, 4.0);\n" +
-                "    blurCoordinates[20] = textureCoordinate.xy + singleStepOffset * vec2(-2.0, -2.0);\n" +
-                "    blurCoordinates[21] = textureCoordinate.xy + singleStepOffset * vec2(-2.0, 2.0);\n" +
-                "    blurCoordinates[22] = textureCoordinate.xy + singleStepOffset * vec2(2.0, -2.0);\n" +
-                "    blurCoordinates[23] = textureCoordinate.xy + singleStepOffset * vec2(2.0, 2.0);\n" +
+                "    highp vec3 centralColor = texture2D(sTexture, vTextureCoord).rgb;\n" +
+                "    blurCoordinates[0] = vTextureCoord.xy + singleStepOffset * vec2(0.0, -10.0);\n" +
+                "    blurCoordinates[1] = vTextureCoord.xy + singleStepOffset * vec2(0.0, 10.0);\n" +
+                "    blurCoordinates[2] = vTextureCoord.xy + singleStepOffset * vec2(-10.0, 0.0);\n" +
+                "    blurCoordinates[3] = vTextureCoord.xy + singleStepOffset * vec2(10.0, 0.0);\n" +
+                "    blurCoordinates[4] = vTextureCoord.xy + singleStepOffset * vec2(5.0, -8.0);\n" +
+                "    blurCoordinates[5] = vTextureCoord.xy + singleStepOffset * vec2(5.0, 8.0);\n" +
+                "    blurCoordinates[6] = vTextureCoord.xy + singleStepOffset * vec2(-5.0, 8.0);\n" +
+                "    blurCoordinates[7] = vTextureCoord.xy + singleStepOffset * vec2(-5.0, -8.0);\n" +
+                "    blurCoordinates[8] = vTextureCoord.xy + singleStepOffset * vec2(8.0, -5.0);\n" +
+                "    blurCoordinates[9] = vTextureCoord.xy + singleStepOffset * vec2(8.0, 5.0);\n" +
+                "    blurCoordinates[10] = vTextureCoord.xy + singleStepOffset * vec2(-8.0, 5.0);\n" +
+                "    blurCoordinates[11] = vTextureCoord.xy + singleStepOffset * vec2(-8.0, -5.0);\n" +
+                "    blurCoordinates[12] = vTextureCoord.xy + singleStepOffset * vec2(0.0, -6.0);\n" +
+                "    blurCoordinates[13] = vTextureCoord.xy + singleStepOffset * vec2(0.0, 6.0);\n" +
+                "    blurCoordinates[14] = vTextureCoord.xy + singleStepOffset * vec2(6.0, 0.0);\n" +
+                "    blurCoordinates[15] = vTextureCoord.xy + singleStepOffset * vec2(-6.0, 0.0);\n" +
+                "    blurCoordinates[16] = vTextureCoord.xy + singleStepOffset * vec2(-4.0, -4.0);\n" +
+                "    blurCoordinates[17] = vTextureCoord.xy + singleStepOffset * vec2(-4.0, 4.0);\n" +
+                "    blurCoordinates[18] = vTextureCoord.xy + singleStepOffset * vec2(4.0, -4.0);\n" +
+                "    blurCoordinates[19] = vTextureCoord.xy + singleStepOffset * vec2(4.0, 4.0);\n" +
+                "    blurCoordinates[20] = vTextureCoord.xy + singleStepOffset * vec2(-2.0, -2.0);\n" +
+                "    blurCoordinates[21] = vTextureCoord.xy + singleStepOffset * vec2(-2.0, 2.0);\n" +
+                "    blurCoordinates[22] = vTextureCoord.xy + singleStepOffset * vec2(2.0, -2.0);\n" +
+                "    blurCoordinates[23] = vTextureCoord.xy + singleStepOffset * vec2(2.0, 2.0);\n" +
                 "\n" +
                 "    highp float sampleColor = centralColor.g * 22.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[0]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[1]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[2]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[3]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[4]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[5]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[6]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[7]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[8]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[9]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[10]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[11]).g;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[12]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[13]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[14]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[15]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[16]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[17]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[18]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[19]).g * 2.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[20]).g * 3.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[21]).g * 3.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[22]).g * 3.0;\n" +
-                "    sampleColor += texture2D(inputImageTexture, blurCoordinates[23]).g * 3.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[0]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[1]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[2]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[3]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[4]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[5]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[6]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[7]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[8]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[9]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[10]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[11]).g;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[12]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[13]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[14]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[15]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[16]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[17]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[18]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[19]).g * 2.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[20]).g * 3.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[21]).g * 3.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[22]).g * 3.0;\n" +
+                "    sampleColor += texture2D(sTexture, blurCoordinates[23]).g * 3.0;\n" +
                 "\n" +
                 "    sampleColor = sampleColor / 62.0;\n" +
                 "\n" +
@@ -138,15 +143,22 @@ public class GPUBeautyFilter extends GPUFilter {
         singleStepOffsetLocation = GLES20.glGetUniformLocation(getProgram(), "singleStepOffset");
 
         toneLevel = 0.47f;
-        beautyLevel = 0.42f;
-        brightLevel = 0.34f;
+        beautyLevel = 0.82f;
+        brightLevel = 0.54f;
 
+
+
+    }
+    @Override
+    public void onDrawForeround(){
+//        super.onDrawForeround();
         setParams(beautyLevel, toneLevel);
         setBrightLevel(brightLevel);
     }
     public void setBrightLevel(float brightLevel) {
         this.brightLevel = brightLevel;
-        setFloat(brightnessLocation, 0.6f * (-0.5f + brightLevel));
+//        setFloat(brightnessLocation, 0.6f * (-0.5f + brightLevel));
+        GLES20.glUniform1f(brightnessLocation, 0.6f * (-0.5f + brightLevel));
     }
 
     public void setParams(float beauty, float tone) {
@@ -155,7 +167,12 @@ public class GPUBeautyFilter extends GPUFilter {
         vector[1] = 1.0f - 0.3f * beauty;
         vector[2] = 0.1f + 0.3f * tone;
         vector[3] = 0.1f + 0.3f * tone;
-        setFloatVec4(paramsLocation, vector);
+//        setFloatVec4(paramsLocation, vector);
+        GLES20.glUniform4fv(paramsLocation, 1, FloatBuffer.wrap(vector));
 
     }
+//    public void setBeautyLevel(float beautyLevel) {
+//        this.beautyLevel = beautyLevel;
+//        setParams(beautyLevel, toneLevel);
+//    }
 }

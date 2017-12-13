@@ -2,6 +2,8 @@ package tech.qt.com.meishivideoeditsdk.camera.filter.twoInput;
 
 import android.opengl.GLES20;
 
+import jp.co.cyberagent.android.gpuimage.GPUImageLookupFilter;
+
 /**
  * Created by chenchao on 2017/12/13.
  */
@@ -11,17 +13,17 @@ public class GPULookupFilter extends GPUTowInputFilter {
         String fgs
                 = "#extension GL_OES_EGL_image_external : require\n"+
                  "precision mediump float;\n"+
-                 "varying highp vec2 textureCoordinate;\n" +
-                " varying highp vec2 textureCoordinate2; // TODO: This is not used\n" +
+                 "varying highp vec2 vTextureCoord;\n" +
+                " varying highp vec2 vTextureCoord2;\n" +
                 " \n" +
-                " uniform "+samplerTypeValue+" inputImageTexture;\n" +
-                " uniform sampler2D inputImageTexture2; // lookup texture\n" +
+                " uniform "+samplerTypeValue+" sTexture;\n" +
+                " uniform sampler2D sTexture2;\n" +
                 " \n" +
                 " uniform lowp float intensity;\n" +
                 " \n" +
                 " void main()\n" +
                 " {\n" +
-                "     highp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);\n" +
+                "     highp vec4 textureColor = texture2D(sTexture, vTextureCoord);\n" +
                 "     \n" +
                 "     highp float blueColor = textureColor.b * 63.0;\n" +
                 "     \n" +
@@ -41,8 +43,8 @@ public class GPULookupFilter extends GPUTowInputFilter {
                 "     texPos2.x = (quad2.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * textureColor.r);\n" +
                 "     texPos2.y = (quad2.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * textureColor.g);\n" +
                 "     \n" +
-                "     lowp vec4 newColor1 = texture2D(inputImageTexture2, texPos1);\n" +
-                "     lowp vec4 newColor2 = texture2D(inputImageTexture2, texPos2);\n" +
+                "     lowp vec4 newColor1 = texture2D(sTexture2, texPos1);\n" +
+                "     lowp vec4 newColor2 = texture2D(sTexture2, texPos2);\n" +
                 "     \n" +
                 "     lowp vec4 newColor = mix(newColor1, newColor2, fract(blueColor));\n" +
                 "     gl_FragColor = mix(textureColor, vec4(newColor.rgb, textureColor.w), intensity);\n" +
@@ -55,13 +57,16 @@ public class GPULookupFilter extends GPUTowInputFilter {
     public void init(){
         super.init();
         mIntensityLocation = GLES20.glGetUniformLocation(getProgram(), "intensity");
-    }
-    @Override
-    public void onInitialized() {
-        super.onInitialized();
-        setIntensity(mIntensity);
+
+
     }
 
+    @Override
+    public void  onDrawForeround(){
+        super.onDrawForeround();
+//        setIntensity(mIntensity);
+        GLES20.glUniform1f(mIntensityLocation, mIntensity);
+    }
     public void setIntensity(final float intensity) {
         mIntensity = intensity;
         setFloat(mIntensityLocation, mIntensity);

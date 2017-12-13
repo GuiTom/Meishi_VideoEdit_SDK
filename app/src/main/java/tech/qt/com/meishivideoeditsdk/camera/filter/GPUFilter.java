@@ -23,6 +23,12 @@ public class GPUFilter {
     protected String samplerTypeValue ="sampler2D";
     private SamplerType mSamplerType;
 
+    public void setNeedRealse(boolean needRealse) {
+        this.needRealse = needRealse;
+    }
+
+    private boolean needRealse;
+
     protected enum SamplerType {
         Sampler2D,SamplerExternalOES
     }
@@ -66,12 +72,12 @@ public class GPUFilter {
     protected String mVertexShader;
     protected String mFragmentShader;
 
-    protected static final float[] VERTICES = { 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f };
-    protected static final float[] TEXCOORD = { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
+    protected final float[] VERTICES = { 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f };
+    protected final float[] TEXCOORD = { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
 
-    protected static final int FLOAT_SZ = Float.SIZE / 8;
-    protected static final int VERTEX_NUM = 4;
-    protected static final int VERTEX_SZ = 4 * 2;
+    protected final int FLOAT_SZ = Float.SIZE / 8;
+    protected final int VERTEX_NUM = 4;
+    protected final int VERTEX_SZ = 4 * 2;
 
     private final float[] mMvpMatrix = new float[16];
     private final float[] mTexMatrix = new float[16];
@@ -115,13 +121,15 @@ public class GPUFilter {
 
     }
     public void onDrawFrame(int textureId, SurfaceTexture st, int mViewWidth, int mViewHeight){
+        OpenGLUtils.checkGlError("3.3");
         runPendingOnDrawTasks();
-
+        OpenGLUtils.checkGlError("3.2");
         if(mSamplerType == SamplerType.SamplerExternalOES) {
             st.getTransformMatrix(mTexMatrix);
         }else {
             Matrix.setIdentityM(mTexMatrix,0);
         }
+        OpenGLUtils.checkGlError("3.1");
         Matrix.setIdentityM(mMvpMatrix,0);
         OpenGLUtils.checkGlError("3");
         GLES20.glUseProgram(mProgramId);
@@ -160,27 +168,35 @@ public class GPUFilter {
             GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
         }
         OpenGLUtils.checkGlError("1");
-        onInitialized();
-        GLES20.glUseProgram(0);
 
+        GLES20.glUseProgram(0);
+         if(needRealse){
+             release();
+         }
     }
     protected void onDrawForeround() {}
 
-    protected void onInitialized() {
 
-    }
     public int getProgram() {
         return mProgramId;
     }
     public void runPendingOnDrawTasks() {
-        while (!mRunOnDraw.isEmpty()) {
-            mRunOnDraw.removeFirst().run();
+        OpenGLUtils.checkGlError("3.5");
+        while (mRunOnDraw!=null&&!mRunOnDraw.isEmpty()) {
+            Runnable runnable = mRunOnDraw.removeFirst();
+            runnable.run();
+//            if(OpenGLUtils.checkGlError("3.4")!=0){
+//                runnable.run();
+//            }
         }
     }
     protected void release(){
 
     }
     protected void runOnDraw(final Runnable runnable) {
+        if(mRunOnDraw == null){
+            mRunOnDraw = new LinkedList<Runnable>();
+        }
         synchronized (mRunOnDraw) {
             mRunOnDraw.addLast(runnable);
         }
@@ -197,7 +213,9 @@ public class GPUFilter {
         runOnDraw(new Runnable() {
             @Override
             public void run() {
+                OpenGLUtils.checkGlError("setFloat");
                 GLES20.glUniform1f(location, floatValue);
+                OpenGLUtils.checkGlError("setFloat2");
             }
         });
     }

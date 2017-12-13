@@ -12,15 +12,15 @@ public class GPUGrayScaleFilter extends GPUTowInputFilter {
                 + "precision mediump float;\n"+
                 "precision highp float;\n" +
                 "\n" +
-                "varying vec2 textureCoordinate;\n" +
+                "varying vec2 vTextureCoord;\n" +
                 "\n" +
-                "uniform "+samplerTypeValue+" inputImageTexture;\n" +
+                "uniform "+samplerTypeValue+" sTexture;\n" +
                 "\n" +
                 "const highp vec3 W = vec3(0.2125, 0.7154, 0.0721);\n" +
                 "\n" +
                 "void main()\n" +
                 "{\n" +
-                "  lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);\n" +
+                "  lowp vec4 textureColor = texture2D(sTexture, vTextureCoord);\n" +
                 "  float luminance = dot(textureColor.rgb, W);\n" +
                 "\n" +
                 "  gl_FragColor = vec4(vec3(luminance), textureColor.a);\n" +

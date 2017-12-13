@@ -27,8 +27,9 @@ public class GPUGourpFilter extends GPUFilter {
     }
 
     public void removeAllFilter(){
-
-        mfilters.clear();
+        synchronized (mfilters) {
+            mfilters.clear();
+        }
     }
     public GPUGourpFilter(){
         mfilters = new ArrayList<>();
@@ -84,28 +85,30 @@ public class GPUGourpFilter extends GPUFilter {
         runPendingOnDrawTasks();
 //        if(isInitlized == false) return;
         if (mfilters != null) {
-            int size = mfilters.size();
 
-            int previousTexture = textureId;
             OpenGLUtils.checkGlError("group1");
-            for (int i = 0; i < size; i++) {
-                GPUFilter filter = mfilters.get(i);
-                boolean isNotLast = i < size - 1;
-                if (isNotLast) {//除最后一个Filter 外在自己创建FrameBuffer开始渲染，最后一个Filter在系统默认的Filter 渲染
+            synchronized (mfilters) {
+                int size = mfilters.size();
+                int previousTexture = textureId;
+                for (int i = 0; i < size; i++) {
+                    GPUFilter filter = mfilters.get(i);
+                    boolean isNotLast = i < size - 1;
+                    if (isNotLast) {//除最后一个Filter 外在自己创建FrameBuffer开始渲染，最后一个Filter在系统默认的Filter 渲染
 
 //                    GLES11Ext.glBindFramebufferOES(GLES11Ext.GL_FRAMEBUFFER_OES, mFrameBuffers[i]);
-                    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[i]);
-                    GLES20.glClearColor(0, 0, 0, 0);
+                        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[i]);
+                        GLES20.glClearColor(0, 0, 0, 0);
 //                    GLES11Ext.glClearColorxOES(0,0,0,0);
-                    OpenGLUtils.checkGlError("group2");
-                }
+                        OpenGLUtils.checkGlError("group2");
+                    }
 
-                filter.onDrawFrame(previousTexture, st, mViewWidth, mViewHeight);
+                    filter.onDrawFrame(previousTexture, st, mViewWidth, mViewHeight);
 
-                if (isNotLast) {
-                    GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+                    if (isNotLast) {
+                        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 //                    GLES11Ext.glBindFramebufferOES(GLES11Ext.GL_FRAMEBUFFER_OES, 0);
-                    previousTexture = mFrameBufferTextures[i];
+                        previousTexture = mFrameBufferTextures[i];
+                    }
                 }
             }
         }

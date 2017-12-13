@@ -18,6 +18,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
 import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import tech.qt.com.meishivideoeditsdk.camera.CameraWraper;
 import tech.qt.com.meishivideoeditsdk.camera.GLRender;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilterTool;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUGourpFilter;
@@ -68,8 +69,8 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         videoDegree=0;
         if(videoShapeType==videoProtrait){
             videoDegree=0;
-            videoWidth=540;
-            videoHeight=960;
+            videoWidth=1080;
+            videoHeight=1920;
         }else if(videoShapeType==videoLandscape){
             videoDegree=90;
             videoWidth=540;
@@ -184,9 +185,10 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                     public void onGpuFilterChosenListener(GPUFilter filter) {
                         imageButton.setSelected(true);
                         gpuCommonFilter = filter;
+                        addFilters();
                     }
                 });
-                         addFilters();
+
                 break;
             case R.id.imageButton18://添加特效
                 GPUFilterTool.showCoverDialog(this, new GPUFilterTool.onGpuFilterChosenListener() {
@@ -217,10 +219,13 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                 boolean isSelected = imageButton.isSelected();
                 imageButton.setSelected(!isSelected);
 
-//                if(gpuBeautyFilter== null){
-//                    gpuBeautyFilter = new GPUBeautyFilter();
-//                }
-//                addFilters();
+                if(gpuBeautyFilter== null){
+                    gpuBeautyFilter = new GPUBeautyFilter();
+                }else {
+                    gpuBeautyFilter.setNeedRealse(true);
+                    gpuBeautyFilter = null;
+                }
+                addFilters();
                 break;
             case R.id.imageButton21://切换摄像头前后
                 if(facingType == Camera.CameraInfo.CAMERA_FACING_BACK){
@@ -254,7 +259,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         }
     }
     public void addFilters(){
-//        mCamera.stopPreview();
+        mCamera.stopPreview();
         if(gpuGourpFilter==null) {
             gpuGourpFilter = new GPUGourpFilter();
         }
@@ -279,7 +284,7 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         gpuGourpFilter.filtersChanged(GLRender.mViewWidth,GLRender.mViewHeight);
         CameraManager.getManager().setFilter(gpuGourpFilter);
 
-//        mCamera.startPreview();
+        mCamera.startPreview();
     }
     @Override
     protected void onResume() {

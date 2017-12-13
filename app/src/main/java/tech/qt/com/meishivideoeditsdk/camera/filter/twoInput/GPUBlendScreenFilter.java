@@ -19,7 +19,6 @@ public class GPUBlendScreenFilter extends GPUTowInputFilter {
                 + "varying highp vec2 vTextureCoord2;\n"
 
                 + "void main() {\n"
-
                 + "mediump vec4 textureColor = texture2D(sTexture, vTextureCoord);\n"
                 + "mediump vec4 textureColor2 = texture2D(sTexture2, vTextureCoord2);\n"
                 +  "mediump vec4 whiteColor = vec4(1.0);\n"

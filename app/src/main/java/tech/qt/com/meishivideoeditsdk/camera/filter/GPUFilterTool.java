@@ -65,15 +65,15 @@ public class GPUFilterTool {
                     @Override
                     public void onClick(final DialogInterface dialog, final int item) {
                         ArrayList<Bitmap>bitmaps = null;
-                        gpuTowInputFilter = new GPUBlendScreenFilter();
+//                        gpuTowInputFilter = new GPUBlendScreenFilter();
                         if(gpuTowInputFilter == null){
                             gpuTowInputFilter = new GPUBlendScreenFilter();
                         }else{
-                            bitmaps = GPUTowInputFilter.bitmaps;
+                            bitmaps = gpuTowInputFilter.bitmaps;
                         }
 
                         int frameNum=60;
-                        GPUBlendScreenFilter.blockOverLay=true;
+                        gpuTowInputFilter.blockOverLay=true;
                         if(bitmaps!=null&&bitmaps.size()>0){
                             int size=bitmaps.size();
                             for(Bitmap bitmap:bitmaps){
@@ -108,7 +108,7 @@ public class GPUFilterTool {
                                 }
                             }
                         }
-                        GPUTowInputFilter.bitmaps = bitmaps;
+                        gpuTowInputFilter.bitmaps = bitmaps;
                         listener.onGpuFilterChosenListener(gpuTowInputFilter);
 
                     }
@@ -145,8 +145,9 @@ public class GPUFilterTool {
                     public void onClick(final DialogInterface dialog, final int item) {
                         if(filter!= null){
                             //以后把内存回收处理好
-                            filter.release();
+                            filter.setNeedRealse(true);
                         }
+                        filter = null;
                         FilterType filterType = filterList.types.get(item);
                         String filterName = filterList.names.get(item);
                         String resName = filterList.resNames.get(item);
@@ -154,7 +155,7 @@ public class GPUFilterTool {
                             filter = null;
                         }else if(filterType == filterType.GrayScale){
                             filter = new GPUGrayScaleFilter();
-                        }else if(filterType == filterType.GrayScale){
+                        }else if(filterType == filterType.LOOK_UP){
                             filter = new GPULookupFilter();
 
                             String fileName="filters/lookup_"+resName;
