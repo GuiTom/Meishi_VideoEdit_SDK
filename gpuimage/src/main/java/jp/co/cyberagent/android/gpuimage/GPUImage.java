@@ -68,7 +68,7 @@ public class GPUImage {
 
         mContext = context;
         mFilter = new GPUImageFilter();
-        mRenderer = new GPUImageRenderer(mFilter,this);
+        mRenderer = new GPUImageRenderer(mFilter);
     }
 
     /**
@@ -288,7 +288,7 @@ public class GPUImage {
             }
         }
 
-        GPUImageRenderer renderer = new GPUImageRenderer(mFilter,this);
+        GPUImageRenderer renderer = new GPUImageRenderer(mFilter);
         renderer.setRotation(Rotation.NORMAL,
                 mRenderer.isFlippedHorizontally(), mRenderer.isFlippedVertically());
         renderer.setScaleType(mScaleType);
@@ -322,21 +322,21 @@ public class GPUImage {
      */
     public static void getBitmapForMultipleFilters(final Bitmap bitmap,
             final List<GPUImageFilter> filters, final ResponseListener<Bitmap> listener) {
-//        if (filters.isEmpty()) {
-//            return;
-//        }
-//        GPUImageRenderer renderer = new GPUImageRenderer(filters.get(0),this);
-//        renderer.setImageBitmap(bitmap, false);
-//        PixelBuffer buffer = new PixelBuffer(bitmap.getWidth(), bitmap.getHeight());
-//        buffer.setRenderer(renderer);
-//
-//        for (GPUImageFilter filter : filters) {
-//            renderer.setFilter(filter);
-//            listener.response(buffer.getBitmap());
-//            filter.destroy();
-//        }
-//        renderer.deleteImage();
-//        buffer.destroy();
+        if (filters.isEmpty()) {
+            return;
+        }
+        GPUImageRenderer renderer = new GPUImageRenderer(filters.get(0));
+        renderer.setImageBitmap(bitmap, false);
+        PixelBuffer buffer = new PixelBuffer(bitmap.getWidth(), bitmap.getHeight());
+        buffer.setRenderer(renderer);
+
+        for (GPUImageFilter filter : filters) {
+            renderer.setFilter(filter);
+            listener.response(buffer.getBitmap());
+            filter.destroy();
+        }
+        renderer.deleteImage();
+        buffer.destroy();
     }
 
     /**

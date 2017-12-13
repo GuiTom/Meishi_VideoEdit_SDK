@@ -41,7 +41,7 @@ public class GPUImageFilter {
             "#extension GL_OES_EGL_image_external : require\n" +
             "varying highp vec2 textureCoordinate;\n" +
             " \n" +
-            "uniform samplerExternalOES inputImageTexture;\n" +
+            "uniform sampler2D inputImageTexture;\n" +
             " \n" +
             "void main()\n" +
             "{\n" +

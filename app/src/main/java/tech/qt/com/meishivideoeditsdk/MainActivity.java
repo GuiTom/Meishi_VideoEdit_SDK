@@ -72,7 +72,7 @@ public class MainActivity extends Activity {
                         intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
                         startActivity(intent);
                     }else if(childPosition==1){
-                        Intent intent=new Intent(MainActivity.this,CameraLandscapeActivity.class);
+                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
                         intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
                         startActivity(intent);
                     }
