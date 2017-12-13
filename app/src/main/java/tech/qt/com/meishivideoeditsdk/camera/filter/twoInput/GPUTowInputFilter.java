@@ -1,4 +1,4 @@
-package tech.qt.com.meishivideoeditsdk.camera.filter;
+package tech.qt.com.meishivideoeditsdk.camera.filter.twoInput;
 
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
 import jp.co.cyberagent.android.gpuimage.OpenGlUtils;
 import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
 
 /**
  * Created by chenchao on 2017/12/8.
@@ -20,6 +21,8 @@ import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
 
 public class GPUTowInputFilter extends GPUFilter {
 
+
+    private Bitmap mBitmap;
 
     @Override
     protected String getVertexShader(){
@@ -87,7 +90,27 @@ public class GPUTowInputFilter extends GPUFilter {
         OpenGLUtils.checkGlError("a6");
 
     }
-
+    public void setBitmap(final Bitmap bitmap) {
+        if (bitmap != null && bitmap.isRecycled()) {
+            return;
+        }
+        mBitmap = bitmap;
+        if (mBitmap == null) {
+            return;
+        }
+        runOnDraw(new Runnable() {
+            public void run() {
+                if (mFilterSourceTexture2 == OpenGlUtils.NO_TEXTURE) {
+                    if (bitmap == null || bitmap.isRecycled()) {
+                        return;
+                    }
+                    GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
+//                    mBitmap.eraseColor(Color.alpha(0));
+                    mFilterSourceTexture2 = OpenGlUtils.loadTexture(bitmap, OpenGlUtils.NO_TEXTURE, false);
+                }
+            }
+        });
+    }
     public static int numFrames=-1;
     public static int bitMapIndex=-1;
     public static boolean blockOverLay;

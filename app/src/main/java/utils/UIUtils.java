@@ -3,20 +3,10 @@ package utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBlendScreenFilter;
-import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
-import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilterTool;
-import tech.qt.com.meishivideoeditsdk.camera.filter.GPUTowInputFilter;
 
 /**
  * Created by chenchao on 2017/12/12.

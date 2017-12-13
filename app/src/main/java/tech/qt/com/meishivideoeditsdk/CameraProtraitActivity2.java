@@ -6,8 +6,6 @@ import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Surface;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -17,21 +15,16 @@ import java.io.File;
 import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
 import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import tech.qt.com.meishivideoeditsdk.camera.CameraWraper;
 import tech.qt.com.meishivideoeditsdk.camera.GLRender;
-import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
-import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBlendScreenFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilterTool;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUGourpFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.MovieWriter;
 import utils.FileUtils;
-import utils.GPUImageFilterTools;
 import utils.UIUtils;
 
-import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
 import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO;
 
 public class CameraProtraitActivity2 extends AppCompatActivity {
@@ -51,8 +44,10 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
     private long startTime;
     private GPUGourpFilter gpuGourpFilter;
-    private GPUFilter gpuBlendScreenFilter;
+
     private GPUFilter gpuBeautyFilter;
+    private GPUFilter gpuCommonFilter;
+    private GPUFilter gpuBlendScreenFilter;
     private Camera.Size preViewSize;
     private int facingType;
     private String musicPath;
@@ -188,8 +183,10 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                     @Override
                     public void onGpuFilterChosenListener(GPUFilter filter) {
                         imageButton.setSelected(true);
+                        gpuCommonFilter = filter;
                     }
                 });
+                         addFilters();
                 break;
             case R.id.imageButton18://添加特效
                 GPUFilterTool.showCoverDialog(this, new GPUFilterTool.onGpuFilterChosenListener() {
@@ -266,6 +263,10 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         if(gpuBeautyFilter!=null){
             gpuBeautyFilter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
             gpuGourpFilter.addFilter(gpuBeautyFilter);
+        }
+        if(gpuCommonFilter!=null){
+            gpuCommonFilter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
+            gpuGourpFilter.addFilter(gpuCommonFilter);
         }
         if(gpuBlendScreenFilter!=null) {
             gpuBlendScreenFilter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);

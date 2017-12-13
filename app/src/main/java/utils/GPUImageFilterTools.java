@@ -42,29 +42,29 @@ public class GPUImageFilterTools {
         final FilterList filters = new FilterList();
         filters.addFilter("无滤镜", FilterType.NONE);
         filters.addFilter("美颜", FilterType.BUEATYFACE);
-//        filters.addFilter("Contrast", FilterType.CONTRAST);
-        filters.addFilter("Invert", FilterType.INVERT);
-        filters.addFilter("Pixelation", FilterType.PIXELATION);
-        filters.addFilter("Hue", FilterType.HUE);
-        filters.addFilter("Gamma", FilterType.GAMMA);
-//        filters.addFilter("Brightness", FilterType.BRIGHTNESS);
-//        filters.addFilter("Sepia", FilterType.SEPIA);
-//        filters.addFilter("Grayscale", FilterType.GRAYSCALE);
-//        filters.addFilter("Sharpness", FilterType.SHARPEN);
-//        filters.addFilter("Sobel Edge Detection", FilterType.SOBEL_EDGE_DETECTION);
-//        filters.addFilter("3x3 Convolution", FilterType.THREE_X_THREE_CONVOLUTION);
-//        filters.addFilter("Emboss", FilterType.EMBOSS);
-//        filters.addFilter("Posterize", FilterType.POSTERIZE);
-//        filters.addFilter("Grouped filters", FilterType.FILTER_GROUP);
-//        filters.addFilter("Saturation", FilterType.SATURATION);
-//        filters.addFilter("Exposure", FilterType.EXPOSURE);
-//        filters.addFilter("Highlight Shadow", FilterType.HIGHLIGHT_SHADOW);
-//        filters.addFilter("Monochrome", FilterType.MONOCHROME);
-//        filters.addFilter("Opacity", FilterType.OPACITY);
-//        filters.addFilter("RGB", FilterType.RGB);
-//        filters.addFilter("White Balance", FilterType.WHITE_BALANCE);
-//        filters.addFilter("Vignette", FilterType.VIGNETTE);
-//        filters.addFilter("ToneCurve", FilterType.TONE_CURVE);
+//        filters.addCoverFilter("Contrast", FilterType.CONTRAST);
+//        filters.addCoverFilter("Invert", FilterType.INVERT);
+//        filters.addCoverFilter("Pixelation", FilterType.PIXELATION);
+//        filters.addCoverFilter("Hue", FilterType.HUE);
+//        filters.addCoverFilter("Gamma", FilterType.GAMMA);
+//        filters.addCoverFilter("Brightness", FilterType.BRIGHTNESS);
+//        filters.addCoverFilter("Sepia", FilterType.SEPIA);
+//        filters.addCoverFilter("Grayscale", FilterType.GRAYSCALE);
+//        filters.addCoverFilter("Sharpness", FilterType.SHARPEN);
+//        filters.addCoverFilter("Sobel Edge Detection", FilterType.SOBEL_EDGE_DETECTION);
+//        filters.addCoverFilter("3x3 Convolution", FilterType.THREE_X_THREE_CONVOLUTION);
+//        filters.addCoverFilter("Emboss", FilterType.EMBOSS);
+//        filters.addCoverFilter("Posterize", FilterType.POSTERIZE);
+//        filters.addCoverFilter("Grouped filters", FilterType.FILTER_GROUP);
+//        filters.addCoverFilter("Saturation", FilterType.SATURATION);
+//        filters.addCoverFilter("Exposure", FilterType.EXPOSURE);
+//        filters.addCoverFilter("Highlight Shadow", FilterType.HIGHLIGHT_SHADOW);
+//        filters.addCoverFilter("Monochrome", FilterType.MONOCHROME);
+//        filters.addCoverFilter("Opacity", FilterType.OPACITY);
+//        filters.addCoverFilter("RGB", FilterType.RGB);
+//        filters.addCoverFilter("White Balance", FilterType.WHITE_BALANCE);
+//        filters.addCoverFilter("Vignette", FilterType.VIGNETTE);
+//        filters.addCoverFilter("ToneCurve", FilterType.TONE_CURVE);
 
         filters.addFilter("Blend (Difference)", FilterType.BLEND_DIFFERENCE);
         filters.addFilter("Blend (Source Over)", FilterType.BLEND_SOURCE_OVER);
@@ -101,27 +101,27 @@ public class GPUImageFilterTools {
         filters.addFilter("Kuwahara", FilterType.KUWAHARA);
         filters.addFilter("RGB Dilation", FilterType.RGB_DILATION);
         filters.addFilter("Sketch", FilterType.SKETCH);
-//        filters.addFilter("Toon", FilterType.TOON);
-//        filters.addFilter("Smooth Toon", FilterType.SMOOTH_TOON);
-//        filters.addFilter("Halftone", FilterType.HALFTONE);
+//        filters.addCoverFilter("Toon", FilterType.TOON);
+//        filters.addCoverFilter("Smooth Toon", FilterType.SMOOTH_TOON);
+//        filters.addCoverFilter("Halftone", FilterType.HALFTONE);
 
-//        filters.addFilter("Bulge Distortion", FilterType.BULGE_DISTORTION);
-//        filters.addFilter("Glass Sphere", FilterType.GLASS_SPHERE);
-//        filters.addFilter("Haze", FilterType.HAZE);
-//        filters.addFilter("Laplacian", FilterType.LAPLACIAN);
-//        filters.addFilter("Non Maximum Suppression", FilterType.NON_MAXIMUM_SUPPRESSION);
-//        filters.addFilter("Sphere Refraction", FilterType.SPHERE_REFRACTION);
-//        filters.addFilter("Swirl", FilterType.SWIRL);
-//        filters.addFilter("Weak Pixel Inclusion", FilterType.WEAK_PIXEL_INCLUSION);
-//        filters.addFilter("False Color", FilterType.FALSE_COLOR);
+//        filters.addCoverFilter("Bulge Distortion", FilterType.BULGE_DISTORTION);
+//        filters.addCoverFilter("Glass Sphere", FilterType.GLASS_SPHERE);
+//        filters.addCoverFilter("Haze", FilterType.HAZE);
+//        filters.addCoverFilter("Laplacian", FilterType.LAPLACIAN);
+//        filters.addCoverFilter("Non Maximum Suppression", FilterType.NON_MAXIMUM_SUPPRESSION);
+//        filters.addCoverFilter("Sphere Refraction", FilterType.SPHERE_REFRACTION);
+//        filters.addCoverFilter("Swirl", FilterType.SWIRL);
+//        filters.addCoverFilter("Weak Pixel Inclusion", FilterType.WEAK_PIXEL_INCLUSION);
+//        filters.addCoverFilter("False Color", FilterType.FALSE_COLOR);
 //
-//        filters.addFilter("Color Balance", FilterType.COLOR_BALANCE);
+//        filters.addCoverFilter("Color Balance", FilterType.COLOR_BALANCE);
 //
-//        filters.addFilter("Levels Min (Mid Adjust)", FilterType.LEVELS_FILTER_MIN);
+//        filters.addCoverFilter("Levels Min (Mid Adjust)", FilterType.LEVELS_FILTER_MIN);
 //
-//        filters. addFilter("Bilateral Blur", FilterType.BILATERAL_BLUR);
+//        filters. addCoverFilter("Bilateral Blur", FilterType.BILATERAL_BLUR);
 //
-//        filters.addFilter("Transform (2-D)", FilterType.TRANSFORM2D);
+//        filters.addCoverFilter("Transform (2-D)", FilterType.TRANSFORM2D);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("选择一个滤镜");
@@ -393,7 +393,7 @@ public class GPUImageFilterTools {
 
             case LOOKUP_AMATORKA:
                 GPUImageLookupFilter amatorka = new GPUImageLookupFilter();
-                amatorka.setBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.lookup_amatorka));
+                amatorka.setBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.lookup_fugu));
                 return amatorka;
             case GAUSSIAN_BLUR:
                 return new GPUImageGaussianBlurFilter();

@@ -1,6 +1,4 @@
-package tech.qt.com.meishivideoeditsdk.camera.filter;
-
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+package tech.qt.com.meishivideoeditsdk.camera.filter.twoInput;
 
 /**
  * Created by chenchao on 2017/12/11.

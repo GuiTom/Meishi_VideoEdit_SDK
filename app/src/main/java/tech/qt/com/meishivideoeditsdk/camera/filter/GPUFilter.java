@@ -160,10 +160,15 @@ public class GPUFilter {
             GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
         }
         OpenGLUtils.checkGlError("1");
+        onInitialized();
         GLES20.glUseProgram(0);
 
     }
     protected void onDrawForeround() {}
+
+    protected void onInitialized() {
+
+    }
     public int getProgram() {
         return mProgramId;
     }
@@ -193,6 +198,14 @@ public class GPUFilter {
             @Override
             public void run() {
                 GLES20.glUniform1f(location, floatValue);
+            }
+        });
+    }
+    protected void setFloatVec3(final int location, final float[] arrayValue) {
+        runOnDraw(new Runnable() {
+            @Override
+            public void run() {
+                GLES20.glUniform3fv(location, 1, FloatBuffer.wrap(arrayValue));
             }
         });
     }
