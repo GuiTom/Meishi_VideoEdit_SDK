@@ -3,6 +3,7 @@ package tech.qt.com.meishivideoeditsdk.camera.filter.twoInput;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -23,13 +24,14 @@ public class GPUTowInputFilter extends GPUFilter {
 
 
     private Bitmap mBitmap;
+    private int mTexMatrix2Loc = -1;
 
     @Override
     protected String getVertexShader(){
         String vts
                 = "uniform mat4 uMVPMatrix;\n"
                 + "uniform mat4 uTexMatrix;\n"
-
+                + "uniform mat4 uTexMatrix2;\n"
                 + "attribute highp vec4 aPosition;\n"
                 + "attribute highp vec4 aTextureCoord;\n"
 
@@ -39,11 +41,11 @@ public class GPUTowInputFilter extends GPUFilter {
                 + "void main() {\n"
                 + "	gl_Position = uMVPMatrix * aPosition;\n"
                 + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
-                + "	vTextureCoord2 =  aTextureCoord.xy;\n"
+                + "	vTextureCoord2 =  (uTexMatrix2*uTexMatrix2*aTextureCoord).xy;\n"
                 + "}\n";
         return vts;
     }
-
+    protected float[] mTexMatrix2 = new float[16];
     private int mTexture2Loc = -1;
     private int mFilterSourceTexture2 = OpenGlUtils.NO_TEXTURE;
 
@@ -51,8 +53,10 @@ public class GPUTowInputFilter extends GPUFilter {
     public void init() {
         super.init();
         OpenGLUtils.checkGlError("a1");
+        mTexMatrix2Loc = GLES20.glGetUniformLocation(getProgram(),"uTexMatrix2");
         mTexture2Loc = GLES20.glGetUniformLocation(getProgram(), "sTexture2"); // This does assume a name of "inputImageTexture2" for second input texture in the fragment shader
         OpenGLUtils.checkGlError("a2");
+        Matrix.setIdentityM(mTexMatrix2,0);
 
     }
 
@@ -68,7 +72,7 @@ public class GPUTowInputFilter extends GPUFilter {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFilterSourceTexture2);
         OpenGLUtils.checkGlError("a5");
         GLES20.glUniform1i(mTexture2Loc, 3);
-
+        GLES20.glUniformMatrix4fv(mTexMatrix2Loc,1,false,mTexMatrix2,0);
         try {
             if (bitmaps != null) {
                 numFrames++;

@@ -1,5 +1,7 @@
 package tech.qt.com.meishivideoeditsdk.camera.filter.twoInput;
 
+import android.opengl.Matrix;
+
 /**
  * Created by chenchao on 2017/12/11.
  */
@@ -7,7 +9,25 @@ package tech.qt.com.meishivideoeditsdk.camera.filter.twoInput;
 public class GPUBlendScreenFilter extends GPUTowInputFilter {
 
 
+    @Override
+    protected String getVertexShader(){
+        String vts
+                = "uniform mat4 uMVPMatrix;\n"
+                + "uniform mat4 uTexMatrix;\n"
+                + "uniform mat4 uTexMatrix2;\n"
+                + "attribute highp vec4 aPosition;\n"
+                + "attribute highp vec4 aTextureCoord;\n"
 
+                + "varying highp vec2 vTextureCoord;\n"
+                + "varying highp vec2 vTextureCoord2;\n"
+                + "\n"
+                + "void main() {\n"
+                + "	gl_Position = uMVPMatrix * aPosition;\n"
+                + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
+                + "	vTextureCoord2 =  (uTexMatrix*uTexMatrix*aTextureCoord).xy;\n"
+                + "}\n";
+        return vts;
+    }
     protected String getFragmentShader(){
         String fgs//绘制视频层
         = "#extension GL_OES_EGL_image_external : require\n"
@@ -27,7 +47,12 @@ public class GPUBlendScreenFilter extends GPUTowInputFilter {
         return fgs;
     }
 
-
+    @Override
+    public void init(){
+        super.init();
+//        Matrix.rotateM(mTexMatrix2,0,180,0.0f,0.0f,1.0f);
+//         Matrix.setRotateM(mTexMatrix2,0,180,0.0f,0.0f,1.0f);
+    }
 
 
 }

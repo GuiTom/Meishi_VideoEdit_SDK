@@ -53,7 +53,7 @@ public class GPUFilterTool {
         filterList.addCoverFilter("无", "none");
         filterList.addCoverFilter("霓虹灯", "nihongdeng");
         filterList.addCoverFilter("七彩光","qicaiguang");
-        filterList.addCoverFilter("下雪了", "xiaxuele");
+//        filterList.addCoverFilter("下雪了", "xiaxuele");
         filterList.addCoverFilter("烟花", "yanhua");
         filterList.addCoverFilter("萤火虫", "yinghuochong");
         filterList.addCoverFilter("蝴蝶","hudie");
@@ -107,6 +107,9 @@ public class GPUFilterTool {
                                     e.printStackTrace();
                                 }
                             }
+                        }else {
+                            gpuTowInputFilter.setNeedRealse(true);
+                            gpuTowInputFilter = null;
                         }
                         gpuTowInputFilter.bitmaps = bitmaps;
                         listener.onGpuFilterChosenListener(gpuTowInputFilter);

@@ -151,9 +151,11 @@ public class GPUBeautyFilter extends GPUFilter {
     }
     @Override
     public void onDrawForeround(){
-//        super.onDrawForeround();
+
+        super.onDrawForeround();
         setParams(beautyLevel, toneLevel);
         setBrightLevel(brightLevel);
+
     }
     public void setBrightLevel(float brightLevel) {
         this.brightLevel = brightLevel;
@@ -171,6 +173,7 @@ public class GPUBeautyFilter extends GPUFilter {
         GLES20.glUniform4fv(paramsLocation, 1, FloatBuffer.wrap(vector));
 
     }
+
 //    public void setBeautyLevel(float beautyLevel) {
 //        this.beautyLevel = beautyLevel;
 //        setParams(beautyLevel, toneLevel);
