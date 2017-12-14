@@ -53,7 +53,7 @@ public class GPUFilterTool {
         filterList.addCoverFilter("无", "none");
         filterList.addCoverFilter("霓虹灯", "nihongdeng");
         filterList.addCoverFilter("七彩光","qicaiguang");
-//        filterList.addCoverFilter("下雪了", "xiaxuele");
+        filterList.addCoverFilter("下雪了", "xiaxuele");
         filterList.addCoverFilter("烟花", "yanhua");
         filterList.addCoverFilter("萤火虫", "yinghuochong");
         filterList.addCoverFilter("蝴蝶","hudie");
@@ -65,21 +65,24 @@ public class GPUFilterTool {
                     @Override
                     public void onClick(final DialogInterface dialog, final int item) {
                         ArrayList<Bitmap>bitmaps = null;
-//                        gpuTowInputFilter = new GPUBlendScreenFilter();
+
                         if(gpuTowInputFilter == null){
                             gpuTowInputFilter = new GPUBlendScreenFilter();
                         }else{
+                            gpuTowInputFilter.setNeedRealse(true);
                             bitmaps = gpuTowInputFilter.bitmaps;
-                        }
-
-                        int frameNum=60;
-                        gpuTowInputFilter.blockOverLay=true;
-                        if(bitmaps!=null&&bitmaps.size()>0){
-                            int size=bitmaps.size();
-                            for(Bitmap bitmap:bitmaps){
-                                bitmap.recycle();
+                            gpuTowInputFilter.blockOverLay=true;
+                            if(bitmaps!=null&&bitmaps.size()>0){
+                                int size=bitmaps.size();
+                                for(Bitmap bitmap:bitmaps){
+                                    bitmap.recycle();
+                                }
                             }
+                            gpuTowInputFilter = new GPUBlendScreenFilter();
+
                         }
+                        int frameNum=60;
+
 
                         bitmaps=null;
 
@@ -107,11 +110,13 @@ public class GPUFilterTool {
                                     e.printStackTrace();
                                 }
                             }
+                            gpuTowInputFilter.bitmaps = bitmaps;
+                            gpuTowInputFilter.blockOverLay=false;
                         }else {
                             gpuTowInputFilter.setNeedRealse(true);
                             gpuTowInputFilter = null;
+
                         }
-                        gpuTowInputFilter.bitmaps = bitmaps;
                         listener.onGpuFilterChosenListener(gpuTowInputFilter);
 
                     }

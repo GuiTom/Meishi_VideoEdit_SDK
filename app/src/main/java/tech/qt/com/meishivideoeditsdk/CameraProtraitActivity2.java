@@ -6,15 +6,18 @@ import android.opengl.GLSurfaceView;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
 
 import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
+import jp.co.cyberagent.android.gpuimage.GPUImageMovieWriter;
 import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import tech.qt.com.meishivideoeditsdk.camera.CameraWraper;
 import tech.qt.com.meishivideoeditsdk.camera.GLRender;
@@ -52,6 +55,9 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     private Camera.Size preViewSize;
     private int facingType;
     private String musicPath;
+    private TextView timeTextView;
+    private ImageButton captureButton;
+    private int realProgres;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +90,33 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
         glSurfaceView = (GLSurfaceView)findViewById(R.id.surfaceView);
         progressBar = (ProgressBar)findViewById(R.id.progressBar3);
+        timeTextView =(TextView)findViewById(R.id.timeTextView);
+        captureButton =(ImageButton)findViewById(R.id.imageButton14);
+        captureButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction()==MotionEvent.ACTION_DOWN){//按下
+                    if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
+                        if(mMovieWriter.outputVideoFile==null) {
+                            String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
+                            File file = new File(videoOutPutPath);
+                            if (file.exists()) {
+                                file.delete();
+                            }
+                            mMovieWriter.outputVideoFile = videoOutPutPath;
+                        }
+                        mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,musicPath);
+                        captureButton.setSelected(!captureButton.isSelected());
+                    }
+
+                }else if(event.getAction()==MotionEvent.ACTION_UP){//抬起
+                    mMovieWriter.stopRecording();
+                    captureButton.setSelected(!captureButton.isSelected());
+                }
+
+                return false;
+            }
+        });
     }
 
     private void openCamera() {
@@ -111,11 +144,16 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
         mMovieWriter.recordCallBack = new MovieWriter.RecordCallBack() {
             @Override
             public void onRecordProgress(final float progress) {
+
+                realProgres=(int)(progress*progressBar.getMax());
+                final long timeSeconds = mMovieWriter.maxDuration*realProgres/100;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        int _progress =(int)(progress * progressBar.getMax());
-                        progressBar.setProgress(_progress);
+//                        Log.e("reprogress",String.valueOf(realProgres));
+                        progressBar.setProgress(realProgres);
+
+                        timeTextView.setText(String.format("%02d",timeSeconds/60)+":"+String.format("%02d",timeSeconds%60));
                     }
                 });
             }
@@ -174,6 +212,10 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
                 }
                 break;
             case R.id.imageButton15://回删
+                if(mMovieWriter.recordStatus != MovieWriter.RecordStatus.Stoped) {
+//                    Toast.makeText(t"请先停止拍摄再进行次操作",Toast.LENGTH_LONG);
+                   return;
+                }
                 mMovieWriter.fallBack();
                 break;
             case R.id.imageButton16://结束录制
@@ -267,7 +309,9 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
         if(gpuBeautyFilter!=null){
             gpuBeautyFilter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);
-            gpuGourpFilter.addFilter(gpuBeautyFilter);
+            if(gpuCommonFilter == null&&gpuBlendScreenFilter==null) {
+                gpuGourpFilter.addFilter(gpuBeautyFilter);
+            }
         }
         if(gpuCommonFilter!=null){
             gpuCommonFilter.setFirstLayer(gpuGourpFilter.getFilterCount() == 0);

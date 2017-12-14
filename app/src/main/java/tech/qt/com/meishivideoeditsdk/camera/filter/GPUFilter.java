@@ -101,6 +101,7 @@ public class GPUFilter {
         mRunOnDraw = new LinkedList<Runnable>();
         if(mProgramId > 0){
             GLES20.glDeleteProgram(mProgramId);
+            mProgramId = -1;
         }
         mProgramId = OpenGLUtils.loadShader(mVertexShader,mFragmentShader);
 
@@ -114,10 +115,15 @@ public class GPUFilter {
         pTexCoord.flip();
         GLES20.glUseProgram(mProgramId);
         mMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uMVPMatrix");
+        OpenGLUtils.checkGlError("a1.5");
         mPositionLoc = GLES20.glGetAttribLocation(mProgramId,"aPosition");
+        OpenGLUtils.checkGlError("a1.4");
         mTexMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uTexMatrix");
+        OpenGLUtils.checkGlError("a1.3");
         mTextureCoordLoc = GLES20.glGetAttribLocation(mProgramId,"aTextureCoord");
+        OpenGLUtils.checkGlError("a1.2");
         mTextureLoc = GLES20.glGetUniformLocation(mProgramId,"sTexture");
+        OpenGLUtils.checkGlError("a1.1");
 
     }
     public void onDrawFrame(int textureId, SurfaceTexture st, int mViewWidth, int mViewHeight){
@@ -168,7 +174,8 @@ public class GPUFilter {
             GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, 0);
         }
         OpenGLUtils.checkGlError("1");
-
+        GLES20.glDisableVertexAttribArray(mPositionLoc);
+        GLES20.glDisableVertexAttribArray(mTextureCoordLoc);
         GLES20.glUseProgram(0);
          if(needRealse){
              release();
@@ -191,6 +198,10 @@ public class GPUFilter {
         }
     }
     protected void release(){
+        if(mProgramId > 0){
+            GLES20.glDeleteProgram(mProgramId);
+            mProgramId = -1;
+        }
 
     }
     protected void runOnDraw(final Runnable runnable) {

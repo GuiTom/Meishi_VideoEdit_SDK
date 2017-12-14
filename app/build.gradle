@@ -7,9 +7,9 @@ android {
         //读写权限居然跟包名有关系，醉了
         applicationId "com.qt.tech"
         minSdkVersion 18
-        targetSdkVersion 21
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 23
+        versionCode 3
+        versionName "1.1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     sourceSets {

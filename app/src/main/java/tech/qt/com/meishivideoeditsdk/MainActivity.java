@@ -1,8 +1,13 @@
 package tech.qt.com.meishivideoeditsdk;
 
+import android.*;
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,14 +19,15 @@ import tech.qt.com.meishivideoeditsdk.wiget.Group;
 import tech.qt.com.meishivideoeditsdk.wiget.Item;
 import tech.qt.com.meishivideoeditsdk.wiget.MyBaseExpandableListAdapter;
 
-public class MainActivity extends Activity {
-
+public class MainActivity extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA= 0;
     private ArrayList<Group> gData = null;
     private ArrayList<ArrayList<Item>> iData = null;
     private ArrayList<Item> lData = null;
     private Context mContext;
     private ExpandableListView exlist_lol;
     private MyBaseExpandableListAdapter myAdapter = null;
+    private int mChildPosition;
 
 
     @Override
@@ -67,15 +73,7 @@ public class MainActivity extends Activity {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 //                Toast.makeText(mContext, "你点击了：" + iData.get(groupPosition).get(childPosition).getiName(), Toast.LENGTH_SHORT).show();
                 if(groupPosition==0){
-                    if(childPosition==0){
-                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
-                        intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
-                        startActivity(intent);
-                    }else if(childPosition==1){
-                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
-                        intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
-                        startActivity(intent);
-                    }
+                    reqPermission(Manifest.permission.CAMERA,groupPosition);
                 }else if(groupPosition==1) {
                     if(childPosition==0){
                         Intent intent=new Intent(MainActivity.this,VideoJoinActivity.class);
@@ -90,6 +88,74 @@ public class MainActivity extends Activity {
         });
 
 
+    }
+    @TargetApi(23)
+    public void reqPermission(String permission,int childPosition){
+        mChildPosition = childPosition;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
+            //检查目前是否有权限
+            if (checkSelfPermission(permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                if (shouldShowRequestPermissionRationale(
+                        permission)) {
+                    // 这里写一些向用户解释为什么我们需要读取联系人的提示得代码
+                }
+
+                //请求权限，系统会显示一个获取权限的提示对话框，当前应用不能配置和修改这个对话框
+                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,permission},
+                        MY_PERMISSIONS_REQUEST_CAMERA);
+
+                return;
+            }else {
+                if(childPosition==0){
+                    Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
+                    intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
+                    startActivity(intent);
+                }else if(childPosition==1){
+                    Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
+                    intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
+                    startActivity(intent);
+                }
+            }
+
+        }else {
+            if(childPosition==0){
+                Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
+                intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
+                startActivity(intent);
+            }else if(childPosition==1){
+                Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
+                intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
+                startActivity(intent);
+            }
+        }
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_CAMERA: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // 授权成功
+                    if(mChildPosition==0){
+                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
+                        intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
+                        startActivity(intent);
+                    }else if(mChildPosition==1){
+                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
+                        intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
+                        startActivity(intent);
+                    }
+                } else {
+                    // 授权失败
+                }
+                return;
+            }
+
+        }
     }
 
 }
