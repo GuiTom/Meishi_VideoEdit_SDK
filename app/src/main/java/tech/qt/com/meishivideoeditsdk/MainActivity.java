@@ -2,12 +2,15 @@ package tech.qt.com.meishivideoeditsdk;
 
 import android.*;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -29,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private MyBaseExpandableListAdapter myAdapter = null;
     private int mChildPosition;
 
-
+    public static int videoProtrait=0;
+    public static int videoLandscape=1;
+    public static int videoSquare=2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,8 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
         //录制
         lData.add(new Item("竖屏"));
-        lData.add(new Item("竖屏(老版)"));
-
+        lData.add(new Item("横屏"));
+        lData.add(new Item("方形"));
 
         iData.add(lData);
         //后期处理
@@ -73,7 +78,19 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 //                Toast.makeText(mContext, "你点击了：" + iData.get(groupPosition).get(childPosition).getiName(), Toast.LENGTH_SHORT).show();
                 if(groupPosition==0){
-                    reqPermission(Manifest.permission.CAMERA,groupPosition);
+                    if(childPosition==0){
+                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
+                        intent.putExtra("videoType", videoProtrait);
+                        startActivity(intent);
+                    }else if(childPosition==1){
+                        Intent intent=new Intent(MainActivity.this,CameraLandscapeActivity.class);
+                        intent.putExtra("videoType", videoLandscape);
+                        startActivity(intent);
+                    }else if(childPosition==2){
+                        Intent intent=new Intent(MainActivity.this,CameraSquareActivity.class);
+                        intent.putExtra("videoType", videoSquare);
+                        startActivity(intent);
+                    }
                 }else if(groupPosition==1) {
                     if(childPosition==0){
                         Intent intent=new Intent(MainActivity.this,VideoJoinActivity.class);
@@ -87,75 +104,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+//        View button = findViewById(R.id.async_task);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override public void onClick(View v) {
+//                startAsyncTask();
+//            }
+//        });
     }
-    @TargetApi(23)
-    public void reqPermission(String permission,int childPosition){
-        mChildPosition = childPosition;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-            //检查目前是否有权限
-            if (checkSelfPermission(permission)
-                    != PackageManager.PERMISSION_GRANTED) {
 
-                if (shouldShowRequestPermissionRationale(
-                        permission)) {
-                    // 这里写一些向用户解释为什么我们需要读取联系人的提示得代码
-                }
 
-                //请求权限，系统会显示一个获取权限的提示对话框，当前应用不能配置和修改这个对话框
-                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE,permission},
-                        MY_PERMISSIONS_REQUEST_CAMERA);
-
-                return;
-            }else {
-                if(childPosition==0){
-                    Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
-                    intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
-                    startActivity(intent);
-                }else if(childPosition==1){
-                    Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
-                    intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
-                    startActivity(intent);
-                }
-            }
-
-        }else {
-            if(childPosition==0){
-                Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
-                intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
-                startActivity(intent);
-            }else if(childPosition==1){
-                Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
-                intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
-                startActivity(intent);
-            }
-        }
-
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_CAMERA: {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // 授权成功
-                    if(mChildPosition==0){
-                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity2.class);
-                        intent.putExtra("videoType", CameraProtraitActivity.videoProtrait);
-                        startActivity(intent);
-                    }else if(mChildPosition==1){
-                        Intent intent=new Intent(MainActivity.this,CameraProtraitActivity.class);
-                        intent.putExtra("videoType", CameraProtraitActivity.videoLandscape);
-                        startActivity(intent);
-                    }
-                } else {
-                    // 授权失败
-                }
-                return;
-            }
-
-        }
-    }
+//    @SuppressLint("StaticFieldLeak")
+//    void startAsyncTask() {
+//        // This async task is an anonymous class and therefore has a hidden reference to the outer
+//        // class MainActivity. If the activity gets destroyed before the task finishes (e.g. rotation),
+//        // the activity instance will leak.
+//        new AsyncTask<Void, Void, Void>() {
+//            @Override protected Void doInBackground(Void... params) {
+//                // Do some slow work in background
+//                SystemClock.sleep(20000);
+//                return null;
+//            }
+//        }.execute();
+//    }
 
 }

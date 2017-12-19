@@ -55,9 +55,7 @@ public class CameraProtraitActivity extends Activity {
     private ProgressBar progressBar;
     private SeekBar filterSeekBar;
 
-    public static int videoProtrait=0;
-    public static int videoLandscape=1;
-    public static int videoSquare=2;
+
     private int videoDegree;
     private int videoHeight;
     private int videoWidth;
@@ -86,15 +84,15 @@ public class CameraProtraitActivity extends Activity {
         Intent intent=getIntent();
         int videoShapeType=intent.getIntExtra("videoType",0);
         videoDegree=0;
-        if(videoShapeType==videoProtrait){
+        if(videoShapeType==MainActivity.videoProtrait){
             videoDegree=0;
             videoWidth=540;
             videoHeight=960;
-        }else if(videoShapeType==videoLandscape){
+        }else if(videoShapeType==MainActivity.videoLandscape){
             videoDegree=90;
             videoWidth=540;
             videoHeight=960;
-        }else if(videoShapeType==videoSquare){
+        }else if(videoShapeType==MainActivity.videoSquare){
             videoDegree=0;
             videoWidth=videoHeight=540;
         }

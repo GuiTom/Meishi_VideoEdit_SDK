@@ -22,6 +22,9 @@ public class GPUFilter {
     //samplerExternalOES|sampler2D
     protected String samplerTypeValue ="sampler2D";
     private SamplerType mSamplerType;
+    private float texTureHeight = -1;
+    private float texTureWidth = -1;
+    private boolean isSquare;
 
     public void setNeedRealse(boolean needRealse) {
         this.needRealse = needRealse;
@@ -55,7 +58,7 @@ public class GPUFilter {
         return vts;
     }
     protected String getFragmentShader(){
-        String fgs//绘制视频层的
+        String fgs
                 = "#extension GL_OES_EGL_image_external : require\n"
                 + "precision mediump float;\n"
                 + "uniform "+samplerTypeValue+" sTexture;\n"
@@ -72,8 +75,8 @@ public class GPUFilter {
     protected String mVertexShader;
     protected String mFragmentShader;
 
-    protected final float[] VERTICES = { 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f };
-    protected final float[] TEXCOORD = { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
+    protected float[] VERTICES = { 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f };
+    protected float[] TEXCOORD = { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
 
     protected final int FLOAT_SZ = Float.SIZE / 8;
     protected final int VERTEX_NUM = 4;
@@ -83,7 +86,7 @@ public class GPUFilter {
     private final float[] mTexMatrix = new float[16];
     private int mProgramId = -1;
 
-
+//    private boolean isInintalized = false;
     private int mMVPMatrixLoc = -1;
     private int mPositionLoc = -1;
     private int mTexMatrixLoc = -1;
@@ -109,10 +112,7 @@ public class GPUFilter {
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         pVertex.put(VERTICES);
         pVertex.flip();
-        pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
-                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-        pTexCoord.put(TEXCOORD);
-        pTexCoord.flip();
+        setTextureCoord(texTureWidth,texTureHeight,isSquare);
         GLES20.glUseProgram(mProgramId);
         mMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uMVPMatrix");
         OpenGLUtils.checkGlError("a1.5");
@@ -126,7 +126,51 @@ public class GPUFilter {
         OpenGLUtils.checkGlError("a1.1");
 
     }
+
+//    public void setSquare(){
+//
+//        for(int i=0;i<16;i++){
+//            float f = TEXCOORD[i];
+//        }
+//        pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
+//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+//        pTexCoord.put(TEXCOORD);
+//        pTexCoord.flip();
+//    }
+    public void setTexureSize(float width,float height,boolean isSquare){
+        texTureWidth = width;
+        texTureHeight = height;
+        this.isSquare = isSquare;
+
+    }
+
+    private void setTextureCoord(float width, float height, boolean isSquare) {
+        if(isSquare){
+            if(width>height){
+                float y1 = ((width - height)/width)/2;
+                float y2 = y1 + height/width;
+//                { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f }
+
+                float [] fs = { 1.0f,y2,0.0f,y2,1.0f,y1,0.0f,y1};
+
+                pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
+                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                pTexCoord.put(fs);
+                pTexCoord.flip();
+            }else {
+                float y1 = ((height - width)/height)/2;
+                float y2 = y1 + width/height;
+                float [] fs = { y2, 1.0f, y1, 1.0f, y2, 0.0f, 0.0f, y1 };
+                pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
+                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                pTexCoord.put(fs);
+                pTexCoord.flip();
+            }
+        }
+    }
+
     public void onDrawFrame(int textureId, SurfaceTexture st, int mViewWidth, int mViewHeight){
+//        if(isInintalized == false) return;
         OpenGLUtils.checkGlError("3.3");
         runPendingOnDrawTasks();
         OpenGLUtils.checkGlError("3.2");

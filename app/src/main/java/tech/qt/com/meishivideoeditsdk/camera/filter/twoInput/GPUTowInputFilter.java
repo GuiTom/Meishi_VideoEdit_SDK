@@ -115,7 +115,7 @@ public class GPUTowInputFilter extends GPUFilter {
                         return;
                     }
                     GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
-//                    mBitmap.eraseColor(Color.alpha(0));
+
                     mFilterSourceTexture2 = OpenGlUtils.loadTexture(bitmap, OpenGlUtils.NO_TEXTURE, false);
                 }
             }
