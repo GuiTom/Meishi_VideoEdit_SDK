@@ -6,6 +6,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.IOException;
@@ -116,7 +117,16 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
         mViewHeight  = i1;
         GLES20.glViewport(0,0,i,i1);
     }
+    public void release(){
+        if(mSurfaceTexture!=null){
+            mSurfaceTexture.setOnFrameAvailableListener(null);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                mSurfaceTexture.releaseTexImage();
+            }
 
+            mSurfaceTexture = null;
+        }
+    }
     @Override
     public void onDrawFrame(GL10 gl10) {
         mSurfaceTexture.updateTexImage();

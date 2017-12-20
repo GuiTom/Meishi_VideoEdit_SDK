@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageLookupFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageLookupFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.twoInput.GPUBlendScreenFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.twoInput.GPUGrayScaleFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.twoInput.GPULookupFilter;

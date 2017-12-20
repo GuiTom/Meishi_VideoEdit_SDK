@@ -342,5 +342,10 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
 
         CameraManager.getManager().onPause();
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CameraManager.getManager().onDestory();
+    }
 
 }

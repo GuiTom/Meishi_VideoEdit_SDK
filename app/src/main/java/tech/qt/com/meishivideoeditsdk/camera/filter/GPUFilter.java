@@ -10,8 +10,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.LinkedList;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
 import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
 
 /**

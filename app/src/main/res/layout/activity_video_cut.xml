@@ -21,8 +21,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="选择视频" />
-
+        android:text="选择一个视频" />
+    <!--<SeekBar-->
+        <!--android:id="@+id/startTimeSeekBar"-->
+        <!--style="@android:style/Widget.SeekBar"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="200dp"-->
+        <!--/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/startTimeText"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:text="00:00"-->
+        <!--/>-->
+    <!--<SeekBar-->
+        <!--android:id="@+id/endTimeSeekBar"-->
+        <!--style="@android:style/Widget.SeekBar"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="200dp"-->
+        <!--/>-->
+    <!--<TextView-->
+        <!--android:id="@+id/endTimeText"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:text="00:00"-->
+        />
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -31,19 +58,20 @@
         android:layout_gravity="center_horizontal"
         android:progress="0" />
 
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="开始" />
     <Button
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:enabled="false"
-        android:text="cancel" />
-    <Button
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="start" />
+        android:text="取消" />
     <ListView
         android:id="@+id/myList"
         android:layout_width="match_parent"

@@ -6,12 +6,13 @@ import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+//import java.nio.ByteBuffer;
+//import java.nio.ByteOrder;
+//import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
+//import jp.co.cyberagent.android.gpuimage.OpenGlUtils;
 import jp.co.cyberagent.android.gpuimage.OpenGlUtils;
 import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;

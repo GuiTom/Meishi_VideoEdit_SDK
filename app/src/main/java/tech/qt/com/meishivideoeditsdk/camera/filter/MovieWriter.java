@@ -20,7 +20,7 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageMovieWriter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageMovieWriter;
 import jp.co.cyberagent.android.gpuimage.encoder.EglCore;
 import jp.co.cyberagent.android.gpuimage.encoder.MediaAudioEncoder;
 import jp.co.cyberagent.android.gpuimage.encoder.MediaEncoder;
@@ -28,6 +28,7 @@ import jp.co.cyberagent.android.gpuimage.encoder.MediaMuxerWrapper;
 import jp.co.cyberagent.android.gpuimage.encoder.MediaVideoEncoder;
 import jp.co.cyberagent.android.gpuimage.encoder.WindowSurface;
 import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
+import transcoder.IListener;
 import transcoder.VideoTranscoder;
 
 /**
@@ -293,7 +294,7 @@ public class MovieWriter extends GPUFilter {
             return;
         }
         VideoTranscoder.getInstance().transcodeVideo(mContext, uriList, outputVideoFile,
-                null, null, true, new VideoTranscoder.Listener() {
+                null, null, true, new IListener() {
                     @Override
                     public void onTranscodeProgress(double v) {
 

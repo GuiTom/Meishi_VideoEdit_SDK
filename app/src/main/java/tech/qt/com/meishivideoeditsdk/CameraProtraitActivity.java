@@ -32,6 +32,7 @@ import jp.co.cyberagent.android.gpuimage.GPUImageFilterGroup;
 import jp.co.cyberagent.android.gpuimage.GPUImageMovieWriter;
 import jp.co.cyberagent.android.gpuimage.GPUImageOverlayBlendFilter;
 import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
+import tech.qt.com.meishivideoeditsdk.camera.CameraManager;
 import utils.CameraHelper;
 import utils.CameraLoader;
 import utils.FileUtils;
@@ -120,6 +121,8 @@ public class CameraProtraitActivity extends Activity {
             mMovieWriter.stopRecording();
         }
     }
+
+
 
     private void initCamera() {
         mGPUImage = new GPUImage(this);

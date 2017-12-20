@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         gData = new ArrayList<Group>();
         iData = new ArrayList<ArrayList<Item>>();
         gData.add(new Group("录制"));
-//        gData.add(new Group("后期编辑"));
+        gData.add(new Group("后期编辑"));
 
 
         lData = new ArrayList<Item>();
@@ -61,8 +61,9 @@ public class MainActivity extends AppCompatActivity {
         //后期处理
         lData = new ArrayList<Item>();
         lData.add(new Item("视频拼接"));
-        lData.add(new Item("视频截取(时间轴)"));
-//        iData.add(lData);
+        lData.add(new Item("视频截取"));
+        lData.add(new Item("视频加字幕、动画"));
+        iData.add(lData);
 
 
         myAdapter = new MyBaseExpandableListAdapter(gData,iData,mContext);
@@ -97,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }else if(childPosition==1){
                         Intent intent=new Intent(MainActivity.this,VideoCutActivity.class);
+                        startActivity(intent);
+                    }else if(childPosition==2){
+                        Intent intent=new Intent(MainActivity.this,VideoEffectActivity.class);
                         startActivity(intent);
                     }
                 }

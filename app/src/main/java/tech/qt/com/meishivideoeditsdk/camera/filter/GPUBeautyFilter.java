@@ -4,10 +4,10 @@ import android.opengl.GLES20;
 
 import java.nio.FloatBuffer;
 
-import jp.co.cyberagent.android.gpuimage.GPUImage;
-import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImage;
+//import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageScreenBlendFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageTwoInputFilter;
 
 /**
  * Created by chenchao on 2017/12/8.

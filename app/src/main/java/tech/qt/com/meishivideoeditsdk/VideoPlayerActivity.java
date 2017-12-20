@@ -31,9 +31,12 @@ public class VideoPlayerActivity extends Activity {
         vv_video.setVideoPath(dstMediaPath);
 
         vv_video.setMediaController(mController);
+//        vv_video.showContextMenu();
 
         mController.setMediaPlayer(vv_video);
+//        mController.setVisibility(View.VISIBLE);
         vv_video.start();
+
         mController.setPrevNextListeners(new View.OnClickListener() {
 
             @Override

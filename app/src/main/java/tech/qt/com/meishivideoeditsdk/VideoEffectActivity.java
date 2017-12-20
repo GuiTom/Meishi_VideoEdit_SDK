@@ -6,12 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaMetadataRetriever;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -22,55 +25,55 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.concurrent.Future;
-
-
+//import transcoder.SystemUtil;
 import transcoder.IListener;
 import transcoder.VideoTranscoder;
 import transcoder.engine.EffectLayer;
 import transcoder.engine.MediaTranscoder;
-//import transcoder.engine.QTTimeRange;
-//import transcoder.engine.displayObject.Animation;
-//import transcoder.engine.displayObject.AnimationBitmap;
-//import transcoder.engine.displayObject.AnimationText;
 import transcoder.engine.displayObject.Animation;
 import transcoder.engine.displayObject.AnimationBitmap;
 import transcoder.engine.displayObject.AnimationText;
 import transcoder.format.MediaPreSet;
-//import transcoder.format.Size;
-import transcoder.format.QTTimeRange;
 import transcoder.format.Size;
+import utils.FileUtils;
 import utils.MetaInfoUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import static android.widget.ImageView.ScaleType.FIT_CENTER;
 
-public class VideoCutActivity extends Activity {
+
+public class VideoEffectActivity extends Activity {
     private static final String TAG = "VideoJoinActivity";
-    private static final String FILE_PROVIDER_AUTHORITY = "net.ypresto.androidtranscoder.example.fileprovider";
+    //    private static final String FILE_PROVIDER_AUTHORITY = "net.ypresto.androidtranscoder.example.fileprovider";
     private static final int REQUEST_CODE_PICK = 1;
     private static final int PROGRESS_BAR_MAX = 1000;
     private Future<Void> mFuture;
     private long startTime;
-    private ArrayList<Uri> fileUris;
-    //    private ArrayList<ParcelFileDescriptor>parcelFileDescriptors;
+    private ArrayList<Uri>fileUris;
+
     private String dstMediaPath;
     private File outFile=null;
     private ArrayList<MetaInfo> listItems;
     private ListView list;
     private ArrayList<LinearLayout> cellList;
+    private ArrayList<AnimationBitmap> animationBitmaps;
+    private ArrayList<AnimationText> animationTexts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_cut);
+        setContentView(R.layout.activity_videojoin);
         list=(ListView)findViewById(R.id.myList);
         findViewById(R.id.select_video_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType("video/*"), REQUEST_CODE_PICK);
             }
         });
@@ -87,8 +90,15 @@ public class VideoCutActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                if(fileUris==null||fileUris.size()<1){
-                    Toast.makeText(getApplicationContext(),"请选择1个视频",Toast.LENGTH_SHORT);
+
+                if(fileUris==null){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(VideoEffectActivity.this,"请选择需要添加字幕或动画的视频",Toast.LENGTH_LONG).show();
+                        }
+                    });
+
                     return;
                 }
                 startTime = SystemClock.uptimeMillis();
@@ -103,29 +113,22 @@ public class VideoCutActivity extends Activity {
                 mediaPreSet.audioBitRate=128*1000;
                 mediaPreSet.audioSampleRate=48*1000;
                 mediaPreSet.audioChannelCount=2;
-                mediaPreSet.timeRange=new QTTimeRange(0,getTotalDuration()/2);
 
-//                           //设置遮罩
-//                String borderPath= Environment.getExternalStorageDirectory()+"/border1";
-//                setUpBorderAnimation(borderPath,20,30);
 
-//                setUpTextAnimation();
+                String borderPath= Environment.getExternalStorageDirectory()+"/border";
+                FileUtils.copyFilesFassets(getApplicationContext(),"border",borderPath);
+
+                setUpBorderAnimation(borderPath,20,30);
+                setUpTextAnimation();
 
 
 
                 dstMediaPath= new File(Environment.getExternalStorageDirectory(),"outPut.mp4").getAbsolutePath();
                 EffectLayer effectLayer = new EffectLayer();
-//                effectLayer.animationBitmaps = this.animationBitmaps;
-//                effectLayer.animationTexts = this.animationTexts;
+                effectLayer.animationBitmaps = animationBitmaps;
+                effectLayer.animationTexts = animationTexts;
                 effectLayer.getTimeRange();
-
-                dstMediaPath= new File(Environment.getExternalStorageDirectory(),"outPut.mp4").getAbsolutePath();
-//                try {
-                    MediaTranscoder.get_instance().transcodeFromSource(getApplicationContext(),fileUris,dstMediaPath,mediaPreSet,false,listener);
-//                } catch (IOException e) {
-//                    Log.e("trascode",Log.getStackTraceString(e));
-//                }
-//                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer, listener);
+                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer,false, listener);
                 switchButtonEnabled(true);
             }
         });
@@ -133,16 +136,7 @@ public class VideoCutActivity extends Activity {
         setupListView();
 
     }
-    private long getTotalDuration(){
-        long timeLength = 0;
-        for(Uri uri:fileUris){
-            MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-            mediaMetadataRetriever.setDataSource(getApplicationContext(),uri);
-            String length = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            timeLength += Integer.valueOf(length).longValue()*1000;
-        }
-        return timeLength;
-    }
+
     private void setupListView() {
         listItems = new ArrayList<MetaInfo>();
         cellList=new ArrayList<LinearLayout>();
@@ -175,23 +169,23 @@ public class VideoCutActivity extends Activity {
                 if(position>cellList.size()-1){
                     MetaInfo metaInfo=listItems.get(position);
                     // 创建一个LinearLayout，并向其中添加两个组件
-                    line = new LinearLayout(VideoCutActivity.this);
+                    line = new LinearLayout(VideoEffectActivity.this);
                     line.setOrientation(LinearLayout.HORIZONTAL);
-                    ImageView image = new ImageView(VideoCutActivity.this);
+                    ImageView image = new ImageView(VideoEffectActivity.this);
                     image.setLayoutParams(new LinearLayout.LayoutParams(200,200));
                     image.setScaleType(FIT_CENTER);
                     image.setImageBitmap(metaInfo.thumbnail);
 
                     line.addView(image);
-                    LinearLayout right = new LinearLayout(VideoCutActivity.this);
+                    LinearLayout right = new LinearLayout(VideoEffectActivity.this);
                     right.setOrientation(LinearLayout.VERTICAL);
-                    TextView text = new TextView(VideoCutActivity.this);
+                    TextView text = new TextView(VideoEffectActivity.this);
                     text.setText("时长:"+metaInfo.durationMS/1000);
                     text.setTextSize(20);
                     text.setTextColor(Color.GRAY);
                     right.addView(text);
 
-                    TextView text2 = new TextView(VideoCutActivity.this);
+                    TextView text2 = new TextView(VideoEffectActivity.this);
                     text2.setText("尺寸:"+metaInfo.videoWidth+"x"+metaInfo.videoHeight);
                     text2.setTextSize(20);
                     text2.setTextColor(Color.GRAY);
@@ -234,11 +228,14 @@ public class VideoCutActivity extends Activity {
             }
         }
 
-        animation.duration=(float)20/30;
+        animation.duration=(float)1/frameRate;
         animation.repeatCount=10000;
         animations.add(animation);
         animationBitmap.animations=animations;
-        MediaTranscoder.get_instance().animationBitmaps.add(animationBitmap);
+        if(animationBitmaps == null) {
+            animationBitmaps = new ArrayList<>();
+        }
+        animationBitmaps.add(animationBitmap);
     }
     private void setUpTextAnimation() {
         AnimationText animationText=new AnimationText();
@@ -286,7 +283,10 @@ public class VideoCutActivity extends Activity {
         animations.add(fontSizeAnimation);
 
         animationText.animations=animations;
-        MediaTranscoder.get_instance().animationTexts.add(animationText);
+        if(animationTexts == null) {
+            animationTexts = new ArrayList<>();
+        }
+        animationTexts.add(animationText);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -294,13 +294,13 @@ public class VideoCutActivity extends Activity {
             case REQUEST_CODE_PICK: {
 
                 if (resultCode == RESULT_OK) {
-//                    if(fileUris==null){
+                    if(fileUris==null){
                         fileUris=new ArrayList<>();
-//                    }
+                    }
                     fileUris.add(data.getData());
                     Uri uri=data.getData();
                     MetaInfo metaInfo= MetaInfoUtil.getMediaInfo(getApplicationContext(),uri);
-                    listItems=new ArrayList<MetaInfo>();
+
                     listItems.add(metaInfo);
                     BaseAdapter baseAdapter = (BaseAdapter) list.getAdapter();
                     baseAdapter.notifyDataSetChanged();
@@ -341,14 +341,15 @@ public class VideoCutActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     ((TextView)findViewById(R.id.timeView)).setText("timeUse:"+(SystemClock.uptimeMillis() - startTime)/1000);
                 }
             });
 
-            Intent intent=new Intent(VideoCutActivity.this,VideoPlayerActivity.class);
+            Intent intent=new Intent(VideoEffectActivity.this,VideoPlayerActivity.class);
             intent.putExtra("videoPath",dstMediaPath);
             startActivity(intent);
-            onTranscodeFinished(false, "转码完毕");
+
         }
 
         @Override
@@ -367,32 +368,21 @@ public class VideoCutActivity extends Activity {
 
 
 
-    private void onTranscodeFinished(final boolean isSuccess, final String toastMessage) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
-                progressBar.setIndeterminate(false);
-                progressBar.setProgress(isSuccess ? PROGRESS_BAR_MAX : 0);
-                switchButtonEnabled(false);
+    private void onTranscodeFinished(boolean isSuccess, String toastMessage) {
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setIndeterminate(false);
+        progressBar.setProgress(isSuccess ? PROGRESS_BAR_MAX : 0);
+        switchButtonEnabled(false);
 
-                Toast.makeText(VideoCutActivity.this, toastMessage, Toast.LENGTH_LONG).show();
-            }
-        });
-
+        Toast.makeText(VideoEffectActivity.this, toastMessage, Toast.LENGTH_LONG).show();
 
     }
 
-    private void switchButtonEnabled(final boolean isProgress) {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                findViewById(R.id.select_video_button2).setEnabled(!isProgress);
-//                findViewById(R.id.cancel_button2).setEnabled(isProgress);
-//                findViewById(R.id.start_button2).setEnabled(isProgress);
-//            }
-//        });
-
+    private void switchButtonEnabled(boolean isProgress) {
+        findViewById(R.id.select_video_button).setEnabled(!isProgress);
+        findViewById(R.id.cancel_button).setEnabled(isProgress);
 
     }
+
+
 }

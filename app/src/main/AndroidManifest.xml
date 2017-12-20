@@ -7,7 +7,6 @@
 
     <!-- 语音录音 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <permission
@@ -55,12 +54,14 @@
         <activity
             android:name=".VideoPlayerActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".VideoCutActivity"
+        <activity
+            android:name=".VideoCutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CameraProtraitActivity2"
             android:screenOrientation="portrait"
-            />
-        <activity android:name=".CameraProtraitActivity2"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".VideoEffectActivity"></activity>
     </application>
 
 </manifest>

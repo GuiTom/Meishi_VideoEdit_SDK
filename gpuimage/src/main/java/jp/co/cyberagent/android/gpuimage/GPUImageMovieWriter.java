@@ -27,9 +27,11 @@ import jp.co.cyberagent.android.gpuimage.encoder.MediaEncoder;
 import jp.co.cyberagent.android.gpuimage.encoder.MediaMuxerWrapper;
 import jp.co.cyberagent.android.gpuimage.encoder.MediaVideoEncoder;
 import jp.co.cyberagent.android.gpuimage.encoder.WindowSurface;
+import transcoder.IListener;
 import transcoder.VideoTranscoder;
+//import transcoder.VideoTranscoder;
 
-import static android.content.Context.MODE_PRIVATE;
+//import static android.content.Context.MODE_PRIVATE;
 
 @TargetApi(18)
 public class GPUImageMovieWriter extends GPUImageFilter {
@@ -280,7 +282,7 @@ public class GPUImageMovieWriter extends GPUImageFilter {
             file.delete();
         }
         VideoTranscoder.getInstance().transcodeVideo(mContext, uriList, outputVideoFile,
-                null, null, true, new VideoTranscoder.Listener() {
+                null, null, true, new IListener() {
                     @Override
                     public void onTranscodeProgress(double v) {
 

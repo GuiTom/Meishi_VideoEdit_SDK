@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
-import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
-import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageBeautyFilter;
+//import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
+//import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
 
 /**
@@ -103,6 +103,7 @@ public class CameraManager {
     public void onDestory(){
         releaseCamera();
         glSurfaceView.setRenderer(null);
+
 
     }
     public void releaseCamera(){

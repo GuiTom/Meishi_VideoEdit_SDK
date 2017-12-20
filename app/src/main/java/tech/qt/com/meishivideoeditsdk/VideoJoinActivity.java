@@ -25,7 +25,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import transcoder.SystemUtil;
+//import transcoder.SystemUtil;
+import transcoder.IListener;
 import transcoder.VideoTranscoder;
 import transcoder.engine.EffectLayer;
 import transcoder.engine.MediaTranscoder;
@@ -49,13 +50,13 @@ import static android.widget.ImageView.ScaleType.FIT_CENTER;
 
 public class VideoJoinActivity extends Activity {
     private static final String TAG = "VideoJoinActivity";
-    private static final String FILE_PROVIDER_AUTHORITY = "net.ypresto.androidtranscoder.example.fileprovider";
+//    private static final String FILE_PROVIDER_AUTHORITY = "net.ypresto.androidtranscoder.example.fileprovider";
     private static final int REQUEST_CODE_PICK = 1;
     private static final int PROGRESS_BAR_MAX = 1000;
     private Future<Void> mFuture;
     private long startTime;
     private ArrayList<Uri>fileUris;
-//    private ArrayList<ParcelFileDescriptor>parcelFileDescriptors;
+
     private String dstMediaPath;
     private File outFile=null;
     private ArrayList<MetaInfo> listItems;
@@ -88,7 +89,13 @@ public class VideoJoinActivity extends Activity {
 
 
                 if(fileUris==null||fileUris.size()<2){
-                    Toast.makeText(getApplicationContext(),"请选择两个或以上的视频",Toast.LENGTH_SHORT);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(VideoJoinActivity.this,"请选择两个或以上的视频",Toast.LENGTH_LONG).show();
+                        }
+                    });
+
                     return;
                 }
                 startTime = SystemClock.uptimeMillis();
@@ -118,7 +125,7 @@ public class VideoJoinActivity extends Activity {
 //                effectLayer.getTimeRange();
 
 
-//                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer, listener);
+                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer,false, listener);
                 switchButtonEnabled(true);
             }
         });
@@ -296,7 +303,7 @@ public class VideoJoinActivity extends Activity {
                 super.onActivityResult(requestCode, resultCode, data);
         }
     }
-    VideoTranscoder.Listener listener = new VideoTranscoder.Listener() {
+    IListener listener = new IListener() {
         private double _progress;
         @Override
         public void onTranscodeProgress(double progress) {
@@ -325,17 +332,15 @@ public class VideoJoinActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+
                     ((TextView)findViewById(R.id.timeView)).setText("timeUse:"+(SystemClock.uptimeMillis() - startTime)/1000);
                 }
             });
-//            Uri uri = Uri.parse(dstMediaPath);
-//            startActivity(new Intent(Intent.ACTION_VIEW)
-//                    .setDataAndType(uri, "video/mp4")
-//                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION));
 
             Intent intent=new Intent(VideoJoinActivity.this,VideoPlayerActivity.class);
             intent.putExtra("videoPath",dstMediaPath);
             startActivity(intent);
+
         }
 
         @Override

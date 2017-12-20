@@ -18,6 +18,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
     sourceSets {
         main {
@@ -33,5 +37,35 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:23.+'
     testCompile 'junit:junit:4.12'
+
     compile files('libs/classes.jar')
 }
+//=======生成jar包脚本 start=============================================
+def SDK_BASENAME = "meishi";
+def SDK_VERSION = "_V1.0";
+def sdkDestinationPath = "build";//生成jar存放目录
+
+//打包release目录下的classes.jar(开启混淆后这个jar就是混淆的源码)----注意由于as版本原因有的在default目录
+def releaseJar = file('build/intermediates/bundles/default/classes.jar')
+//打包debug目录下的classes.jar
+def debugJar = file('build/intermediates/bundles/debug/classes.jar')
+//将libs目录下的gson打入jar包
+//def thirdPartyJar = file('libs/gson-2.8.0.jar')
+
+//打包jar前先删除原先的jar
+task deleteBuild(type: Delete) {
+    delete sdkDestinationPath + SDK_BASENAME + SDK_VERSION + ".jar"
+}
+
+task makeJar(type: Jar) {
+    from zipTree(debugJar)//导出混淆的jar
+    //from zipTree(debugJar)//导出未混淆的jar
+    //from zipTree(thirdPartyJar)将第三方jar包打入jar包
+    //from fileTree(dir: 'src/main', includes: ['assets/**'])//将assets目录打入jar包
+    exclude('**/BuildConfig.class')//排除不必要的class文件
+    baseName = SDK_BASENAME + SDK_VERSION
+    destinationDir = file(sdkDestinationPath)
+}
+
+makeJar.dependsOn(deleteBuild, build)
+//=======生成jar包脚本 end=============================================

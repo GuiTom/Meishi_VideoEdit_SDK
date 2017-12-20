@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context="tech.qt.com.meishivideoeditsdk.CameraProtraitActivity2">
 
     <android.opengl.GLSurfaceView
@@ -82,9 +83,9 @@
         android:layout_height="100dp"
         android:layout_marginBottom="25dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="150dp"
-        android:onClick="onClick"
+        android:layout_marginTop="120dp"
         android:background="@android:color/transparent"
+        android:onClick="onClick"
         app:layout_constraintBottom_toTopOf="@+id/imageButton18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
