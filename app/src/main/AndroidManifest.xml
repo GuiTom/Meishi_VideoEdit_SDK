@@ -53,7 +53,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".VideoPlayerActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="unspecified" />
         <activity
             android:name=".VideoCutActivity"
             android:screenOrientation="portrait" />

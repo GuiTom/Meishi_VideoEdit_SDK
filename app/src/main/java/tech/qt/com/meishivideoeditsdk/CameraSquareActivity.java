@@ -196,22 +196,23 @@ public class CameraSquareActivity extends AppCompatActivity {
         final ImageButton imageButton = (ImageButton)view;
         switch (imageButton.getId()){
             case R.id.imageButton14://录制
-                if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
-                    if(mMovieWriter.outputVideoFile==null) {
-                        String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
-                        File file = new File(videoOutPutPath);
-                        if (file.exists()) {
-                            file.delete();
-                        }
-                        mMovieWriter.outputVideoFile = videoOutPutPath;
-                    }
-                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,musicPath);
-                    imageButton.setSelected(!imageButton.isSelected());
-                }else {
-                    mMovieWriter.stopRecording();
-                    imageButton.setSelected(!imageButton.isSelected());
-                }
                 break;
+//                if(mMovieWriter.recordStatus == MovieWriter.RecordStatus.Stoped ){
+//                    if(mMovieWriter.outputVideoFile==null) {
+//                        String videoOutPutPath = Environment.getExternalStorageDirectory() + "/" + FileUtils.getDateTimeString() + ".mp4";
+//                        File file = new File(videoOutPutPath);
+//                        if (file.exists()) {
+//                            file.delete();
+//                        }
+//                        mMovieWriter.outputVideoFile = videoOutPutPath;
+//                    }
+//                    mMovieWriter.startRecording(videoWidth,videoHeight,videoDegree,musicPath);
+//                    imageButton.setSelected(!imageButton.isSelected());
+//                }else {
+//                    mMovieWriter.stopRecording();
+//                    imageButton.setSelected(!imageButton.isSelected());
+//                }
+//                break;
             case R.id.imageButton15://回删
                 if(mMovieWriter.recordStatus != MovieWriter.RecordStatus.Stoped) {
 //                    Toast.makeText(t"请先停止拍摄再进行次操作",Toast.LENGTH_LONG);

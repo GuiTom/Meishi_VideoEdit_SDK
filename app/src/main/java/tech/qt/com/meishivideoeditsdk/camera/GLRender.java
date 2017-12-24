@@ -19,6 +19,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUGourpFilter;
 
 /**
  * Created by chenchao on 2017/12/5.
@@ -50,44 +51,6 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     public GLRender(){
 
     }
-    private static final String vts
-            = "uniform mat4 uMVPMatrix;\n"
-            + "uniform mat4 uTexMatrix;\n"
-            + "attribute highp vec4 aPosition;\n"
-            + "attribute highp vec4 aTextureCoord;\n"
-            + "varying highp vec2 vTextureCoord;\n"
-            + "\n"
-            + "void main() {\n"
-            + "	gl_Position = uMVPMatrix * aPosition;\n"
-            + "	vTextureCoord = (uTexMatrix * aTextureCoord).xy;\n"
-            + "}\n";
-    private static final String fgs//绘制视频层的
-            = "#extension GL_OES_EGL_image_external : require\n"
-            + "precision mediump float;\n"
-            + "uniform samplerExternalOES sTexture;\n"
-            + "varying highp vec2 vTextureCoord;\n"
-            + "void main() {\n"
-            + "  gl_FragColor = texture2D(sTexture, vTextureCoord);\n"
-            + "}";
-    private static final float[] VERTICES = { 1.0f, 1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, -1.0f };
-    private static final float[] TEXCOORD = { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
-
-    private static final int FLOAT_SZ = Float.SIZE / 8;
-    private static final int VERTEX_NUM = 4;
-    private static final int VERTEX_SZ = 4 * 2;
-
-    private final float[] mMvpMatrix = new float[16];
-    private final float[] mTexMatrix = new float[16];
-    private int mProgramId = -1;
-
-
-    private int mMVPMatrixLoc = -1;
-    private int mPositionLoc = -1;
-    private int mTexMatrixLoc = -1;
-    private int mTextureCoordLoc = -1;
-    private int mTextureLoc = -1;
-    private FloatBuffer pVertex;
-    private FloatBuffer pTexCoord;
 
     public GLRender(CameraWraper camera,GLSurfaceView glSurfaceView){
         mCamera = camera;
@@ -118,14 +81,30 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
         GLES20.glViewport(0,0,i,i1);
     }
     public void release(){
-        if(mSurfaceTexture!=null){
-            mSurfaceTexture.setOnFrameAvailableListener(null);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                mSurfaceTexture.releaseTexImage();
-            }
-
-            mSurfaceTexture = null;
+        if(((GPUGourpFilter)mFilter).mfilters.size()>0){
+            runOnDraw(new Runnable() {
+                @Override
+                public void run() {
+                    mFilter.setNeedRealse(true);
+                    mFilter = null;
+                }
+            });
         }
+        runOnDraw(new Runnable() {
+            @Override
+            public void run() {
+                if(mSurfaceTexture!=null){
+                    mSurfaceTexture.setOnFrameAvailableListener(null);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                        mSurfaceTexture.releaseTexImage();
+                    }
+
+                    mSurfaceTexture = null;
+                }
+            }
+        });
+
+
     }
     @Override
     public void onDrawFrame(GL10 gl10) {
@@ -160,7 +139,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
             mRunOnDraw.removeFirst().run();
         }
     }
-    protected void runOnDraw(final Runnable runnable) {
+    public void runOnDraw(final Runnable runnable) {
         synchronized (mRunOnDraw) {
             mRunOnDraw.addLast(runnable);
         }

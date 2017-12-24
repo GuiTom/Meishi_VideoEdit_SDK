@@ -75,8 +75,8 @@
 
     <ImageButton
         android:id="@+id/imageButton17"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="25dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="120dp"
@@ -89,13 +89,13 @@
 
     <ImageButton
         android:id="@+id/imageButton18"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="25dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="35dp"
         android:layout_marginEnd="28dp"
-        android:layout_marginTop="25dp"
-        android:onClick="onClick"
+        android:layout_marginTop="35dp"
         android:background="@android:color/transparent"
+        android:onClick="onClick"
         app:layout_constraintBottom_toTopOf="@+id/imageButton19"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -106,14 +106,14 @@
 
     <ImageButton
         android:id="@+id/imageButton19"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="272dp"
         android:layout_marginEnd="28dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="25dp"
-        android:onClick="onClick"
         android:background="@android:color/transparent"
+        android:onClick="onClick"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/imageButton18"

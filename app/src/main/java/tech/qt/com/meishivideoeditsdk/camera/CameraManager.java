@@ -12,6 +12,7 @@ import java.util.List;
 //import jp.co.cyberagent.android.gpuimage.GPUImageFilter;
 //import tech.qt.com.meishivideoeditsdk.camera.filter.GPUBeautyFilter;
 import tech.qt.com.meishivideoeditsdk.camera.filter.GPUFilter;
+import tech.qt.com.meishivideoeditsdk.camera.filter.GPUGourpFilter;
 
 /**
  * Created by chenchao on 2017/12/6.
@@ -89,6 +90,7 @@ public class CameraManager {
         mCamera.stopPreview();
 //        glSurfaceView.onPause();
     }
+
     public void onResume(){
         mCamera.startPreview();
 //        glSurfaceView.onResume();
@@ -101,9 +103,17 @@ public class CameraManager {
 //        mRender.setmCamera(camera);
 //    }
     public void onDestory(){
-        releaseCamera();
-        glSurfaceView.setRenderer(null);
-        mRender.release();
+        mCamera.startPreview();
+        mRender.runOnDraw(new Runnable() {
+            @Override
+            public void run() {
+                mRender.release();
+                releaseCamera();
+                mRender = null;
+                glSurfaceView.setRenderer(null);
+
+            }
+        });
 
     }
     public void releaseCamera(){
@@ -113,6 +123,7 @@ public class CameraManager {
         }
         mCamera.release();
         mCamera = null;
+
     }
     public static Camera.Size getClosestSupportedSize(List<Camera.Size> supportedSizes, final int requestedWidth, final int requestedHeight) {
         return (Camera.Size) Collections.min(supportedSizes, new Comparator<Camera.Size>() {

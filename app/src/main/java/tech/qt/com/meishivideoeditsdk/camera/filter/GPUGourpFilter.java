@@ -16,7 +16,7 @@ import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
  */
 
 public class GPUGourpFilter extends GPUFilter {
-    private List<GPUFilter>mfilters;
+    public List<GPUFilter>mfilters;
 //    private boolean isInitlized;
 
     public void addFilter(GPUFilter gpuFilter){

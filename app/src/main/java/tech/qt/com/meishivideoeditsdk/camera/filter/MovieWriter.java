@@ -30,6 +30,7 @@ import jp.co.cyberagent.android.gpuimage.encoder.WindowSurface;
 import tech.qt.com.meishivideoeditsdk.camera.OpenGLUtils;
 import transcoder.IListener;
 import transcoder.VideoTranscoder;
+import transcoder.format.MediaPreSet;
 
 /**
  * Created by chenchao on 2017/12/7.
@@ -236,13 +237,13 @@ public class MovieWriter extends GPUFilter {
                 if (recordStatus== RecordStatus.Stoped) {
                     return;
                 }
-
+                recordStatus= RecordStatus.Stoped;
                 timer.cancel();
                 timer=null;
                 lastAudioPts = mMuxer.getSampleTime();
 
                 mMuxer.stopRecording();
-                recordStatus= RecordStatus.Stoped;
+
                 releaseEncodeSurface();
                 uriList.add(Uri.parse(tmpVideoFilePath));
             }
@@ -293,8 +294,11 @@ public class MovieWriter extends GPUFilter {
             uriList = new ArrayList<Uri>();
             return;
         }
+        MediaPreSet mediaPreSet = new MediaPreSet();
+        mediaPreSet.audioTimeAlpha = 0;
+
         VideoTranscoder.getInstance().transcodeVideo(mContext, uriList, outputVideoFile,
-                null, null, true, new IListener() {
+                mediaPreSet, null, true, new IListener() {
                     @Override
                     public void onTranscodeProgress(double v) {
 
