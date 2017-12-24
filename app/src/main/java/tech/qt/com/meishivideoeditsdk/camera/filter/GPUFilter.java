@@ -112,7 +112,16 @@ public class GPUFilter {
                 .order(ByteOrder.nativeOrder()).asFloatBuffer();
         pVertex.put(VERTICES);
         pVertex.flip();
-        setTextureCoord(texTureWidth,texTureHeight,isSquare);
+
+        pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
+                .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        pTexCoord.put(TEXCOORD);
+
+        pTexCoord.flip();
+
+        if(texTureWidth>0&&texTureHeight>0){
+            setTextureCoord(texTureWidth,texTureHeight,this.isSquare);
+        }
         GLES20.glUseProgram(mProgramId);
         mMVPMatrixLoc = GLES20.glGetUniformLocation(mProgramId,"uMVPMatrix");
         OpenGLUtils.checkGlError("a1.5");

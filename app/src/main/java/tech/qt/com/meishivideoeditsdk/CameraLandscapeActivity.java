@@ -24,7 +24,7 @@ import utils.GPUImageFilterTools.FilterAdjuster;
 
 
 
-public class CameraLandscapeActivity extends Activity {
+public class CameraLandscapeActivity extends AppCompatActivity {
 
     private Button captureButton;
 

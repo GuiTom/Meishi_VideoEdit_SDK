@@ -103,7 +103,7 @@ public class CameraManager {
     public void onDestory(){
         releaseCamera();
         glSurfaceView.setRenderer(null);
-
+        mRender.release();
 
     }
     public void releaseCamera(){
