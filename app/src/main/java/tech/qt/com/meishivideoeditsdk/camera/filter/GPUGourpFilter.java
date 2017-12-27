@@ -37,6 +37,10 @@ public class GPUGourpFilter extends GPUFilter {
     }
     private int[] mFrameBuffers;
     private int[] mFrameBufferTextures;
+    @Override
+    public void setNeedRealse(boolean needRealse) {
+        this.needRealse = needRealse;
+    }
 
     @Override
     public void init(){

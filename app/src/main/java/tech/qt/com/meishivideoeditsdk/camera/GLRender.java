@@ -81,14 +81,18 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
         GLES20.glViewport(0,0,i,i1);
     }
     public void release(){
-        if(((GPUGourpFilter)mFilter).mfilters.size()>0){
-            runOnDraw(new Runnable() {
-                @Override
-                public void run() {
-                    mFilter.setNeedRealse(true);
-                    mFilter = null;
-                }
-            });
+        if(mFilter instanceof  GPUGourpFilter) {
+            if (((GPUGourpFilter) mFilter).mfilters.size() > 0) {
+                runOnDraw(new Runnable() {
+                    @Override
+                    public void run() {
+                        mFilter.setNeedRealse(true);
+                        mFilter = null;
+                    }
+                });
+            }
+        }else {
+            mFilter.setNeedRealse(true);
         }
         runOnDraw(new Runnable() {
             @Override

@@ -104,17 +104,26 @@ public class CameraManager {
 //    }
     public void onDestory(){
         mCamera.startPreview();
-        mRender.runOnDraw(new Runnable() {
+
+        mRender.release();
+
+        mRender = null;
+
+
+
+        new Thread() {
             @Override
             public void run() {
-                mRender.release();
+                super.run();
+                try {
+                    Thread.sleep(500);//休眠0.5秒
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 releaseCamera();
-                mRender = null;
-                glSurfaceView.setRenderer(null);
-
+                glSurfaceView.onPause();
             }
-        });
-
+        }.start();
     }
     public void releaseCamera(){
         if(mCamera == null) return;

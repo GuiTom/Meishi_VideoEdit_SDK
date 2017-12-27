@@ -63,7 +63,7 @@ public class CameraSquareActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getInputParams();
-        setContentView(R.layout.activity_camera_protrait2);
+        setContentView(R.layout.activity_square_camera);
 
         setUpUIComponentIds();
         openCamera();
@@ -348,5 +348,9 @@ public class CameraSquareActivity extends AppCompatActivity {
 
         CameraManager.getManager().onPause();
     }
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        CameraManager.getManager().onDestory();
+    }
 }

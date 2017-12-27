@@ -63,7 +63,7 @@ public class CameraLandscapeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getInputParams();
-        setContentView(R.layout.activity_camera_protrait2);
+        setContentView(R.layout.activity_landscape_camera);
 
         setUpUIComponentIds();
         openCamera();

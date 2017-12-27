@@ -30,7 +30,7 @@ public class GPUFilter {
         this.needRealse = needRealse;
     }
 
-    private boolean needRealse;
+    protected boolean needRealse;
 
     protected enum SamplerType {
         Sampler2D,SamplerExternalOES
@@ -180,6 +180,10 @@ public class GPUFilter {
 
     public void onDrawFrame(int textureId, SurfaceTexture st, int mViewWidth, int mViewHeight){
 //        if(isInintalized == false) return;
+        if(needRealse){
+            release();
+            return;
+        }
         OpenGLUtils.checkGlError("3.3");
         runPendingOnDrawTasks();
         OpenGLUtils.checkGlError("3.2");
@@ -230,9 +234,7 @@ public class GPUFilter {
         GLES20.glDisableVertexAttribArray(mPositionLoc);
         GLES20.glDisableVertexAttribArray(mTextureCoordLoc);
         GLES20.glUseProgram(0);
-         if(needRealse){
-             release();
-         }
+
     }
     protected void onDrawForeround() {}
 
