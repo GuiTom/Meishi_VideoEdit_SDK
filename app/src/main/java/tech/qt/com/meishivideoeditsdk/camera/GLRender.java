@@ -113,6 +113,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
     @Override
     public void onDrawFrame(GL10 gl10) {
         mSurfaceTexture.updateTexImage();
+
         drawVideoFrame();
     }
 

@@ -67,7 +67,7 @@ public class GPUGourpFilter extends GPUFilter {
                 for (int i = 0; i < size - 1; i++) {
 
 //                    if(i<size -2) {
-                        GLES20.glGenFramebuffers(1, mFrameBuffers, i);
+
                         GLES20.glGenTextures(1, mFrameBufferTextures, i);
                         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFrameBufferTextures[i]);
                         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
@@ -75,6 +75,8 @@ public class GPUGourpFilter extends GPUFilter {
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
                         GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+
+                        GLES20.glGenFramebuffers(1, mFrameBuffers, i);
                         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, mFrameBuffers[i]);
                         GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, mFrameBufferTextures[i], 0);
                         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);

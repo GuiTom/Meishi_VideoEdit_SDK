@@ -340,7 +340,6 @@ public class CameraProtraitActivity2 extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         CameraManager.getManager().onPause();
     }
 

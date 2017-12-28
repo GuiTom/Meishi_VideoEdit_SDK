@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
+import android.media.MediaExtractor;
+import android.media.MediaFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -124,8 +126,8 @@ public class VideoJoinActivity extends Activity {
 //                effectLayer.animationTexts = this.animationTexts;
 //                effectLayer.getTimeRange();
 
-
-                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer,false, listener);
+                boolean isPassThough = MetaInfoUtil.compare(getApplicationContext(),fileUris);
+                VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer,isPassThough, listener);
                 switchButtonEnabled(true);
             }
         });
@@ -133,6 +135,8 @@ public class VideoJoinActivity extends Activity {
         setupListView();
 
     }
+
+
 
     private void setupListView() {
         listItems = new ArrayList<MetaInfo>();

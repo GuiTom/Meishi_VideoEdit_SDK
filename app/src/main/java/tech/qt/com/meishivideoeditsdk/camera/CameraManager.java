@@ -109,8 +109,6 @@ public class CameraManager {
 
         mRender = null;
 
-
-
         new Thread() {
             @Override
             public void run() {
