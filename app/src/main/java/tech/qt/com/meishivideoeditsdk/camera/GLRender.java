@@ -126,7 +126,7 @@ public class GLRender implements GLSurfaceView.Renderer,SurfaceTexture.OnFrameAv
 
     @Override
     public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-        Log.e("request Render","1");
+//        Log.e("request Render","1");
         glSurfaceView.requestRender();
     }
 

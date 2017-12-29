@@ -3,6 +3,7 @@ package tech.qt.com.meishivideoeditsdk;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -33,6 +34,7 @@ import transcoder.engine.MediaTranscoder;
 import transcoder.engine.displayObject.Animation;
 import transcoder.engine.displayObject.AnimationBitmap;
 import transcoder.engine.displayObject.AnimationText;
+import transcoder.engine.displayObject.Scale;
 import transcoder.format.MediaPreSet;
 import transcoder.format.Size;
 import utils.FileUtils;
@@ -40,6 +42,7 @@ import utils.MetaInfoUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,12 +118,19 @@ public class VideoEffectActivity extends Activity {
                 mediaPreSet.audioChannelCount=2;
 
 
-                String borderPath= Environment.getExternalStorageDirectory()+"/border";
-                FileUtils.copyFilesFassets(getApplicationContext(),"border",borderPath);
 
-                setUpBorderAnimation(borderPath,20,30);
+                String fileName="flower/flower.png";
+                Bitmap bitmap = null;
+                try {
+                    InputStream is = getApplicationContext().getAssets().open(fileName);
+                    bitmap = BitmapFactory.decodeStream(is);
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
                 setUpTextAnimation();
-
+                setUpImageAnimation(bitmap);
 
 
                 dstMediaPath= new File(Environment.getExternalStorageDirectory(),"outPut.mp4").getAbsolutePath();
@@ -131,12 +141,47 @@ public class VideoEffectActivity extends Activity {
                 VideoTranscoder.getInstance().transcodeVideo(getApplicationContext(), fileUris, dstMediaPath, mediaPreSet, effectLayer,false, listener);
                 switchButtonEnabled(true);
             }
+
+
         });
 
         setupListView();
 
     }
+    private void setUpImageAnimation(Bitmap bitmap) {
+        AnimationBitmap animationBitmap=new AnimationBitmap();
+        animationBitmap.alpha=0.0f;
+        animationBitmap.position=new Point(0,0);
+        animationBitmap.size=new Size(100,100);
+        ArrayList<Animation>animations=new ArrayList<Animation>();
+        //Positin Animation
+        Animation posAnimation=new Animation();
+        posAnimation.animationType= Animation.ANIMATIONTYPE.position;
+        posAnimation.keyTimes.add(0.5f);
+        posAnimation.keyValues.add(new Point(20,20));
+        posAnimation.keyTimes.add(2.5f);
+        posAnimation.keyValues.add(new Point(200,100));
+        posAnimation.keyTimes.add(3.5f);
+        posAnimation.keyValues.add(new Point(100,200));
+        animations.add(posAnimation);
+        //scale Animation
+        Animation scaleAnimation=new Animation();
+        scaleAnimation.animationType= Animation.ANIMATIONTYPE.scale;
+        scaleAnimation.keyTimes.add(0.5f);
+        scaleAnimation.keyValues.add(new Scale(1.0f,1.0f));
+        scaleAnimation.keyTimes.add(2.5f);
+        scaleAnimation.keyValues.add(new Scale(2.0f,2.0f));
+        scaleAnimation.keyTimes.add(3.5f);
+        scaleAnimation.keyValues.add(new Scale(3.0f,3.0f));
+        animations.add(scaleAnimation);
 
+        animationBitmap.animations = animations;
+        if(animationBitmaps == null) {
+            animationBitmaps = new ArrayList<>();
+        }
+        animationBitmaps.add(animationBitmap);
+
+    }
     private void setupListView() {
         listItems = new ArrayList<MetaInfo>();
         cellList=new ArrayList<LinearLayout>();

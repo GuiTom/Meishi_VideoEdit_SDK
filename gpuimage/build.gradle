@@ -37,8 +37,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:23.+'
     testCompile 'junit:junit:4.12'
-
-    compile files('libs/classes.jar')
+    //    compile files('libs/classes.jar')
+    compile files('libs/videoEdit_V1.0.jar')
 }
 //=======生成jar包脚本 start=============================================
 def SDK_BASENAME = "meishi";

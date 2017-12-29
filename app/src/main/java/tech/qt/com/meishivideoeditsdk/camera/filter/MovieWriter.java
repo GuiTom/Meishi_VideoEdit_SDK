@@ -321,7 +321,7 @@ public class MovieWriter extends GPUFilter {
 
                     @Override
                     public void onTranscodeFailed(Exception e) {
-
+                        Log.e("jonit video Exception",Log.getStackTraceString(e));
                     }
                 });
     }
