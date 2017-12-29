@@ -150,9 +150,10 @@ public class VideoEffectActivity extends Activity {
     }
     private void setUpImageAnimation(Bitmap bitmap) {
         AnimationBitmap animationBitmap=new AnimationBitmap();
-        animationBitmap.alpha=0.0f;
+        animationBitmap.alpha=1.0f;
         animationBitmap.position=new Point(0,0);
         animationBitmap.size=new Size(100,100);
+        animationBitmap.setBitmap(bitmap);
         ArrayList<Animation>animations=new ArrayList<Animation>();
         //Positin Animation
         Animation posAnimation=new Animation();
@@ -170,10 +171,26 @@ public class VideoEffectActivity extends Activity {
         scaleAnimation.keyTimes.add(0.5f);
         scaleAnimation.keyValues.add(new Scale(1.0f,1.0f));
         scaleAnimation.keyTimes.add(2.5f);
-        scaleAnimation.keyValues.add(new Scale(2.0f,2.0f));
+        scaleAnimation.keyValues.add(new Scale(1.5f,1.2f));
         scaleAnimation.keyTimes.add(3.5f);
         scaleAnimation.keyValues.add(new Scale(3.0f,3.0f));
         animations.add(scaleAnimation);
+        //alpha Animation
+        Animation alphaAnimation = new Animation();
+        alphaAnimation.animationType = Animation.ANIMATIONTYPE.alpha;
+        alphaAnimation.keyTimes.add(0.0f);
+        alphaAnimation.keyValues.add(0.1f);
+
+        alphaAnimation.keyTimes.add(1.5f);
+        alphaAnimation.keyValues.add(1.0f);
+
+
+        alphaAnimation.keyTimes.add(2.5f);
+        alphaAnimation.keyValues.add(0.5f);
+
+        alphaAnimation.keyTimes.add(3.5f);
+        alphaAnimation.keyValues.add(0.0f);
+        animations.add(alphaAnimation);
 
         animationBitmap.animations = animations;
         if(animationBitmaps == null) {
