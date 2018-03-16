@@ -40,6 +40,15 @@
         app:layout_constraintTop_toTopOf="@+id/imageButton15"
         app:layout_constraintVertical_bias="0.888"
         app:srcCompat="@drawable/record_button" />
+    <TextView
+        android:text="长按录制"
+        android:id="@+id/recordButtonText"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@id/imageButton14"
+        app:layout_constraintLeft_toLeftOf="@id/imageButton14"
+        app:layout_constraintRight_toRightOf="@id/imageButton14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         android:id="@+id/imageButton15"
@@ -59,6 +68,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/delete_back_button" />
+    <TextView
+        android:text="回退"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@id/imageButton15"
+        app:layout_constraintLeft_toLeftOf="@id/imageButton15"
+        app:layout_constraintRight_toRightOf="@id/imageButton15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         android:id="@+id/imageButton16"
@@ -83,9 +100,9 @@
         android:id="@+id/imageButton17"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
         android:onClick="onClick"
         android:scaleType="fitXY"
@@ -93,14 +110,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/add_filter_button" />
+    <TextView
+        android:text="滤镜"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@id/imageButton17"
+        app:layout_constraintLeft_toLeftOf="@id/imageButton17"
+        app:layout_constraintRight_toRightOf="@id/imageButton17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         android:id="@+id/imageButton18"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginEnd="28dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="15dp"
         android:background="@android:color/transparent"
         android:onClick="onClick"
         android:scaleType="fitXY"
@@ -111,6 +136,15 @@
         app:layout_constraintTop_toBottomOf="@+id/imageButton17"
         app:layout_constraintVertical_bias="0.114"
         app:srcCompat="@drawable/add_effect_button" />
+    <TextView
+        android:text="贴纸动画"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@id/imageButton18"
+        app:layout_constraintLeft_toLeftOf="@id/imageButton18"
+        app:layout_constraintRight_toRightOf="@id/imageButton18"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 
     <ImageButton
         android:id="@+id/imageButton19"
@@ -119,7 +153,7 @@
         android:layout_marginBottom="272dp"
         android:layout_marginEnd="28dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="15dp"
         android:background="@android:color/transparent"
         android:onClick="onClick"
         android:scaleType="fitXY"
@@ -128,6 +162,14 @@
         app:layout_constraintStart_toStartOf="@+id/imageButton18"
         app:layout_constraintTop_toBottomOf="@+id/imageButton18"
         app:srcCompat="@drawable/add_music_button" />
+    <TextView
+        android:text="背景音乐"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@id/imageButton19"
+        app:layout_constraintLeft_toLeftOf="@id/imageButton19"
+        app:layout_constraintRight_toRightOf="@id/imageButton19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         android:id="@+id/imageButton20"
@@ -144,6 +186,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/beauty_face_button" />
+    <TextView
+        android:text="美颜"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@id/imageButton20"
+        app:layout_constraintLeft_toLeftOf="@id/imageButton20"
+        app:layout_constraintRight_toRightOf="@id/imageButton20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         android:id="@+id/imageButton21"
@@ -161,6 +211,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/switch_camera_button" />
+    <TextView
+        android:text="翻转"
+        android:textColor="@color/colorWhite"
+        app:layout_constraintTop_toBottomOf="@id/imageButton21"
+        app:layout_constraintLeft_toLeftOf="@id/imageButton21"
+        app:layout_constraintRight_toRightOf="@id/imageButton21"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ProgressBar
         android:id="@+id/progressBar3"
