@@ -435,7 +435,9 @@ public class VideoEffectActivity extends Activity {
         progressBar.setIndeterminate(false);
         progressBar.setProgress(isSuccess ? PROGRESS_BAR_MAX : 0);
         switchButtonEnabled(false);
+
         Toast.makeText(VideoEffectActivity.this, toastMessage, Toast.LENGTH_LONG).show();
+
     }
 
     private void switchButtonEnabled(boolean isProgress) {

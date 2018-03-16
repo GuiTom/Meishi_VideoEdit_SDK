@@ -9,7 +9,7 @@
 #### Also support 24 kinds of Real-Time filters suce as FaceBeauty filter etc,support font animation、image Animation、video joint、video cut,and also you can define bitrate、size、rotation of the video youself.
 ### source code and API document will be on line,please care for us!
 
-# NanJin Greentun Technology Co., Ltd.(in China)
+# WuHan QuTong Technology Co., Ltd.(in China)
 ## For Business cooperation:
 ### cell phone:(86)13148475541
 ### Email:306768929@qq.com
