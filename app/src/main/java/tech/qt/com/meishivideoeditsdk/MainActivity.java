@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         iData.add(lData);
         //后期处理
         lData = new ArrayList<Item>();
-        lData.add(new Item("视频拼接（免费））"));
+        lData.add(new Item("视频拼接（免费）"));
         lData.add(new Item("视频截取(免费)"));
         lData.add(new Item("视频加字幕、动画"));
         iData.add(lData);

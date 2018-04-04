@@ -136,16 +136,6 @@ public class GPUFilter {
 
     }
 
-//    public void setSquare(){
-//
-//        for(int i=0;i<16;i++){
-//            float f = TEXCOORD[i];
-//        }
-//        pTexCoord = ByteBuffer.allocateDirect(VERTEX_SZ * FLOAT_SZ)
-//                .order(ByteOrder.nativeOrder()).asFloatBuffer();
-//        pTexCoord.put(TEXCOORD);
-//        pTexCoord.flip();
-//    }
     public void setTexureSize(float width,float height,boolean isSquare){
         texTureWidth = width;
         texTureHeight = height;
