@@ -10,7 +10,6 @@
 ##商业案例
 ### <a href="http://sj.qq.com/myapp/detail.htm?apkName=cc.laowantong.gcw"><font color="#00ff00" size=24>99广场舞</font></a>
 ### <a href="http://sj.qq.com/myapp/detail.htm?apkName=com.jjdance"><font color="#00ff00" size=24>就爱广场舞</font></a>
-### <a href="http://zhushou.360.cn/detail/index/soft_id/3221826?recrefer=SE_D_%E6%9C%89%E8%AE%B0"><font color="#00ff00" size=24>YokiVoice</font></a>
 ### 更多案例，即将呈现...
 
 
